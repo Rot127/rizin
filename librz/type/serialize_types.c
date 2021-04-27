@@ -576,7 +576,7 @@ RZ_IPI bool types_load_sdb(RZ_NONNULL Sdb *db, RZ_NONNULL RzTypeDB *typedb) {
 }
 
 struct base_type_sdb {
-	RzTypeDB *typedb;
+	const RzTypeDB *typedb;
 	Sdb *sdb;
 };
 
@@ -587,7 +587,7 @@ static bool export_base_type_cb(void *user, const void *k, const void *v) {
 	return true;
 }
 
-static bool types_export_sdb(RZ_NONNULL Sdb *db, RZ_NONNULL RzTypeDB *typedb) {
+static bool types_export_sdb(RZ_NONNULL Sdb *db, RZ_NONNULL const RzTypeDB *typedb) {
 	struct base_type_sdb tdb = { typedb, db };
 	ht_pp_foreach(typedb->types, export_base_type_cb, &tdb);
 	return true;
@@ -608,7 +608,7 @@ RZ_API bool rz_type_db_load_sdb(RzTypeDB *typedb, const char *path) {
 	return sdb_load_by_path(typedb, path);
 }
 
-RZ_API void rz_serialize_types_save(RZ_NONNULL Sdb *db, RZ_NONNULL RzTypeDB *typedb) {
+RZ_API void rz_serialize_types_save(RZ_NONNULL Sdb *db, RZ_NONNULL const RzTypeDB *typedb) {
 	types_export_sdb(db, typedb);
 }
 

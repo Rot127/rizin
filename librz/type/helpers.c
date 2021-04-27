@@ -192,7 +192,22 @@ RZ_API bool rz_type_is_void_ptr(RzType *type) {
 
 RZ_API bool rz_type_is_default(RzTypeDB *typedb, RzType *type) {
 	rz_return_val_if_fail(type, false);
-	return false;
+	if (type->kind != RZ_TYPE_KIND_IDENTIFIER) {
+		return false;
+	}
+	if (type->identifier.kind != RZ_TYPE_IDENTIFIER_KIND_UNSPECIFIED) {
+		return false;
+	}
+	return !strcmp(type->identifier.name, RZ_TYPE_DEFAULT) && !type->identifier.is_const;
+}
+
+RZ_API RZ_OWN RzType *rz_type_new_default(RzTypeDB *typedb) {
+	rz_return_val_if_fail(typedb, NULL);
+	RzBaseType *btype = rz_type_db_get_base_type(typedb, RZ_TYPE_DEFAULT);
+	if (!btype) {
+		return NULL;
+	}
+	return rz_type_identifier_of_base_type(typedb, btype);
 }
 
 RZ_API bool rz_type_atomic_set_sign(RzTypeDB *typedb, RzType *type, bool sign) {

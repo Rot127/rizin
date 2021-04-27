@@ -239,7 +239,7 @@ RZ_API RZ_OWN RzType *rz_type_parse_string_single(RzTypeParser *parser, const ch
 	}
 
 	// If there were errors during the parser then the result is different from 0
-	if (result || tpair) {
+	if (result || !tpair) {
 		const char *error_msgs = rz_strbuf_drain_nofree(parser->state->errors);
 		eprintf("Errors:\n");
 		eprintf(error_msgs);
