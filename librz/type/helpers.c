@@ -53,23 +53,16 @@ RZ_API RZ_OWN RzType *rz_type_pointer_of_base_type_str(RzTypeDB *typedb, RZ_NONN
 
 RZ_API RZ_OWN RzType *rz_type_pointer_of_type(RzTypeDB *typedb, RZ_NONNULL RzType *type, bool is_const) {
 	rz_return_val_if_fail(typedb && type, NULL);
-	switch (type->kind) {
-	case RZ_TYPE_KIND_IDENTIFIER: {
+	if (type->kind == RZ_TYPE_KIND_IDENTIFIER) {
 		return rz_type_pointer_of_base_type_str(typedb, type->identifier.name, is_const);
 	}
-	case RZ_TYPE_KIND_POINTER: {
-		// Pointer of a pointer
-		break;
+	RzType *newtype = RZ_NEW0(RzType);
+	if (!newtype) {
+		return NULL;
 	}
-	case RZ_TYPE_KIND_ARRAY: {
-		// Pointer of an array
-		break;
-	}
-	case RZ_TYPE_KIND_CALLABLE: {
-		rz_warn_if_reached();
-		break;
-	}
-	}
+	newtype->kind = RZ_TYPE_KIND_POINTER;
+	newtype->pointer.type = type;
+	newtype->pointer.is_const = is_const;
 	return NULL;
 }
 
@@ -96,6 +89,17 @@ RZ_API RZ_OWN RzType *rz_type_array_of_base_type_str(RzTypeDB *typedb, RZ_NONNUL
 		return NULL;
 	}
 	return rz_type_array_of_base_type(typedb, btype, count);
+}
+
+RZ_API RZ_OWN RzType *rz_type_array_of_type(RzTypeDB *typedb, RZ_NONNULL RzType *type, size_t count) {
+	RzType *newtype = RZ_NEW0(RzType);
+	if (!newtype) {
+		return NULL;
+	}
+	newtype->kind = RZ_TYPE_KIND_ARRAY;
+	newtype->array.type = type;
+	newtype->array.count = count;
+	return type;
 }
 
 RZ_API bool rz_type_atomic_eq(RzTypeDB *typedb, RzType *typ1, RzType *typ2) {

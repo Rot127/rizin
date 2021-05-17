@@ -134,8 +134,8 @@ RZ_IPI void rz_core_types_enum_print_all(RzCore *core, RzOutputMode mode) {
 
 static void core_types_enum_print_c(RzBaseType *btype, bool multiline) {
 	char *separator;
-	rz_cons_printf("enum %s {%s", btype->name, multiline ? "\n" : "");
 	if (!rz_vector_empty(&btype->enum_data.cases)) {
+		rz_cons_printf("enum %s {%s", btype->name, multiline ? "\n" : "");
 		separator = multiline ? "\t" : "";
 		RzTypeEnumCase *cas;
 		rz_vector_foreach(&btype->enum_data.cases, cas) {
@@ -143,6 +143,8 @@ static void core_types_enum_print_c(RzBaseType *btype, bool multiline) {
 			separator = multiline ? ",\n\t" : ", ";
 		}
 		rz_cons_println(multiline ? "\n};" : "};");
+	} else {
+		rz_cons_printf("enum %s {};\n", btype->name);
 	}
 }
 
@@ -238,8 +240,8 @@ RZ_IPI void rz_core_types_union_print_all(RzCore *core, RzOutputMode mode) {
 
 static void core_types_union_print_c(RzTypeDB *typedb, RzBaseType *btype, bool multiline) {
 	char *separator;
-	rz_cons_printf("union %s {%s", btype->name, multiline ? "\n" : "");
 	if (!rz_vector_empty(&btype->enum_data.cases)) {
+		rz_cons_printf("union %s {%s", btype->name, multiline ? "\n" : "");
 		separator = multiline ? "\t" : "";
 		RzTypeUnionMember *memb;
 		rz_vector_foreach(&btype->union_data.members, memb) {
@@ -253,6 +255,8 @@ static void core_types_union_print_c(RzTypeDB *typedb, RzBaseType *btype, bool m
 			separator = multiline ? ";\n\t" : "; ";
 		}
 		rz_cons_println(multiline ? "\n};" : "};");
+	} else {
+		rz_cons_printf("union %s {};\n", btype->name);
 	}
 }
 
@@ -348,8 +352,8 @@ RZ_IPI void rz_core_types_struct_print_all(RzCore *core, RzOutputMode mode) {
 
 static void core_types_struct_print_c(RzTypeDB *typedb, RzBaseType *btype, bool multiline) {
 	char *separator;
-	rz_cons_printf("struct %s {%s", btype->name, multiline ? "\n" : "");
 	if (!rz_vector_empty(&btype->struct_data.members)) {
+		rz_cons_printf("struct %s {%s", btype->name, multiline ? "\n" : "");
 		separator = multiline ? "\t" : "";
 		RzTypeStructMember *memb;
 		rz_vector_foreach(&btype->struct_data.members, memb) {
@@ -364,6 +368,8 @@ static void core_types_struct_print_c(RzTypeDB *typedb, RzBaseType *btype, bool 
 			separator = multiline ? ";\n\t" : "; ";
 		}
 		rz_cons_println(multiline ? "\n};" : "};");
+	} else {
+		rz_cons_printf("struct %s {};\n", btype->name);
 	}
 }
 
@@ -455,7 +461,6 @@ RZ_IPI void rz_core_types_typedef_print_c(RzTypeDB *typedb, const char *typedef_
 		return;
 	}
 	core_types_typedef_print_c(typedb, btype);
-	rz_type_base_type_free(btype);
 }
 
 RZ_IPI void rz_core_types_typedef_print_c_all(RzTypeDB *typedb) {
@@ -501,7 +506,7 @@ RZ_IPI void rz_types_function_print(RzTypeDB *typedb, const char *function, RzOu
 		pj_end(pj);
 	} break;
 	default: {
-		rz_cons_printf("%s %s (", ret, function);
+		rz_cons_printf("%s %s(", ret, function);
 		int i = 0;
 		rz_pvector_foreach (callable->args, it) {
 			RzCallableArg *arg = (RzCallableArg *)*it;

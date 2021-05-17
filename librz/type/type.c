@@ -45,7 +45,7 @@ RZ_API RzTypeDB *rz_type_db_new() {
 	if (!typedb->callables) {
 		return NULL;
 	}
-	typedb->parser = rz_type_parser_new();
+	typedb->parser = rz_type_parser_init(typedb->types, typedb->callables);
 	rz_io_bind_init(typedb->iob);
 	return typedb;
 }
@@ -116,12 +116,16 @@ RZ_API void rz_type_db_init(RzTypeDB *typedb, const char *dir_prefix, const char
 
 	// TODO: make sure they are empty this is initializing
 
-	const char *dbpath = sdb_fmt(RZ_JOIN_3_PATHS("%s", RZ_SDB_FCNSIGN, "types.sdb"), dir_prefix);
+	// At first we load the basic types
+	// Atomic types
+	const char *dbpath = sdb_fmt(RZ_JOIN_3_PATHS("%s", RZ_SDB_FCNSIGN, "types-atomic.sdb"), dir_prefix);
 	if (rz_type_db_load_sdb(typedb, dbpath)) {
 		RZ_LOG_DEBUG("types: loaded \"%s\"\n", dbpath);
 	}
-	if (rz_type_db_load_callables_sdb(typedb, dbpath)) {
-		RZ_LOG_DEBUG("callable types: loaded \"%s\"\n", dbpath);
+	// C runtime types
+	dbpath = sdb_fmt(RZ_JOIN_3_PATHS("%s", RZ_SDB_FCNSIGN, "types-libc.sdb"), dir_prefix);
+	if (rz_type_db_load_sdb(typedb, dbpath)) {
+		RZ_LOG_DEBUG("types: loaded \"%s\"\n", dbpath);
 	}
 	// Architecture-specific types
 	dbpath = sdb_fmt(RZ_JOIN_3_PATHS("%s", RZ_SDB_FCNSIGN, "types-%s.sdb"),
@@ -135,46 +139,35 @@ RZ_API void rz_type_db_init(RzTypeDB *typedb, const char *dir_prefix, const char
 	if (rz_type_db_load_sdb(typedb, dbpath)) {
 		RZ_LOG_DEBUG("types: loaded \"%s\"\n", dbpath);
 	}
-	if (rz_type_db_load_callables_sdb(typedb, dbpath)) {
-		RZ_LOG_DEBUG("callable types: loaded \"%s\"\n", dbpath);
-	}
 	dbpath = sdb_fmt(RZ_JOIN_3_PATHS("%s", RZ_SDB_FCNSIGN, "types-%d.sdb"),
 		dir_prefix, bits);
 	if (rz_type_db_load_sdb(typedb, dbpath)) {
 		RZ_LOG_DEBUG("types: loaded \"%s\"\n", dbpath);
-	}
-	if (rz_type_db_load_callables_sdb(typedb, dbpath)) {
-		RZ_LOG_DEBUG("callable types: loaded \"%s\"\n", dbpath);
 	}
 	dbpath = sdb_fmt(RZ_JOIN_3_PATHS("%s", RZ_SDB_FCNSIGN, "types-%s-%d.sdb"),
 		dir_prefix, os, bits);
 	if (rz_type_db_load_sdb(typedb, dbpath)) {
 		RZ_LOG_DEBUG("types: loaded \"%s\"\n", dbpath);
 	}
-	if (rz_type_db_load_callables_sdb(typedb, dbpath)) {
-		RZ_LOG_DEBUG("callable types: loaded \"%s\"\n", dbpath);
-	}
 	dbpath = sdb_fmt(RZ_JOIN_3_PATHS("%s", RZ_SDB_FCNSIGN, "types-%s-%d.sdb"),
 		dir_prefix, arch, bits);
 	if (rz_type_db_load_sdb(typedb, dbpath)) {
 		RZ_LOG_DEBUG("types: loaded \"%s\"\n", dbpath);
-	}
-	if (rz_type_db_load_callables_sdb(typedb, dbpath)) {
-		RZ_LOG_DEBUG("callable types: loaded \"%s\"\n", dbpath);
 	}
 	dbpath = sdb_fmt(RZ_JOIN_3_PATHS("%s", RZ_SDB_FCNSIGN, "types-%s-%s.sdb"),
 		dir_prefix, arch, os);
 	if (rz_type_db_load_sdb(typedb, dbpath)) {
 		RZ_LOG_DEBUG("types: loaded \"%s\"\n", dbpath);
 	}
-	if (rz_type_db_load_callables_sdb(typedb, dbpath)) {
-		RZ_LOG_DEBUG("callable types: loaded \"%s\"\n", dbpath);
-	}
 	dbpath = sdb_fmt(RZ_JOIN_3_PATHS("%s", RZ_SDB_FCNSIGN, "types-%s-%s-%d.sdb"),
 		dir_prefix, arch, os, bits);
 	if (rz_type_db_load_sdb(typedb, dbpath)) {
 		RZ_LOG_DEBUG("types: loaded \"%s\"\n", dbpath);
 	}
+
+	// Then, after all basic types are initialized, we load function types
+	// that use loaded previously base types for return and arguments
+	dbpath = sdb_fmt(RZ_JOIN_3_PATHS("%s", RZ_SDB_FCNSIGN, "functions-libc.sdb"), dir_prefix);
 	if (rz_type_db_load_callables_sdb(typedb, dbpath)) {
 		RZ_LOG_DEBUG("callable types: loaded \"%s\"\n", dbpath);
 	}
@@ -722,6 +715,7 @@ RZ_API RZ_OWN char *rz_type_as_string(const RzTypeDB *typedb, RZ_NONNULL const R
 		// Here it can be any of the RzBaseType
 		RzBaseType *btype = rz_type_db_get_base_type(typedb, type->identifier.name);
 		if (!btype) {
+			eprintf("cannot find base type \"%s\"\n", type->identifier.name);
 			return NULL;
 		}
 		const char *btypestr = rz_type_db_base_type_as_string(typedb, btype);
@@ -743,8 +737,7 @@ RZ_API RZ_OWN char *rz_type_as_string(const RzTypeDB *typedb, RZ_NONNULL const R
 		break;
 	}
 	case RZ_TYPE_KIND_CALLABLE:
-		// FIXME: Implement it
-		rz_warn_if_reached();
+		rz_strbuf_appendf(buf, rz_type_callable_as_string(typedb, type->callable));
 		break;
 	}
 	char *result = rz_strbuf_drain(buf);
@@ -756,7 +749,7 @@ RZ_API RZ_OWN char *rz_type_as_string(const RzTypeDB *typedb, RZ_NONNULL const R
  *
  * \param type RzType type
  */
-RZ_API void rz_type_free(RzType *type) {
+RZ_API void rz_type_free(RZ_NULLABLE RzType *type) {
 	if (!type) {
 		return;
 	}
@@ -771,7 +764,7 @@ RZ_API void rz_type_free(RzType *type) {
 		rz_type_free(type->array.type);
 		break;
 	case RZ_TYPE_KIND_CALLABLE:
-		rz_warn_if_reached();
+		rz_type_callable_free(type->callable);
 		break;
 	}
 	free(type);

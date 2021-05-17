@@ -21,11 +21,10 @@ static RzCallable *get_callable_type(RzTypeDB *typedb, Sdb *sdb, const char *nam
 	}
 
 	size_t arguments = sdb_num_get(sdb, args_key, 0);
-	if (!rz_pvector_reserve(callable->args, arguments)) {
+	if (arguments > 0 && !rz_pvector_reserve(callable->args, arguments)) {
 		goto error;
 	}
 
-	eprintf("func \"%s\" has %zu arguments\n", name, arguments);
 	int i;
 	for (i = 0; i < arguments; i++) {
 		char *argument_key = rz_str_newf("func.%s.arg.%d", name, i);
@@ -38,23 +37,29 @@ static RzCallable *get_callable_type(RzTypeDB *typedb, Sdb *sdb, const char *nam
 		if (!values) {
 			goto error;
 		}
-		char *argument_type = sdb_anext(values, NULL);
-		eprintf("parsing \"%s\" func arg type\n", argument_type);
+		char *argument_name;
+		char *argument_type = sdb_anext(values, &argument_name);
+		if (!argument_name) {
+			// Autoname unnamed arguments
+			argument_name = rz_str_newf("arg%d", i);
+		}
+		//eprintf("parsing \"%s\" func arg type\n", argument_type);
 		char *error_msg = NULL;
 		RzType *ttype = rz_type_parse_string_single(typedb->parser, argument_type, &error_msg);
 		if (!ttype || error_msg) {
-			eprintf("parsing \"%s\" func arg type\n", argument_type);
+			eprintf("error parsing \"%s\" func arg type \"%s\": %s\n", name, argument_type, error_msg);
 			free(values);
 			goto error;
 		}
-		char *argument_name = sdb_anext(values, NULL);
-		RzCallableArg arg = {
-			.name = argument_name,
-			.type = ttype
-		};
+		RzCallableArg *arg = RZ_NEW0(RzCallableArg);
+		if (!arg) {
+			goto error;
+		}
+		arg->name = strdup(argument_name);
+		arg->type = ttype;
 		free(values);
 
-		void *element = rz_pvector_push(callable->args, &arg); // returns null if no space available
+		void *element = rz_pvector_push(callable->args, arg); // returns null if no space available
 		if (!element) {
 			goto error;
 		}
@@ -67,10 +72,10 @@ static RzCallable *get_callable_type(RzTypeDB *typedb, Sdb *sdb, const char *nam
 	char *error_msg = NULL;
 	RzType *ttype = rz_type_parse_string_single(typedb->parser, rettype, &error_msg);
 	if (!ttype || error_msg) {
+		eprintf("error parsing \"%s\" func return type \"%s\": %s \n", name, rettype, error_msg);
 		goto error;
 	}
 	callable->ret = ttype;
-
 	return callable;
 
 error:
@@ -78,15 +83,15 @@ error:
 	return NULL;
 }
 
-bool sdb_load_callables(RzTypeDB *typedb, Sdb *sdb) {
+static bool sdb_load_callables(RzTypeDB *typedb, Sdb *sdb) {
 	rz_return_val_if_fail(typedb && sdb, NULL);
 	RzCallable *callable;
 	SdbKv *kv;
 	SdbListIter *iter;
-	SdbList *l = sdb_foreach_list(sdb, true);
+	SdbList *l = sdb_foreach_list(sdb, false);
 	ls_foreach (l, iter, kv) {
 		if (!strcmp(sdbkv_value(kv), "func")) {
-			eprintf("parsing \"%s\" func SDB key\n", sdbkv_key(kv));
+			//eprintf("loading function: \"%s\"\n", sdbkv_key(kv));
 			callable = get_callable_type(typedb, sdb, sdbkv_key(kv));
 			if (callable) {
 				ht_pp_insert(typedb->callables, callable->name, callable);
