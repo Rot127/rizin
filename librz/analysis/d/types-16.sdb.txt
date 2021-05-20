@@ -1,9 +1,30 @@
+void *=type
+type.void *=p
 type.void *.size=16
+
+char *=type
+type.char *=z
 type.char *.size=16
+
+intptr_t=type
+type.intptr_t=w
+type.intptr_t.size=16
+
+uintptr_t=type
+type.uintptr_t=w
+type.uintptr_t.size=16
+
+ptrdiff_t=type
+type.ptrdiff_t=w
+type.ptrdiff_t.size=16
 
 size_t=type
 type.size_t=w
 type.size_t.size=16
+
+ssize_t=type
+type.ssize_t=w
+type.ssize_t.size=16
 
 pid_t=type
 type.pid_t=w

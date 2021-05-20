@@ -1,85 +1,3 @@
-unsigned int=type
-type.unsigned int=i
-type.unsigned int.size=32
-
-unsigned char=type
-type.unsigned char=b
-type.unsigned char.size=8
-
-unsigned short=type
-type.unsigned short=w
-type.unsigned short.size=16
-
-short=type
-type.short=w
-type.short.size=16
-
-int=type
-type.int=d
-type.int.size=32
-
-long=type
-type.long=x
-type.long.size=64
-
-float=type
-type.float=f
-type.float.size=32
-
-double=type
-type.double=F
-type.double.size=64
-
-long long=type
-type.long long=q
-type.long long.size=64
-
-void *=type
-type.void *=p
-
-char=type
-type.char=c
-type.char.size=8
-
-char *=type
-type.char *=z
-
-uint8_t=type
-type.uint8_t=b
-type.uint8_t.size=8
-
-uint16_t=type
-type.uint16_t=w
-type.uint16_t.size=16
-
-uint32_t=type
-type.uint32_t=d
-type.uint32_t.size=32
-
-uint64_t=type
-type.uint64_t=q
-type.uint64_t.size=64
-
-int8_t=type
-type.int8_t=b
-type.int8_t.size=8
-
-int16_t=type
-type.int16_t=w
-type.int16_t.size=16
-
-int32_t=type
-type.int32_t=d
-type.int32_t.size=32
-
-int64_t=type
-type.int64_t=q
-type.int64_t.size=64
-
-uid_t=type
-type.uid_t=i
-type.uid_t.size=64
-
 arc4random=func
 func.arc4random.args=0
 func.arc4random.ret=uint32_t
@@ -411,14 +329,14 @@ func.strtoumax.ret=uintmax_t
 
 wcstoimax=func
 func.wcstoimax.args=3
-func.wcstoimax.arg.0=const,wchar_t*
+func.wcstoimax.arg.0=const wchar_t*,nptr
 func.wcstoimax.arg.1=wchar_t* *,endptr
 func.wcstoimax.arg.2=int,base
 func.wcstoimax.ret=intmax_t
 
 wcstoumax=func
 func.wcstoumax.args=3
-func.wcstoumax.arg.0=const,wchar_t*
+func.wcstoumax.arg.0=const wchar_t*,nptr
 func.wcstoumax.arg.1=wchar_t* *,endptr
 func.wcstoumax.arg.2=int,base
 func.wcstoumax.ret=uintmax_t
@@ -539,7 +457,7 @@ func.feraiseexcept.ret=int
 
 fesetexceptflag=func
 func.fesetexceptflag.args=2
-func.fesetexceptflag.arg.0=const,fexcept_t*
+func.fesetexceptflag.arg.0=const fexcept_t*,arg
 func.fesetexceptflag.arg.1=int,excepts
 func.fesetexceptflag.ret=int
 
@@ -569,27 +487,27 @@ func.feholdexcept.ret=int
 
 fesetenv=func
 func.fesetenv.args=1
-func.fesetenv.arg.0=const,fenv_t*
+func.fesetenv.arg.0=const fenv_t*,arg
 func.fesetenv.ret=int
 
 feupdateenv=func
 func.feupdateenv.args=1
-func.feupdateenv.arg.0=const,fenv_t*
+func.feupdateenv.arg.0=const fenv_t*,arg
 func.feupdateenv.ret=int
 
 localeconv=func
 func.localeconv.args=0
-func.localeconv.ret=lconv*
+func.localeconv.ret=struct lconv*
 
 abs=func
 func.abs.args=1
-func.abs.arg.0=floating_point,x
-func.abs.ret=floating_point
+func.abs.arg.0=int,x
+func.abs.ret=int
 
 acos=func
 func.acos.args=1
-func.acos.arg.0=arithmetic,x
-func.acos.ret=floating_point
+func.acos.arg.0=double,x
+func.acos.ret=double
 
 acosf=func
 func.acosf.args=1
@@ -603,8 +521,8 @@ func.acosl.ret=long double
 
 asin=func
 func.asin.args=1
-func.asin.arg.0=arithmetic,x
-func.asin.ret=floating_point
+func.asin.arg.0=double,x
+func.asin.ret=double
 
 asinf=func
 func.asinf.args=1
@@ -618,8 +536,8 @@ func.asinl.ret=long double
 
 atan=func
 func.atan.args=1
-func.atan.arg.0=arithmetic,x
-func.atan.ret=floating_point
+func.atan.arg.0=double,x
+func.atan.ret=double
 
 atanf=func
 func.atanf.args=1
@@ -633,9 +551,9 @@ func.atanl.ret=long double
 
 atan2=func
 func.atan2.args=2
-func.atan2.arg.0=arithmetic,y
-func.atan2.arg.1=arithmetic,x
-func.atan2.ret=floating_point
+func.atan2.arg.0=double,y
+func.atan2.arg.1=double,x
+func.atan2.ret=double
 
 atan2f=func
 func.atan2f.args=2
@@ -651,8 +569,8 @@ func.atan2l.ret=long double
 
 ceil=func
 func.ceil.args=1
-func.ceil.arg.0=arithmetic,x
-func.ceil.ret=floating_point
+func.ceil.arg.0=double,x
+func.ceil.ret=double
 
 ceilf=func
 func.ceilf.args=1
@@ -666,8 +584,8 @@ func.ceill.ret=long double
 
 cos=func
 func.cos.args=1
-func.cos.arg.0=arithmetic,x
-func.cos.ret=floating_point
+func.cos.arg.0=double,x
+func.cos.ret=double
 
 cosf=func
 func.cosf.args=1
@@ -681,8 +599,8 @@ func.cosl.ret=long double
 
 cosh=func
 func.cosh.args=1
-func.cosh.arg.0=arithmetic,x
-func.cosh.ret=floating_point
+func.cosh.arg.0=double,x
+func.cosh.ret=double
 
 coshf=func
 func.coshf.args=1
@@ -696,8 +614,8 @@ func.coshl.ret=long double
 
 exp=func
 func.exp.args=1
-func.exp.arg.0=arithmetic,x
-func.exp.ret=floating_point
+func.exp.arg.0=double,x
+func.exp.ret=double
 
 expf=func
 func.expf.args=1
@@ -711,8 +629,8 @@ func.expl.ret=long double
 
 fabs=func
 func.fabs.args=1
-func.fabs.arg.0=arithmetic,x
-func.fabs.ret=floating_point
+func.fabs.arg.0=double,x
+func.fabs.ret=double
 
 fabsf=func
 func.fabsf.args=1
@@ -726,8 +644,8 @@ func.fabsl.ret=long double
 
 floor=func
 func.floor.args=1
-func.floor.arg.0=arithmetic,x
-func.floor.ret=floating_point
+func.floor.arg.0=double,x
+func.floor.ret=double
 
 floorf=func
 func.floorf.args=1
@@ -741,9 +659,9 @@ func.floorl.ret=long double
 
 fmod=func
 func.fmod.args=2
-func.fmod.arg.0=arithmetic,x
-func.fmod.arg.1=arithmetic,y
-func.fmod.ret=floating_point
+func.fmod.arg.0=double,x
+func.fmod.arg.1=double,y
+func.fmod.ret=double
 
 fmodf=func
 func.fmodf.args=2
@@ -759,9 +677,9 @@ func.fmodl.ret=long double
 
 frexp=func
 func.frexp.args=2
-func.frexp.arg.0=arithmetic,value
+func.frexp.arg.0=double,value
 func.frexp.arg.1=int *,exp
-func.frexp.ret=floating_point
+func.frexp.ret=double
 
 frexpf=func
 func.frexpf.args=2
@@ -777,9 +695,9 @@ func.frexpl.ret=long double
 
 ldexp=func
 func.ldexp.args=2
-func.ldexp.arg.0=arithmetic,value
+func.ldexp.arg.0=double,value
 func.ldexp.arg.1=int,exp
-func.ldexp.ret=floating_point
+func.ldexp.ret=double
 
 ldexpf=func
 func.ldexpf.args=2
@@ -795,8 +713,8 @@ func.ldexpl.ret=long double
 
 log=func
 func.log.args=1
-func.log.arg.0=arithmetic,x
-func.log.ret=floating_point
+func.log.arg.0=double,x
+func.log.ret=double
 
 logf=func
 func.logf.args=1
@@ -810,8 +728,8 @@ func.logl.ret=long double
 
 log10=func
 func.log10.args=1
-func.log10.arg.0=arithmetic,x
-func.log10.ret=floating_point
+func.log10.arg.0=double,x
+func.log10.ret=double
 
 log10f=func
 func.log10f.args=1
@@ -825,9 +743,9 @@ func.log10l.ret=long double
 
 modf=func
 func.modf.args=2
-func.modf.arg.0=floating_point,value
-func.modf.arg.1=floating_point *,iptr
-func.modf.ret=floating_point
+func.modf.arg.0=double,value
+func.modf.arg.1=double *,iptr
+func.modf.ret=double
 
 modff=func
 func.modff.args=2
@@ -843,9 +761,9 @@ func.modfl.ret=long double
 
 pow=func
 func.pow.args=2
-func.pow.arg.0=arithmetic,x
-func.pow.arg.1=arithmetic,y
-func.pow.ret=floating_point
+func.pow.arg.0=double,x
+func.pow.arg.1=double,y
+func.pow.ret=double
 
 powf=func
 func.powf.args=2
@@ -861,8 +779,8 @@ func.powl.ret=long double
 
 sin=func
 func.sin.args=1
-func.sin.arg.0=arithmetic,x
-func.sin.ret=floating_point
+func.sin.arg.0=double,x
+func.sin.ret=double
 
 sinf=func
 func.sinf.args=1
@@ -876,8 +794,8 @@ func.sinl.ret=long double
 
 sinh=func
 func.sinh.args=1
-func.sinh.arg.0=arithmetic,x
-func.sinh.ret=floating_point
+func.sinh.arg.0=double,x
+func.sinh.ret=double
 
 sinhf=func
 func.sinhf.args=1
@@ -891,8 +809,8 @@ func.sinhl.ret=long double
 
 sqrt=func
 func.sqrt.args=1
-func.sqrt.arg.0=arithmetic,x
-func.sqrt.ret=floating_point
+func.sqrt.arg.0=double,x
+func.sqrt.ret=double
 
 sqrtf=func
 func.sqrtf.args=1
@@ -906,8 +824,8 @@ func.sqrtl.ret=long double
 
 tan=func
 func.tan.args=1
-func.tan.arg.0=arithmetic,x
-func.tan.ret=floating_point
+func.tan.arg.0=double,x
+func.tan.ret=double
 
 tanf=func
 func.tanf.args=1
@@ -921,8 +839,8 @@ func.tanl.ret=long double
 
 tanh=func
 func.tanh.args=1
-func.tanh.arg.0=arithmetic,x
-func.tanh.ret=floating_point
+func.tanh.arg.0=double,x
+func.tanh.ret=double
 
 tanhf=func
 func.tanhf.args=1
@@ -936,74 +854,74 @@ func.tanhl.ret=long double
 
 signbit=func
 func.signbit.args=1
-func.signbit.arg.0=arithmetic,x
+func.signbit.arg.0=double,x
 func.signbit.ret=bool
 
 fpclassify=func
 func.fpclassify.args=1
-func.fpclassify.arg.0=arithmetic,x
+func.fpclassify.arg.0=double,x
 func.fpclassify.ret=int
 
 isfinite=func
 func.isfinite.args=1
-func.isfinite.arg.0=arithmetic,x
+func.isfinite.arg.0=double,x
 func.isfinite.ret=bool
 
 isinf=func
 func.isinf.args=1
-func.isinf.arg.0=arithmetic,x
+func.isinf.arg.0=double,x
 func.isinf.ret=bool
 
 isnan=func
 func.isnan.args=1
-func.isnan.arg.0=arithmetic,x
+func.isnan.arg.0=double,x
 func.isnan.ret=bool
 
 isnormal=func
 func.isnormal.args=1
-func.isnormal.arg.0=arithmetic,x
+func.isnormal.arg.0=double,x
 func.isnormal.ret=bool
 
 isgreater=func
 func.isgreater.args=2
-func.isgreater.arg.0=arithmetic,x
-func.isgreater.arg.1=arithmetic,y
+func.isgreater.arg.0=double,x
+func.isgreater.arg.1=double,y
 func.isgreater.ret=bool
 
 isgreaterequal=func
 func.isgreaterequal.args=2
-func.isgreaterequal.arg.0=arithmetic,x
-func.isgreaterequal.arg.1=arithmetic,y
+func.isgreaterequal.arg.0=double,x
+func.isgreaterequal.arg.1=double,y
 func.isgreaterequal.ret=bool
 
 isless=func
 func.isless.args=2
-func.isless.arg.0=arithmetic,x
-func.isless.arg.1=arithmetic,y
+func.isless.arg.0=double,x
+func.isless.arg.1=double,y
 func.isless.ret=bool
 
 islessequal=func
 func.islessequal.args=2
-func.islessequal.arg.0=arithmetic,x
-func.islessequal.arg.1=arithmetic,y
+func.islessequal.arg.0=double,x
+func.islessequal.arg.1=double,y
 func.islessequal.ret=bool
 
 islessgreater=func
 func.islessgreater.args=2
-func.islessgreater.arg.0=arithmetic,x
-func.islessgreater.arg.1=arithmetic,y
+func.islessgreater.arg.0=double,x
+func.islessgreater.arg.1=double,y
 func.islessgreater.ret=bool
 
 isunordered=func
 func.isunordered.args=2
-func.isunordered.arg.0=arithmetic,x
-func.isunordered.arg.1=arithmetic,y
+func.isunordered.arg.0=double,x
+func.isunordered.arg.1=double,y
 func.isunordered.ret=bool
 
 acosh=func
 func.acosh.args=1
-func.acosh.arg.0=arithmetic,x
-func.acosh.ret=floating_point
+func.acosh.arg.0=double,x
+func.acosh.ret=double
 
 acoshf=func
 func.acoshf.args=1
@@ -1017,8 +935,8 @@ func.acoshl.ret=long double
 
 asinh=func
 func.asinh.args=1
-func.asinh.arg.0=arithmetic,x
-func.asinh.ret=floating_point
+func.asinh.arg.0=double,x
+func.asinh.ret=double
 
 asinhf=func
 func.asinhf.args=1
@@ -1032,8 +950,8 @@ func.asinhl.ret=long double
 
 atanh=func
 func.atanh.args=1
-func.atanh.arg.0=arithmetic,x
-func.atanh.ret=floating_point
+func.atanh.arg.0=double,x
+func.atanh.ret=double
 
 atanhf=func
 func.atanhf.args=1
@@ -1047,8 +965,8 @@ func.atanhl.ret=long double
 
 cbrt=func
 func.cbrt.args=1
-func.cbrt.arg.0=arithmetic,x
-func.cbrt.ret=floating_point
+func.cbrt.arg.0=double,x
+func.cbrt.ret=double
 
 cbrtf=func
 func.cbrtf.args=1
@@ -1062,9 +980,9 @@ func.cbrtl.ret=long double
 
 copysign=func
 func.copysign.args=2
-func.copysign.arg.0=arithmetic,x
-func.copysign.arg.1=arithmetic,y
-func.copysign.ret=floating_point
+func.copysign.arg.0=double,x
+func.copysign.arg.1=double,y
+func.copysign.ret=double
 
 copysignf=func
 func.copysignf.args=2
@@ -1080,8 +998,8 @@ func.copysignl.ret=long double
 
 erf=func
 func.erf.args=1
-func.erf.arg.0=arithmetic,x
-func.erf.ret=floating_point
+func.erf.arg.0=double,x
+func.erf.ret=double
 
 erff=func
 func.erff.args=1
@@ -1095,8 +1013,8 @@ func.erfl.ret=long double
 
 erfc=func
 func.erfc.args=1
-func.erfc.arg.0=arithmetic,x
-func.erfc.ret=floating_point
+func.erfc.arg.0=double,x
+func.erfc.ret=double
 
 erfcf=func
 func.erfcf.args=1
@@ -1110,8 +1028,8 @@ func.erfcl.ret=long double
 
 exp2=func
 func.exp2.args=1
-func.exp2.arg.0=arithmetic,x
-func.exp2.ret=floating_point
+func.exp2.arg.0=double,x
+func.exp2.ret=double
 
 exp2f=func
 func.exp2f.args=1
@@ -1125,8 +1043,8 @@ func.exp2l.ret=long double
 
 expm1=func
 func.expm1.args=1
-func.expm1.arg.0=arithmetic,x
-func.expm1.ret=floating_point
+func.expm1.arg.0=double,x
+func.expm1.ret=double
 
 expm1f=func
 func.expm1f.args=1
@@ -1140,9 +1058,9 @@ func.expm1l.ret=long double
 
 fdim=func
 func.fdim.args=2
-func.fdim.arg.0=arithmetic,x
-func.fdim.arg.1=arithmetic,y
-func.fdim.ret=floating_point
+func.fdim.arg.0=double,x
+func.fdim.arg.1=double,y
+func.fdim.ret=double
 
 fdimf=func
 func.fdimf.args=2
@@ -1158,10 +1076,10 @@ func.fdiml.ret=long double
 
 fma=func
 func.fma.args=3
-func.fma.arg.0=arithmetic,x
-func.fma.arg.1=arithmetic,y
-func.fma.arg.2=arithmetic,z
-func.fma.ret=floating_point
+func.fma.arg.0=double,x
+func.fma.arg.1=double,y
+func.fma.arg.2=double,z
+func.fma.ret=double
 
 fmaf=func
 func.fmaf.args=3
@@ -1179,9 +1097,9 @@ func.fmal.ret=long double
 
 fmax=func
 func.fmax.args=2
-func.fmax.arg.0=arithmetic,x
-func.fmax.arg.1=arithmetic,y
-func.fmax.ret=floating_point
+func.fmax.arg.0=double,x
+func.fmax.arg.1=double,y
+func.fmax.ret=double
 
 fmaxf=func
 func.fmaxf.args=2
@@ -1197,9 +1115,9 @@ func.fmaxl.ret=long double
 
 fmin=func
 func.fmin.args=2
-func.fmin.arg.0=arithmetic,x
-func.fmin.arg.1=arithmetic,y
-func.fmin.ret=floating_point
+func.fmin.arg.0=double,x
+func.fmin.arg.1=double,y
+func.fmin.ret=double
 
 fminf=func
 func.fminf.args=2
@@ -1215,9 +1133,9 @@ func.fminl.ret=long double
 
 hypot=func
 func.hypot.args=2
-func.hypot.arg.0=arithmetic,x
-func.hypot.arg.1=arithmetic,y
-func.hypot.ret=floating_point
+func.hypot.arg.0=double,x
+func.hypot.arg.1=double,y
+func.hypot.ret=double
 
 hypotf=func
 func.hypotf.args=2
@@ -1233,7 +1151,7 @@ func.hypotl.ret=long double
 
 ilogb=func
 func.ilogb.args=1
-func.ilogb.arg.0=arithmetic,x
+func.ilogb.arg.0=double,x
 func.ilogb.ret=int
 
 ilogbf=func
@@ -1248,8 +1166,8 @@ func.ilogbl.ret=int
 
 lgamma=func
 func.lgamma.args=1
-func.lgamma.arg.0=arithmetic,x
-func.lgamma.ret=floating_point
+func.lgamma.arg.0=double,x
+func.lgamma.ret=double
 
 lgammaf=func
 func.lgammaf.args=1
@@ -1263,7 +1181,7 @@ func.lgammal.ret=long double
 
 llrint=func
 func.llrint.args=1
-func.llrint.arg.0=arithmetic,x
+func.llrint.arg.0=double,x
 func.llrint.ret=long long
 
 llrintf=func
@@ -1278,7 +1196,7 @@ func.llrintl.ret=long long
 
 llround=func
 func.llround.args=1
-func.llround.arg.0=arithmetic,x
+func.llround.arg.0=double,x
 func.llround.ret=long long
 
 llroundf=func
@@ -1293,8 +1211,8 @@ func.llroundl.ret=long long
 
 log1p=func
 func.log1p.args=1
-func.log1p.arg.0=arithmetic,x
-func.log1p.ret=floating_point
+func.log1p.arg.0=double,x
+func.log1p.ret=double
 
 log1pf=func
 func.log1pf.args=1
@@ -1308,8 +1226,8 @@ func.log1pl.ret=long double
 
 log2=func
 func.log2.args=1
-func.log2.arg.0=arithmetic,x
-func.log2.ret=floating_point
+func.log2.arg.0=double,x
+func.log2.ret=double
 
 log2f=func
 func.log2f.args=1
@@ -1323,8 +1241,8 @@ func.log2l.ret=long double
 
 logb=func
 func.logb.args=1
-func.logb.arg.0=arithmetic,x
-func.logb.ret=floating_point
+func.logb.arg.0=double,x
+func.logb.ret=double
 
 logbf=func
 func.logbf.args=1
@@ -1338,7 +1256,7 @@ func.logbl.ret=long double
 
 lrint=func
 func.lrint.args=1
-func.lrint.arg.0=arithmetic,x
+func.lrint.arg.0=double,x
 func.lrint.ret=long
 
 lrintf=func
@@ -1353,7 +1271,7 @@ func.lrintl.ret=long
 
 lround=func
 func.lround.args=1
-func.lround.arg.0=arithmetic,x
+func.lround.arg.0=double,x
 func.lround.ret=long
 
 lroundf=func
@@ -1383,8 +1301,8 @@ func.nanl.ret=long double
 
 nearbyint=func
 func.nearbyint.args=1
-func.nearbyint.arg.0=arithmetic,x
-func.nearbyint.ret=floating_point
+func.nearbyint.arg.0=double,x
+func.nearbyint.ret=double
 
 nearbyintf=func
 func.nearbyintf.args=1
@@ -1398,9 +1316,9 @@ func.nearbyintl.ret=long double
 
 nextafter=func
 func.nextafter.args=2
-func.nextafter.arg.0=arithmetic,x
-func.nextafter.arg.1=arithmetic,y
-func.nextafter.ret=floating_point
+func.nextafter.arg.0=double,x
+func.nextafter.arg.1=double,y
+func.nextafter.ret=double
 
 nextafterf=func
 func.nextafterf.args=2
@@ -1416,9 +1334,9 @@ func.nextafterl.ret=long double
 
 nexttoward=func
 func.nexttoward.args=2
-func.nexttoward.arg.0=arithmetic,x
+func.nexttoward.arg.0=double,x
 func.nexttoward.arg.1=long double,y
-func.nexttoward.ret=floating_point
+func.nexttoward.ret=double
 
 nexttowardf=func
 func.nexttowardf.args=2
@@ -1434,9 +1352,9 @@ func.nexttowardl.ret=long double
 
 remainder=func
 func.remainder.args=2
-func.remainder.arg.0=arithmetic,x
-func.remainder.arg.1=arithmetic,y
-func.remainder.ret=floating_point
+func.remainder.arg.0=double,x
+func.remainder.arg.1=double,y
+func.remainder.ret=double
 
 remainderf=func
 func.remainderf.args=2
@@ -1452,10 +1370,10 @@ func.remainderl.ret=long double
 
 remquo=func
 func.remquo.args=3
-func.remquo.arg.0=arithmetic,x
-func.remquo.arg.1=arithmetic,y
+func.remquo.arg.0=double,x
+func.remquo.arg.1=double,y
 func.remquo.arg.2=int *,pquo
-func.remquo.ret=floating_point
+func.remquo.ret=double
 
 remquof=func
 func.remquof.args=3
@@ -1473,8 +1391,8 @@ func.remquol.ret=long double
 
 rint=func
 func.rint.args=1
-func.rint.arg.0=arithmetic,x
-func.rint.ret=floating_point
+func.rint.arg.0=double,x
+func.rint.ret=double
 
 rintf=func
 func.rintf.args=1
@@ -1488,8 +1406,8 @@ func.rintl.ret=long double
 
 round=func
 func.round.args=1
-func.round.arg.0=arithmetic,x
-func.round.ret=floating_point
+func.round.arg.0=double,x
+func.round.ret=double
 
 roundf=func
 func.roundf.args=1
@@ -1503,9 +1421,9 @@ func.roundl.ret=long double
 
 scalbln=func
 func.scalbln.args=2
-func.scalbln.arg.0=arithmetic,x
+func.scalbln.arg.0=double,x
 func.scalbln.arg.1=long,ex
-func.scalbln.ret=floating_point
+func.scalbln.ret=double
 
 scalblnf=func
 func.scalblnf.args=2
@@ -1521,9 +1439,9 @@ func.scalblnl.ret=long double
 
 scalbn=func
 func.scalbn.args=2
-func.scalbn.arg.0=arithmetic,x
+func.scalbn.arg.0=double,x
 func.scalbn.arg.1=int,ex
-func.scalbn.ret=floating_point
+func.scalbn.ret=double
 
 scalbnf=func
 func.scalbnf.args=2
@@ -1539,8 +1457,8 @@ func.scalbnl.ret=long double
 
 tgamma=func
 func.tgamma.args=1
-func.tgamma.arg.0=arithmetic,x
-func.tgamma.ret=floating_point
+func.tgamma.arg.0=double,x
+func.tgamma.ret=double
 
 tgammaf=func
 func.tgammaf.args=1
@@ -1554,8 +1472,8 @@ func.tgammal.ret=long double
 
 trunc=func
 func.trunc.args=1
-func.trunc.arg.0=arithmetic,x
-func.trunc.ret=floating_point
+func.trunc.arg.0=double,x
+func.trunc.ret=double
 
 truncf=func
 func.truncf.args=1
@@ -1679,14 +1597,16 @@ func.bsearch.arg.0=const void *,key
 func.bsearch.arg.1=const void *,base
 func.bsearch.arg.2=size_t,nmemb
 func.bsearch.arg.3=size_t,size
-func.bsearch.arg.4=int,(*compar)(const void *,const void *)
+func.bsearch.arg.4=void *,compar
+func.bsearch.ret=void *
 
 qsort=func
 func.qsort.args=4
 func.qsort.arg.0=void *,base
 func.qsort.arg.1=size_t,nmemb
 func.qsort.arg.2=size_t,size
-func.qsort.arg.3=int(*compar)(const void *,const void *)
+func.qsort.arg.3=void *,compar
+func.qsort.ret=void
 
 abs=func
 func.abs.args=1
@@ -1969,7 +1889,7 @@ func.difftime.ret=double
 
 mktime=func
 func.mktime.args=1
-func.mktime.arg.0=tm *,timeptr
+func.mktime.arg.0=struct tm *,timeptr
 func.mktime.ret=time_t
 
 time=func
@@ -1979,7 +1899,7 @@ func.time.ret=time_t
 
 asctime=func
 func.asctime.args=1
-func.asctime.arg.0=const tm *,timeptr
+func.asctime.arg.0=const struct tm *,timeptr
 func.asctime.ret=char *
 
 ctime=func
@@ -1990,19 +1910,19 @@ func.ctime.ret=char *
 gmtime=func
 func.gmtime.args=1
 func.gmtime.arg.0=const time_t *,timer
-func.gmtime.ret=tm*
+func.gmtime.ret=struct tm*
 
 localtime=func
 func.localtime.args=1
 func.localtime.arg.0=const time_t *,timer
-func.localtime.ret=tm*
+func.localtime.ret=struct tm*
 
 strftime=func
 func.strftime.args=4
 func.strftime.arg.0=char *,s
 func.strftime.arg.1=size_t,maxsize
 func.strftime.arg.2=const char *,format
-func.strftime.arg.3=const tm *,timeptr
+func.strftime.arg.3=const struct tm *,timeptr
 func.strftime.ret=size_t
 
 fwprintf=func
@@ -2354,7 +2274,7 @@ func.wcsftime.args=4
 func.wcsftime.arg.0=wchar_t *,s
 func.wcsftime.arg.1=size_t,maxsize
 func.wcsftime.arg.2=const wchar_t *,format
-func.wcsftime.arg.3=const tm *,timeptr
+func.wcsftime.arg.3=const struct tm *,timeptr
 func.wcsftime.ret=size_t
 
 btowc=func
@@ -2515,7 +2435,7 @@ func.rename.ret=int
 
 tmpfile=func
 func.tmpfile.args=0
-func.tmpfile.ret=file*
+func.tmpfile.ret=FILE*
 
 tmpnam=func
 func.tmpnam.args=1
@@ -2531,20 +2451,20 @@ fopen=func
 func.fopen.args=2
 func.fopen.arg.0=const char *,filename
 func.fopen.arg.1=const char *,mode
-func.fopen.ret=file*
+func.fopen.ret=FILE*
 
 popen=func
 func.popen.args=2
 func.popen.arg.0=const char *,filename
 func.popen.arg.1=const char *,mode
-func.popen.ret=file*
+func.popen.ret=FILE*
 
 freopen=func
 func.freopen.args=3
 func.freopen.arg.0=const char *,filename
 func.freopen.arg.1=const char *,mode
 func.freopen.arg.2=FILE *,stream
-func.freopen.ret=file*
+func.freopen.ret=FILE*
 
 setbuf=func
 func.setbuf.args=2
@@ -2564,14 +2484,14 @@ fprintf=func
 func.fprintf.args=3
 func.fprintf.arg.0=FILE *,stream
 func.fprintf.arg.1=const char *,format
-func.fprintf.arg.2= ,...
+func.fprintf.arg.2=void *,va_args
 func.fprintf.ret=int
 
 fscanf=func
 func.fscanf.args=3
 func.fscanf.arg.0=FILE *,stream
 func.fscanf.arg.1=const char *,format
-func.fscanf.arg.2=,...
+func.fscanf.arg.2=void *,va_args
 func.fscanf.ret=int
 
 printf=func
@@ -2611,7 +2531,7 @@ func.snprintf.args=4
 func.snprintf.arg.0=char *,s
 func.snprintf.arg.1=size_t,size
 func.snprintf.arg.2=const char *,format
-func.snprintf.arg.3=,...
+func.snprintf.arg.3=va_list,args
 func.snprintf.ret=int
 
 snprintf_chk=func
@@ -2619,28 +2539,28 @@ func.snprintf_chk.args=4
 func.snprintf_chk.arg.0=char *,s
 func.snprintf_chk.arg.1=size_t,size
 func.snprintf_chk.arg.2=const char *,format
-func.snprintf_chk.arg.3=,...
+func.snprintf_chk.arg.3=va_list,args
 func.snprintf_chk.ret=int
 
 sprintf=func
 func.sprintf.args=3
 func.sprintf.arg.0=char *,s
 func.sprintf.arg.1=const char *,format
-func.sprintf.arg.2=,...
+func.sprintf.arg.2=va_list,args
 func.sprintf.ret=int
 
 sprintf_chk=func
 func.sprintf_chk.args=3
 func.sprintf_chk.arg.0=char *,s
 func.sprintf_chk.arg.1=const char *,format
-func.sprintf_chk.arg.2=,...
+func.sprintf_chk.arg.2=va_list,args
 func.sprintf_chk.ret=int
 
 sscanf=func
 func.sscanf.args=3
 func.sscanf.arg.0=const char *,s
 func.sscanf.arg.1=const char *,format
-func.sscanf.arg.2= ,...
+func.sscanf.arg.2=va_list,args
 func.sscanf.ret=int
 
 vfprintf=func
@@ -2974,12 +2894,12 @@ func.nl_langinfo.ret=char *
 nl_langinfo_l=func
 func.nl_langinfo_l.args=2
 func.nl_langinfo_l.arg.0=nl_item,item
-func.nl_langinfo_l.arg.1=locale_t locale
+func.nl_langinfo_l.arg.1=locale_t,locale
 func.nl_langinfo_l.ret=char *
 
 setjmp=func
 func.setjmp.args=1
-func.setjmp.arg.0=jmpbuf,env
+func.setjmp.arg.0=jmp_buf,env
 func.setjmp.ret=int
 
 mmap=func
@@ -3000,7 +2920,7 @@ func.munmap.ret=int
 
 ptrace=func
 func.ptrace.args=4
-func.ptrace.arg.0=__ptrace_request,request
+func.ptrace.arg.0=void*,ptrace_request
 func.ptrace.arg.1=pid_t,pid
 func.ptrace.arg.2=void*,addr
 func.ptrace.arg.3=void*,data
