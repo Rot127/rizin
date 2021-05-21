@@ -43,38 +43,27 @@ RZ_API bool rz_analysis_function_rebase_vars(RzAnalysis *a, RzAnalysisFunction *
 	return true;
 }
 
-// If the type of var is a struct,
-// remove all other vars that are overlapped by var and are at the offset of one of its struct members
-static void shadow_var_struct_members(RzAnalysisVar *var) {
-	if (var->type->kind == RZ_TYPE_KIND_POINTER || var->type->kind == RZ_TYPE_KIND_CALLABLE) {
-		// Pointers don't shadow anything
+// Search for all variables that are located at the offset
+// overlapped by var and remove them
+static void resolve_var_overlaps(RzAnalysisVar *var) {
+	if (!var->type) {
 		return;
 	}
-	if (var->type->kind == RZ_TYPE_KIND_ARRAY) {
-		// TODO: support arrays
+	eprintf("remove_var_overlaps(%s.%s)\n", var->fcn->name, var->name);
+	ut64 varsize = rz_type_db_get_bitsize(var->fcn->analysis->typedb, var->type);
+	if (!varsize) {
 		return;
 	}
-	// In other cases we check the type by name
-	const char *tname = var->type->identifier.name;
-	RzBaseType *btype = rz_type_db_get_base_type(var->fcn->analysis->typedb, tname);
-	if (!btype) {
-		return;
-	}
-
-	if (btype->kind != RZ_BASE_TYPE_KIND_STRUCT) {
-		return;
-	}
-
-	if (rz_vector_empty(&btype->struct_data.members)) {
-		return;
-	}
-	RzTypeStructMember *member;
-	rz_vector_foreach(&btype->struct_data.members, member) {
-		if (member->offset != 0) { // delete variables which are overlaid by structure
-			RzAnalysisVar *other = rz_analysis_function_get_var(var->fcn, var->kind, var->delta + member->offset);
-			if (other && other != var) {
-				rz_analysis_var_delete(other);
-			}
+	// delete variables which are overlaid by the variable type
+	void **it;
+	eprintf("remove_var_overlaps(%s [%" PFMT64d "])\n", var->name, varsize);
+	rz_pvector_foreach (&var->fcn->vars, it) {
+		RzAnalysisVar *other = *it;
+		eprintf("var \"%s\" [%d]\n", other->name, other->delta);
+		if (strcmp(var->name, other->name) && other->kind == var->kind && other->delta > var->delta && other->delta < var->delta + varsize) {
+			ut64 othersize = rz_type_db_get_bitsize(var->fcn->analysis->typedb, other->type);
+			eprintf("removing var \"%s\" [%d; + 0x%" PFMT64x "]\n", other->name, other->delta, othersize);
+			rz_analysis_var_delete(other);
 		}
 	}
 }
@@ -134,7 +123,8 @@ RZ_API RzAnalysisVar *rz_analysis_function_set_var(RzAnalysisFunction *fcn, int 
 	} else {
 		free(var->name);
 		free(var->regname);
-		free(var->type);
+		rz_type_free(var->type);
+		var->type = NULL;
 	}
 	var->name = strdup(name);
 	var->regname = reg ? strdup(reg->name) : NULL; // TODO: no strdup here? pool? or not keep regname at all?
@@ -142,24 +132,27 @@ RZ_API RzAnalysisVar *rz_analysis_function_set_var(RzAnalysisFunction *fcn, int 
 	var->kind = kind;
 	var->isarg = isarg;
 	var->delta = delta;
-	shadow_var_struct_members(var);
+	resolve_var_overlaps(var);
 	return var;
 }
 
 RZ_API void rz_analysis_var_set_type(RzAnalysisVar *var, RZ_OWN RzType *type) {
+	if (var->type) {
+		rz_type_free(var->type);
+	}
 	var->type = type;
-	shadow_var_struct_members(var);
+	resolve_var_overlaps(var);
 }
 
 static void var_free(RzAnalysisVar *var) {
 	if (!var) {
 		return;
 	}
+	rz_type_free(var->type);
 	rz_analysis_var_clear_accesses(var);
 	rz_vector_fini(&var->constraints);
 	free(var->name);
 	free(var->regname);
-	free(var->type);
 	free(var->comment);
 	free(var);
 }
@@ -773,10 +766,13 @@ static void extract_arg(RzAnalysis *analysis, RzAnalysisFunction *fcn, RzAnalysi
 			RzAnalysisVar *var = rz_analysis_function_set_var(fcn, frame_off, type, vartype, analysis->bits / 8, isarg, varname);
 			if (var) {
 				rz_analysis_var_set_access(var, reg, op->addr, rw, ptr);
+			} else {
+				rz_type_free(vartype);
 			}
 			free(varname);
+		} else {
+			rz_type_free(vartype);
 		}
-		rz_type_free(vartype);
 	} else {
 		st64 frame_off = -(ptr + fcn->bp_off);
 		RzAnalysisVar *var = get_stack_var(fcn, frame_off);

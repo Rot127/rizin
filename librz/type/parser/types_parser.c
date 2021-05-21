@@ -138,7 +138,6 @@ int parse_sized_primitive_type(CParserState *state, TSNode node, const char *tex
 	return 0;
 }
 
-
 // Parses primitive type or type alias mention - like "socklen_t", etc
 int parse_sole_type_name(CParserState *state, TSNode node, const char *text, ParserTypePair **tpair, bool is_const) {
 	rz_return_val_if_fail(state && text && tpair, -1);
@@ -249,7 +248,7 @@ int parse_struct_node(CParserState *state, TSNode node, const char *text, Parser
 	rz_return_val_if_fail(!ts_node_is_null(node), -1);
 	rz_return_val_if_fail(ts_node_is_named(node), -1);
 
-	parser_debug(state, "parse_struct_node()\n");
+	parser_error(state, "parse_struct_node()\n");
 
 	int struct_node_child_count = ts_node_named_child_count(node);
 	if (struct_node_child_count < 1 || struct_node_child_count > 2) {
@@ -895,31 +894,32 @@ int parse_typedef_node(CParserState *state, TSNode node, const char *text, Parse
 		}
 		free(nodeast);
 	}
-	const char *real_type = NULL;
-	int type_child_count = ts_node_named_child_count(typedef_type);
-	if (!type_child_count) {
-		const char *node_type = ts_node_type(typedef_type);
-		if (!strcmp(node_type, "primitive_type")) {
-			real_type = ts_node_sub_string(typedef_type, text);
-			parser_debug(state, "typedef type: %s alias: %s\n", real_type, aliasname);
-		} else if (!strcmp(node_type, "type_identifier")) {
-			real_type = ts_node_sub_string(typedef_type, text);
-			parser_debug(state, "typedef type: %s alias: %s\n", real_type, aliasname);
-		} else {
-			parser_error(state, "ERROR: Typedef type AST should contain (primitive_type) or (identifier) node!\n");
-			node_malformed_error(state, typedef_type, text, "typedef type");
-			return -1;
-		}
-	} else {
-		real_type = ts_node_sub_string(typedef_type, text);
-		parser_debug(state, "complex typedef type: %s alias: %s\n", real_type, aliasname);
+	ParserTypePair *type_pair = NULL;
+	if (parse_type_node_single(state, typedef_type, text, &type_pair, is_const)) {
+		parser_error(state, "ERROR: parsing typedef type identifier\n");
+		node_malformed_error(state, typedef_type, text, "typedef type");
+		return -1;
+	}
+	// Then we augment resulting type field with the data from parsed declarator
+	char *typedef_name = NULL;
+	if (parse_type_declarator_node(state, typedef_declarator, text, &type_pair, &typedef_name)) {
+		parser_error(state, "ERROR: parsing typedef declarator\n");
+		node_malformed_error(state, typedef_declarator, text, "typedef declarator");
+		return -1;
 	}
 
 	// Now we form both RzType and RzBaseType to store in the Types database
-	ParserTypePair *typedef_pair = c_parser_new_typedef(state, aliasname, real_type);
+	char *base_type_name = type_pair->btype->name;
+	parser_error(state, "typedef \"%s\" -> \"%s\"\n", typedef_name, base_type_name);
+	ParserTypePair *typedef_pair = c_parser_new_typedef(state, typedef_name, base_type_name);
 	if (!typedef_pair) {
 		parser_error(state, "Error forming RzType and RzBaseType pair out of typedef\n");
 		return -1;
+	}
+	// If parsing successfull completed - we store the state
+	if (typedef_pair) {
+		parser_error(state, "storing typedef \"%s\" -> \"%s\"\n", typedef_name, base_type_name);
+		c_parser_base_type_store(state, typedef_name, typedef_pair);
 	}
 
 	*tpair = typedef_pair;
@@ -1207,6 +1207,10 @@ int parse_type_abstract_declarator_node(CParserState *state, TSNode node, const 
 	return result;
 }
 
+static bool is_identifier(const char *type) {
+	return (!strcmp(type, "identifier") || !strcmp(type, "field_identifier") || !strcmp(type, "type_identifier"));
+}
+
 // Parses the concrete type declarator - i.e. type with the identifier
 // It doesn't allocate a new ParserTypePair, but augments already existing one
 // Also it returns the identifier name
@@ -1240,10 +1244,10 @@ int parse_type_declarator_node(CParserState *state, TSNode node, const char *tex
 	const char *node_type = ts_node_type(node);
 	int result = -1;
 
-	if (!strcmp(node_type, "identifier") || !strcmp(node_type, "field_identifier")) {
-		// Simple identifier, usually the last leaf of the AST tree
+	if (is_identifier(node_type)) {
+		// Identifier, usually the last leaf of the AST tree
 		const char *real_ident = ts_node_sub_string(node, text);
-		parser_debug(state, "simple identifier: %s\n", real_ident);
+		parser_debug(state, "identifier: %s\n", real_ident);
 		*identifier = strdup(real_ident);
 		result = 0;
 	} else if (!strcmp(node_type, "pointer_declarator")) {
@@ -1278,7 +1282,7 @@ int parse_type_declarator_node(CParserState *state, TSNode node, const char *tex
 		type->pointer.type = (*tpair)->type;
 		(*tpair)->type = type;
 
-		if (is_declarator(declarator_type)) {
+		if (is_declarator(declarator_type) || is_identifier(declarator_type)) {
 			result = parse_type_declarator_node(state, pointer_declarator, text, tpair, identifier);
 		} else {
 			result = 0;
@@ -1323,7 +1327,7 @@ int parse_type_declarator_node(CParserState *state, TSNode node, const char *tex
 		(*tpair)->type = type;
 
 		parser_debug(state, "array declarator type: %s\n", declarator_type);
-		if (is_declarator(declarator_type)) {
+		if (is_declarator(declarator_type) || is_identifier(declarator_type)) {
 			result = parse_type_declarator_node(state, array_declarator, text, tpair, identifier);
 		} else {
 			return 0;
@@ -1488,4 +1492,3 @@ int parse_type_nodes_save(CParserState *state, TSNode node, const char *text) {
 	//
 	return result;
 }
-

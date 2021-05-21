@@ -144,15 +144,17 @@ static int type_parse_string(CParserState *state, const char *code, char **error
 	if (result) {
 		const char *error_msgs = rz_strbuf_drain_nofree(state->errors);
 		eprintf("Errors:\n");
-		eprintf(error_msgs);
+		eprintf("%s", error_msgs);
 		const char *warning_msgs = rz_strbuf_drain_nofree(state->warnings);
 		eprintf("Warnings:\n");
-		eprintf(warning_msgs);
-		*error_msg = strdup(error_msgs);
+		eprintf("%s", warning_msgs);
+		if (error_msg) {
+			*error_msg = strdup(error_msgs);
+		}
 	}
 	if (state->verbose) {
 		const char *debug_msgs = rz_strbuf_drain_nofree(state->debug);
-		eprintf(debug_msgs);
+		eprintf("%s", debug_msgs);
 	}
 
 	// After everything parsed, we should preserve the base type database
@@ -268,15 +270,17 @@ RZ_API RZ_OWN RzType *rz_type_parse_string_single(RzTypeParser *parser, const ch
 	if (result || !tpair) {
 		const char *error_msgs = rz_strbuf_drain_nofree(parser->state->errors);
 		eprintf("Errors:\n");
-		eprintf(error_msgs);
+		eprintf("%s", error_msgs);
 		const char *warning_msgs = rz_strbuf_drain_nofree(parser->state->warnings);
 		eprintf("Warnings:\n");
-		eprintf(warning_msgs);
-		*error_msg = strdup(error_msgs);
+		eprintf("%s", warning_msgs);
+		if (error_msg) {
+			*error_msg = strdup(error_msgs);
+		}
 	}
 	if (parser->state->verbose) {
 		const char *debug_msgs = rz_strbuf_drain_nofree(parser->state->debug);
-		eprintf(debug_msgs);
+		eprintf("%s", debug_msgs);
 	}
 
 	// After everything parsed, we should preserve the base type database

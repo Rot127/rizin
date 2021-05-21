@@ -1543,11 +1543,6 @@ Sdb *analysis_ref_db() {
 	sdb_set(class_attrs, "attr.Aeropause.method", "some_meth", 0);
 	sdb_set(class_attrs, "attr.Aeropause.method.some_meth", "4919,42,0,some_meth", 0);
 
-	Sdb *types = sdb_ns(db, "types", true);
-	sdb_set(types, "badchar", "type", 0);
-	sdb_set(types, "type.badchar.size", "16", 0);
-	sdb_set(types, "type.badchar", "c", 0);
-
 	Sdb *zigns = sdb_ns(db, "zigns", true);
 	Sdb *zign_spaces = sdb_ns(zigns, "spaces", true);
 	sdb_set(zign_spaces, "spacestack", "[\"koridai\"]", 0);
@@ -1611,12 +1606,6 @@ bool test_analysis_save() {
 	rz_analysis_class_method_set(analysis, "Aeropause", &crystal);
 	rz_analysis_class_method_fini(&crystal);
 
-	RzBaseType *type = rz_type_base_type_new(RZ_BASE_TYPE_KIND_ATOMIC);
-	type->name = strdup("badchar");
-	type->size = 16;
-	rz_type_db_save_base_type(analysis->typedb, type);
-	rz_type_base_type_free(type);
-
 	rz_spaces_set(&analysis->zign_spaces, "koridai");
 	rz_sign_add_comment(analysis, "sym.boring", "gee it sure is boring around here");
 
@@ -1679,13 +1668,6 @@ bool test_analysis_load() {
 	RzAnalysisMethod *meth = rz_vector_index_ptr(vals, 0);
 	mu_assert_streq(meth->name, "some_meth", "method name");
 	rz_vector_free(vals);
-
-	RzBaseType *type = rz_type_db_get_base_type(analysis->typedb, "badchar");
-	mu_assert_notnull(type, "get type");
-	mu_assert_eq(type->kind, RZ_BASE_TYPE_KIND_ATOMIC, "type kind");
-	mu_assert_eq(type->size, 16, "atomic type size");
-	mu_assert_true(rz_type_atomic_str_eq(analysis->typedb, type->type, "c"), "atomic type");
-	rz_type_base_type_free(type);
 
 	rz_spaces_set(&analysis->zign_spaces, "koridai");
 	RzSignItem *item = rz_sign_get_item(analysis, "sym.boring");

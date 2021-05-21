@@ -4,8 +4,6 @@
 
 #include <rz_analysis.h>
 
-#define D if (analysis->verbose)
-
 static bool get_functions_block_cb(RzAnalysisBlock *block, void *user) {
 	RzList *list = user;
 	RzListIter *iter;

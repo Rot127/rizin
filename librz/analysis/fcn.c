@@ -440,6 +440,7 @@ static bool fcn_takeover_block_recursive_followthrough_cb(RzAnalysisBlock *block
 					: other_var->delta + (other_fcn->bp_off - our_fcn->bp_off);
 				RzAnalysisVar *our_var = rz_analysis_function_get_var(our_fcn, other_var->kind, actual_delta);
 				if (!our_var) {
+					eprintf("set_var_type: %s\n", rz_type_as_string(our_fcn->analysis->typedb, other_var->type));
 					our_var = rz_analysis_function_set_var(our_fcn, actual_delta, other_var->kind, other_var->type, 0, other_var->isarg, other_var->name);
 				}
 				if (our_var) {
@@ -2234,7 +2235,7 @@ static int typecmp(const void *a, const void *b) {
 	return strcmp(a, b);
 }
 
-RZ_API RZ_OWN RzList *rz_analysis_types_from_fcn(RzAnalysis *analysis, RzAnalysisFunction *fcn) {
+RZ_API RZ_OWN RzList /* RzType */ *rz_analysis_types_from_fcn(RzAnalysis *analysis, RzAnalysisFunction *fcn) {
 	RzListIter *iter;
 	RzAnalysisVar *var;
 	RzList *list = rz_analysis_var_all_list(analysis, fcn);

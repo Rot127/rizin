@@ -316,7 +316,6 @@ RZ_OWN ParserTypePair *c_parser_new_structure_forward_definition(CParserState *s
 	return tpair;
 }
 
-
 /**
  * \brief Creates new union naked type (without base type) based on the name
  *
@@ -594,6 +593,8 @@ RZ_OWN ParserTypePair *c_parser_new_typedef(CParserState *state, RZ_NONNULL cons
 	type->identifier.name = strdup(name);
 	type->identifier.kind = RZ_TYPE_IDENTIFIER_KIND_UNSPECIFIED;
 
+	parser_error(state, "typedef \"%s\" -> \"%s\"\n", name, base);
+
 	// We check if there is already a typedef in the hashtable with the same name
 	bool found = false;
 	RzBaseType *alias_type = ht_pp_find(state->types, name, &found);
@@ -601,7 +602,7 @@ RZ_OWN ParserTypePair *c_parser_new_typedef(CParserState *state, RZ_NONNULL cons
 		// At first we try to search if the base type is available in our context already
 		RzBaseType *base_type = ht_pp_find(state->types, base, &found);
 		if (!found || !base_type) {
-			parser_debug(state, "Missing base type for aliasing: \"%s\"\n", base);
+			parser_error(state, "Missing base type for aliasing: \"%s\"\n", base);
 			// If not found - we still should create an alias
 			// This scenario is oftenly used for "forward definitions" both in C and our databases
 			// Thus we store the name in the "forward" hashtable so it could be set later
@@ -769,4 +770,3 @@ RZ_OWN char *c_parser_new_anonymous_callable_name(CParserState *state) {
 	state->anon.enums++;
 	return name;
 }
-

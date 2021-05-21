@@ -93,7 +93,7 @@ RZ_API RZ_BORROW RzCallable *rz_type_func_get(RzTypeDB *typedb, RZ_NONNULL const
 	bool found = false;
 	RzCallable *callable = ht_pp_find(typedb->callables, func_name, &found);
 	if (!found || !callable) {
-		eprintf("Cannot find function type \"%s\"\n", func_name);
+		RZ_LOG_DEBUG("Cannot find function type \"%s\"\n", func_name);
 		return NULL;
 	}
 	return callable;
@@ -211,7 +211,7 @@ RZ_API RZ_OWN char *rz_type_callable_as_string(const RzTypeDB *typedb, RZ_NONNUL
 	rz_strbuf_appendf(buf, "%s %s(", rz_type_as_string(typedb, callable->ret), rz_str_get(callable->name));
 	void **it;
 	bool first = true;
-	rz_pvector_foreach(callable->args, it) {
+	rz_pvector_foreach (callable->args, it) {
 		RzCallableArg *arg = *it;
 		if (arg) {
 			const char *argtype = rz_type_as_string(typedb, arg->type);

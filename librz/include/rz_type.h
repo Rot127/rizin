@@ -164,8 +164,6 @@ RZ_API void rz_type_db_set_cpu(RzTypeDB *typedb, const char *cpu);
 RZ_API void rz_type_db_set_endian(RzTypeDB *typedb, bool big_endian);
 RZ_API ut8 rz_type_db_pointer_size(RzTypeDB *typedb);
 
-RZ_API char *rz_type_db_kuery(RzTypeDB *typedb, const char *query);
-
 RZ_API bool rz_type_db_del(RzTypeDB *typedb, RZ_NONNULL const char *name);
 
 RZ_API void rz_type_db_init(RzTypeDB *typedb, const char *dir_prefix, const char *arch, int bits, const char *os);
@@ -174,7 +172,7 @@ RZ_API void rz_type_db_init(RzTypeDB *typedb, const char *dir_prefix, const char
 
 RZ_API void rz_type_base_type(const RzTypeDB *typedb, const RzBaseType *type);
 RZ_API void rz_type_base_type_free(RzBaseType *type);
-RZ_API RzBaseType *rz_type_base_type_new(RzBaseTypeKind kind);
+RZ_API RZ_OWN RzBaseType *rz_type_base_type_new(RzBaseTypeKind kind);
 
 RZ_API void rz_type_base_enum_case_free(void *e, void *user);
 RZ_API void rz_type_base_struct_member_free(void *e, void *user);
@@ -191,6 +189,7 @@ RZ_API RZ_OWN char *rz_type_db_base_type_as_string(const RzTypeDB *typedb, RZ_NO
 
 // Compound types
 
+RZ_API RZ_BORROW const char *rz_type_identifier(const RzTypeDB *typedb, RZ_NONNULL const RzType *type);
 RZ_API RZ_OWN char *rz_type_as_string(const RzTypeDB *typedb, RZ_NONNULL const RzType *type);
 RZ_API void rz_type_free(RzType *type);
 RZ_API bool rz_type_exists(RzTypeDB *typedb, RZ_NONNULL const char *name);
@@ -236,26 +235,26 @@ RZ_API ut64 rz_type_db_get_bitsize(RzTypeDB *typedb, RZ_NONNULL RzType *type);
 RZ_API RzList *rz_type_db_get_by_offset(RzTypeDB *typedb, ut64 offset);
 
 // Various type helpers
-RZ_API bool rz_type_atomic_eq(RzTypeDB *typedb, RzType *typ1, RzType *typ2);
-RZ_API bool rz_type_atomic_str_eq(RzTypeDB *typedb, RzType *typ1, RZ_NONNULL const char *name);
-RZ_API bool rz_type_atomic_is_void(RzTypeDB *typedb, RzType *type);
-RZ_API bool rz_type_atomic_is_signed(RzTypeDB *typedb, RzType *type);
-RZ_API bool rz_type_atomic_is_const(RzTypeDB *typedb, RzType *type);
-RZ_API bool rz_type_atomic_is_num(RzTypeDB *typedb, RzType *type);
+RZ_API bool rz_type_atomic_eq(const RzTypeDB *typedb, RZ_NONNULL const RzType *typ1, RZ_NONNULL const RzType *typ2);
+RZ_API bool rz_type_atomic_str_eq(const RzTypeDB *typedb, RZ_NONNULL const RzType *typ1, RZ_NONNULL const char *name);
+RZ_API bool rz_type_atomic_is_void(const RzTypeDB *typedb, RZ_NONNULL const RzType *type);
+RZ_API bool rz_type_atomic_is_signed(const RzTypeDB *typedb, RZ_NONNULL const RzType *type);
+RZ_API bool rz_type_atomic_is_const(const RzTypeDB *typedb, RZ_NONNULL const RzType *type);
+RZ_API bool rz_type_atomic_is_num(const RzTypeDB *typedb, RZ_NONNULL const RzType *type);
 RZ_API bool rz_type_atomic_set_sign(RzTypeDB *typedb, RzType *type, bool sign);
 
-RZ_API bool rz_type_is_void_ptr(RzType *type);
-RZ_API bool rz_type_is_default(RzTypeDB *typedb, RzType *type);
-RZ_API RZ_OWN RzType *rz_type_new_default(RzTypeDB *typedb);
+RZ_API bool rz_type_is_void_ptr(RZ_NONNULL const RzType *type);
+RZ_API bool rz_type_is_default(const RzTypeDB *typedb, RZ_NONNULL const RzType *type);
+RZ_API RZ_OWN RzType *rz_type_new_default(const RzTypeDB *typedb);
 
-RZ_API RZ_OWN RzType *rz_type_identifier_of_base_type(RzTypeDB *typedb, RZ_NONNULL RzBaseType *btype);
-RZ_API RZ_OWN RzType *rz_type_identifier_of_base_type_str(RzTypeDB *typedb, RZ_NONNULL const char *name);
-RZ_API RZ_OWN RzType *rz_type_pointer_of_base_type(RzTypeDB *typedb, RZ_NONNULL RzBaseType *btype, bool is_const);
-RZ_API RZ_OWN RzType *rz_type_pointer_of_base_type_str(RzTypeDB *typedb, RZ_NONNULL const char *name, bool is_const);
-RZ_API RZ_OWN RzType *rz_type_pointer_of_type(RzTypeDB *typedb, RZ_NONNULL RzType *type, bool is_const);
-RZ_API RZ_OWN RzType *rz_type_array_of_base_type(RzTypeDB *typedb, RZ_NONNULL RzBaseType *btype, size_t count);
-RZ_API RZ_OWN RzType *rz_type_array_of_base_type_str(RzTypeDB *typedb, RZ_NONNULL const char *name, size_t count);
-RZ_API RZ_OWN RzType *rz_type_array_of_type(RzTypeDB *typedb, RZ_NONNULL RzType *type, size_t count);
+RZ_API RZ_OWN RzType *rz_type_identifier_of_base_type(const RzTypeDB *typedb, RZ_NONNULL const RzBaseType *btype);
+RZ_API RZ_OWN RzType *rz_type_identifier_of_base_type_str(const RzTypeDB *typedb, RZ_NONNULL const char *name);
+RZ_API RZ_OWN RzType *rz_type_pointer_of_base_type(const RzTypeDB *typedb, RZ_NONNULL const RzBaseType *btype, bool is_const);
+RZ_API RZ_OWN RzType *rz_type_pointer_of_base_type_str(const RzTypeDB *typedb, RZ_NONNULL const char *name, bool is_const);
+RZ_API RZ_OWN RzType *rz_type_pointer_of_type(const RzTypeDB *typedb, RZ_NONNULL RzType *type, bool is_const);
+RZ_API RZ_OWN RzType *rz_type_array_of_base_type(const RzTypeDB *typedb, RZ_NONNULL const RzBaseType *btype, size_t count);
+RZ_API RZ_OWN RzType *rz_type_array_of_base_type_str(const RzTypeDB *typedb, RZ_NONNULL const char *name, size_t count);
+RZ_API RZ_OWN RzType *rz_type_array_of_type(const RzTypeDB *typedb, RZ_NONNULL RzType *type, size_t count);
 
 // Type formats (`tp` and `pf` commands)
 RZ_API const char *rz_type_db_format_get(RzTypeDB *typedb, const char *name);

@@ -124,4 +124,3 @@ RZ_API bool rz_serialize_callables_load(RZ_NONNULL Sdb *db, RZ_NONNULL RzTypeDB 
 	sdb_load_callables(typedb, db);
 	return true;
 }
-
