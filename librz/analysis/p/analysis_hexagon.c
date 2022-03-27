@@ -693,6 +693,25 @@ RZ_API char *get_reg_profile(RzAnalysis *analysis) {
 		"sys	s77:76_tmp	.64	77088	0\n";
 	return strdup(p);
 }
+
+
+static RzAnalysisILConfig *il_config(RzAnalysis *analysis) {
+	RzAnalysisILConfig *cfg = rz_analysis_il_config_new(32, false, 32);
+	cfg->init_state = rz_analysis_il_init_state_new();
+	if (!cfg->init_state) {
+		rz_analysis_il_config_free(cfg);
+		return NULL;
+	}
+	// rz_analysis_il_init_state_set_var(cfg->init_state, "ptr", rz_il_value_new_bitv(rz_bv_new_from_ut64(64, BF_ADDR_MEM)));
+	// RzILEffectLabel *read_label = rz_il_effect_label_new("read", EFFECT_LABEL_SYSCALL);
+	// read_label->hook = bf_syscall_read;
+	// rz_analysis_il_config_add_label(cfg, read_label);
+	// RzILEffectLabel *write_label = rz_il_effect_label_new("write", EFFECT_LABEL_HOOK);
+	// write_label->hook = bf_syscall_write;
+	// rz_analysis_il_config_add_label(cfg, write_label);
+	return cfg;
+}
+
 RzAnalysisPlugin rz_analysis_plugin_hexagon = {
 	.name = "hexagon",
 	.desc = "Qualcomm Hexagon (QDSP6) V6",
@@ -702,6 +721,7 @@ RzAnalysisPlugin rz_analysis_plugin_hexagon = {
 	.op = hexagon_v6_op,
 	.esil = false,
 	.get_reg_profile = get_reg_profile,
+  .il_config = il_config,
 };
 
 #ifndef RZ_PLUGIN_INCORE

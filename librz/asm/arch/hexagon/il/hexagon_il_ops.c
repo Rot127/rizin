@@ -2,30 +2,76 @@
 #ifndef RZ_HEXAGON_IL_OPS_WRITE_H
 #define RZ_HEXAGON_IL_OPS_WRITE_H
 
-#include <rz_il/rz_il_opbuilder_begin.h>
 #include "hexagon.h"
 #include "hexagon_il.h"
+#include "hexagon_il_regs.h"
+#include <rz_il/rz_il_opbuilder_begin.h>
 
-RzILOpEffect *hex_ins_a2_tfr(HexInsn *insn) {
+RzILOpEffect *hex_ins_a2_tfr(HexInsn *hi) { // Rd = Rs
+  rz_return_val_if_fail(hi, NULL);
+
+  // READ
+  char *rd = hex_get_int_regs(hi->ops[0].op.reg);
+  char *rs = hex_get_int_regs(hi->ops[1].op.reg);
+  RzILOpPure *op0 = REG(rs);
+  // EXEC
+
+  // WRITE
+  RzILOpEffect *res = SETG(rd, op0);
+  return res;
+}
+
+RzILOpEffect *hex_ins_a2_add(HexInsn *hi) { // Rd = add(Rs,Ii)
+  // READ
+
+  // EXEC
+
+  // WRITE
   return NULL;
 }
 
-RzILOpEffect *hex_ins_a2_add(HexInsn *insn) {
+RzILOpEffect *hex_ins_l2_loadri_io(HexInsn *hi) { // Rd = memw(Rs+Ii)
+  // READ
+  char *rd = hex_get_int_regs(hi->ops[0].op.reg);
+  char *rs = hex_get_int_regs(hi->ops[1].op.reg);
+  st64 ii = hi->ops[2].op.imm;
+  RzILOpPure *op0 = REG(rs);
+  RzILOpPure *op1 = S32(ii);
+
+  // EXEC
+  RzILOpPure *ea = ADD(op0, op1);
+  RzILOpPure *ea_w = LOADW(HEX_HWORD, ea);
+
+  //WRITE
+  RzILOpEffect *res = SETG(rd, ea_w);
+
+  return res;
+}
+
+RzILOpEffect *hex_ins_s2_storerinewgp(HexInsn *hi) { // memw(gp+Ii) = Nt.new
   return NULL;
 }
 
-RzILOpEffect *hex_ins_l2_loadri_io(HexInsn *insn) {
+RzILOpEffect *hex_ins_j2_jumpr(HexInsn *hi) { // jumpr Rs
   return NULL;
 }
 
-RzILOpEffect *hex_ins_j2_jumpr(HexInsn *insn) {
+RzILOpEffect *hex_ins_s2_pstorerdt_io(HexInsn *hi) { // if (Pv) memd(Rs+Ii) = Rtt
   return NULL;
 }
 
-RzILOpEffect *hex_ins_s2_pstorerdt_io(HexInsn *insn) {
+RzILOpEffect *hex_ins_a2_tfril(HexInsn *hi) { // Rx.l = Ii
   return NULL;
 }
-//WRITES
+
+RzILOpEffect *hex_ins_c4_cmpneq(HexInsn *hi) { // Pd = !cmp.eq(Rs,Rt)
+  return NULL;
+}
+
+RzILOpEffect *hex_ins_a4_vcmpwgti(HexInsn *hi) { // Pd = vcmpw.gt(Rss,Ii)
+  return NULL;
+}
+
 
 #include <rz_il/rz_il_opbuilder_end.h>
 
