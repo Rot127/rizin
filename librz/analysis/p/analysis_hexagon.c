@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-03-27 05:03:46-04:00
+// Date of code generation: 2022-03-28 14:34:16-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -15,6 +15,7 @@
 #include <rz_analysis.h>
 #include <rz_lib.h>
 #include "hexagon.h"
+#include "../arch/hexagon/il/hexagon_il.h"
 #include "hexagon_insn.h"
 #include "hexagon_arch.h"
 
@@ -28,6 +29,16 @@ RZ_API int hexagon_v6_op(RzAnalysis *analysis, RzAnalysisOp *op, ut64 addr, cons
 	hexagon_reverse_opcode(NULL, &rev, buf, addr);
 
 	return op->size;
+}
+
+static RzAnalysisILConfig *il_config(RzAnalysis *analysis) {
+	RzAnalysisILConfig *cfg = rz_analysis_il_config_new(HEX_PC_SIZE, false, HEX_ADDR_SIZE);
+	cfg->init_state = rz_analysis_il_init_state_new();
+	if (!cfg->init_state) {
+		rz_analysis_il_config_free(cfg);
+		return NULL;
+	}
+	return cfg;
 }
 
 RZ_API char *get_reg_profile(RzAnalysis *analysis) {
@@ -693,24 +704,6 @@ RZ_API char *get_reg_profile(RzAnalysis *analysis) {
 		"sys	s77:76_tmp	.64	77088	0\n";
 	return strdup(p);
 }
-
-static RzAnalysisILConfig *il_config(RzAnalysis *analysis) {
-	RzAnalysisILConfig *cfg = rz_analysis_il_config_new(32, false, 32);
-	cfg->init_state = rz_analysis_il_init_state_new();
-	if (!cfg->init_state) {
-		rz_analysis_il_config_free(cfg);
-		return NULL;
-	}
-	// rz_analysis_il_init_state_set_var(cfg->init_state, "ptr", rz_il_value_new_bitv(rz_bv_new_from_ut64(64, BF_ADDR_MEM)));
-	// RzILEffectLabel *read_label = rz_il_effect_label_new("read", EFFECT_LABEL_SYSCALL);
-	// read_label->hook = bf_syscall_read;
-	// rz_analysis_il_config_add_label(cfg, read_label);
-	// RzILEffectLabel *write_label = rz_il_effect_label_new("write", EFFECT_LABEL_HOOK);
-	// write_label->hook = bf_syscall_write;
-	// rz_analysis_il_config_add_label(cfg, write_label);
-	return cfg;
-}
-
 RzAnalysisPlugin rz_analysis_plugin_hexagon = {
 	.name = "hexagon",
 	.desc = "Qualcomm Hexagon (QDSP6) V6",
@@ -720,7 +713,7 @@ RzAnalysisPlugin rz_analysis_plugin_hexagon = {
 	.op = hexagon_v6_op,
 	.esil = false,
 	.get_reg_profile = get_reg_profile,
-  .il_config = il_config,
+	.il_config = il_config,
 };
 
 #ifndef RZ_PLUGIN_INCORE
