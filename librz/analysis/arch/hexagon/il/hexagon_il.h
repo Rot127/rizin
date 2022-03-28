@@ -2,7 +2,6 @@
 #define HEXAGON_IL_H
 
 #include "hexagon.h"
-#include <rz_il.h>
 
 #define HEX_ADDR_SIZE 39 // 7bit thread ID + 32bit vaddr
 #define HEX_ADDR_MEM_BASE 0x0
@@ -16,14 +15,5 @@
 // HVM Stuff
 #define HEX_VMM_ADDR_SPACE_BASE 0xff000000U
 #define HEX_VMM_ADDR_SPACE_END  0xffffffffU
-
-
-typedef struct {
-  RzILVal *dest; //< Where the data is written. Register (Global) or memory address (Local pure).
-  RzILVal *data; //< What data is written. Some value (Local pure).
-} HexILWriteElem;
-
-
-
 
 #endif

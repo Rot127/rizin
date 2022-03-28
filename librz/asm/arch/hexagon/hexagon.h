@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-03-26 15:50:26-04:00
+// Date of code generation: 2022-03-28 08:07:01-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -51,15 +51,16 @@ typedef enum {
 	// TODO It might be useful to differ between control, HVX, guest regs etc. Also see HexOp
 } HexOpType;
 
-// Attributes - .H/.L, const extender
+/**
+ * \brief Different attribute flags for instructions operands.
+ */
 typedef enum {
-	HEX_OP_CONST_EXT = 1 << 0, // Constant extender marker for Immediate
-	HEX_OP_REG_HI = 1 << 1, // Rn.H marker
-	HEX_OP_REG_LO = 1 << 2, // Rn.L marker
-	HEX_OP_REG_PAIR = 1 << 3, // Is this a register pair?
-	HEX_OP_REG_QUADRUPLE = 1 << 4, // Is it a register with 4 sub registers?
-	HEX_OP_REG_OUT = 1 << 5, // Is the register the destination register?
-	HEX_OP_IMM_SCALED = 1 << 6 // Is the immediate shifted?
+	HEX_OP_CONST_EXT = 1 << 0, //< Constant extender marker for Immediate
+	HEX_OP_REG_PAIR = 1 << 1, //< Is this a register pair?
+	HEX_OP_REG_QUADRUPLE = 1 << 2, //< Is it a register with 4 sub registers?
+	HEX_OP_REG_OUT = 1 << 3, //< Is the register the destination register?
+	HEX_OP_REG_NEW = 1 << 4, //< .new registers
+	HEX_OP_IMM_SCALED = 1 << 5, //< Is the immediate shifted?
 } HexOpAttr;
 
 typedef enum {
@@ -84,6 +85,7 @@ typedef struct {
 	} op;
 	HexOpAttr attr;
 	ut8 shift;
+	char name[16]; //< Register name with space to add _tmp postfix.
 } HexOp;
 
 typedef struct {
@@ -130,6 +132,7 @@ typedef struct {
 	RzList *const_ext_l; // Constant extender values.
 	RzAsm rz_asm; // Copy of RzAsm struct. Holds certain flags of interesed for disassembly formatting.
 } HexState;
+
 typedef enum {
 	HEX_REG_CTR_REGS_C0 = 0, // sa0
 	HEX_REG_CTR_REGS_C1 = 1, // lc0

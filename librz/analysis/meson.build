@@ -150,6 +150,8 @@ rz_analysis_sources = [
   #'arch/gb/meta_gb_cmt.c',
   'arch/arm/arm_esil32.c',
   'arch/arm/arm_esil64.c',
+  'arch/hexagon/il/hexagon_il_ops.c',
+  'arch/hexagon/il/hexagon_il.c',
   'arch/avr/avr_esil.c',
   'arch/avr/avr_il.c',
   'arch/arm/arm_il32.c',

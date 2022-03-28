@@ -5,14 +5,15 @@
 #include "hexagon.h"
 #include "hexagon_il.h"
 #include "hexagon_il_regs.h"
+#include <rz_il.h>
 #include <rz_il/rz_il_opbuilder_begin.h>
 
 RzILOpEffect *hex_ins_a2_tfr(HexInsn *hi) { // Rd = Rs
   rz_return_val_if_fail(hi, NULL);
 
   // READ
-  char *rd = hex_get_int_regs(hi->ops[0].op.reg);
-  char *rs = hex_get_int_regs(hi->ops[1].op.reg);
+  char *rd = hi->ops[0].name;
+  char *rs = hi->ops[1].name;
   RzILOpPure *op0 = REG(rs);
   // EXEC
 
@@ -23,8 +24,8 @@ RzILOpEffect *hex_ins_a2_tfr(HexInsn *hi) { // Rd = Rs
 
 RzILOpEffect *hex_ins_a2_add(HexInsn *hi) { // Rd = add(Rs,Ii)
   // READ
-  char *rd = hex_get_int_regs(hi->ops[0].op.reg);
-  char *rs = hex_get_int_regs(hi->ops[1].op.reg);
+  char *rd = hi->ops[0].name;
+  char *rs = hi->ops[1].name;
   st64 ii = hi->ops[2].op.imm;
   RzILOpPure *op0 = REG(rs);
   RzILOpPure *op1 = S32(ii);
@@ -40,8 +41,8 @@ RzILOpEffect *hex_ins_a2_add(HexInsn *hi) { // Rd = add(Rs,Ii)
 
 RzILOpEffect *hex_ins_l2_loadri_io(HexInsn *hi) { // Rd = memw(Rs+Ii)
   // READ
-  char *rd = hex_get_int_regs(hi->ops[0].op.reg);
-  char *rs = hex_get_int_regs(hi->ops[1].op.reg);
+  char *rd = hi->ops[0].name;
+  char *rs = hi->ops[1].name;
   st64 ii = hi->ops[2].op.imm;
   RzILOpPure *op0 = REG(rs);
   RzILOpPure *op1 = S32(ii);
@@ -58,20 +59,19 @@ RzILOpEffect *hex_ins_l2_loadri_io(HexInsn *hi) { // Rd = memw(Rs+Ii)
 
 RzILOpEffect *hex_ins_s2_storerinew_io(HexInsn *hi) { // memw(Rs+Ii) = Nt.new
   // READ
-  char *rs = hex_get_int_regs(hi->ops[0].op.reg);
+  char *rs = hi->ops[0].name;
   st64 ii = hi->ops[1].op.imm;
-  char *nt = hex_get_int_regs(hi->ops[2].op.reg);
+  char *nt = hi->ops[2].name;
   RzILOpPure *op0 = REG(rs);
   RzILOpPure *op1 = S32(ii);
   RzILOpPure *op2 = TREG(nt);
 
   // EXEC
   RzILOpPure *ea = ADD(op0, op1);
-  RzILOpPure *ea_w = LOADW(HEX_HWORD, ea);
 
   //WRITE
-  RzILOpEffect *res = SETG(rd, ea_w);
-  return NULL;
+  RzILOpEffect *res = STOREW(ea, op2);
+  return res;
 }
 
 RzILOpEffect *hex_ins_j2_jumpr(HexInsn *hi) { // jumpr Rs

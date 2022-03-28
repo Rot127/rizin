@@ -149,8 +149,6 @@ rz_asm_sources = [
   'arch/hexagon/hexagon.c',
   'arch/hexagon/hexagon_arch.c',
   'arch/hexagon/hexagon_disas.c',
-  'arch/hexagon/il/hexagon_il.c',
-  'arch/hexagon/il/hexagon_il_ops.c',
   #'arch/i4004/i4004dis.c',
   #'arch/i8080/i8080dis.c',
   'arch/java/jvm.c',

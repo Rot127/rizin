@@ -694,7 +694,6 @@ RZ_API char *get_reg_profile(RzAnalysis *analysis) {
 	return strdup(p);
 }
 
-
 static RzAnalysisILConfig *il_config(RzAnalysis *analysis) {
 	RzAnalysisILConfig *cfg = rz_analysis_il_config_new(32, false, 32);
 	cfg->init_state = rz_analysis_il_init_state_new();
