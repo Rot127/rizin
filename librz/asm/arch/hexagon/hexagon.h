@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-03-30 11:58:43-04:00
+// Date of code generation: 2022-03-30 14:02:57-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -56,7 +56,6 @@ typedef enum {
 	HEX_INSN_CLASS_S1_A = 6,
 	HEX_INSN_CLASS_S2_A = 7,
 	HEX_INSN_CLASS_S1_L1 = 8,
-	HEX_INSN_CLASS_S1_L2 = 8,
 	HEX_INSN_CLASS_S1_L2 = 9,
 	HEX_INSN_CLASS_S1_S1 = 10,
 	HEX_INSN_CLASS_S2_S1 = 11,
