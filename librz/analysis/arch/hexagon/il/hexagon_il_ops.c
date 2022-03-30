@@ -4,7 +4,6 @@
 
 #include "hexagon.h"
 #include "hexagon_il.h"
-#include "hexagon_il_regs.h"
 #include <rz_il.h>
 #include <rz_il/rz_il_opbuilder_begin.h>
 

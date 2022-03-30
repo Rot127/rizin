@@ -25,6 +25,12 @@
 #define HEX_WORD  32U
 #define HEX_DWORD 64U
 
+#define TREG(x) VARG(strcat(x, "_tmp")) // tmp register
+#define REG(x)  VARG(x) // register
+// Read predicate register for branching decision (only LSB matters). (manual v67 6.1.2)
+// Give argument is Bitvector returned by TREG or REG macro.
+#define PRED_B(v) LSB(v)
+
 RzILOpEffect *hex_ins_a2_abs(HexInsn *hi);
 RzILOpEffect *hex_ins_a2_absp(HexInsn *hi);
 RzILOpEffect *hex_ins_a2_abssat(HexInsn *hi);
