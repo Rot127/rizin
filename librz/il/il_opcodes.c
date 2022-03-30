@@ -659,6 +659,51 @@ RZ_API RZ_OWN RzILOpEffect *rz_il_op_new_seqn(ut32 n, ...) {
 }
 
 /**
+ * Chain opcodes given in \p list to a sequence and return it.
+ *
+ * \param list RzList with RzILOpEffect * ops to be executed in sequence.
+ */
+RZ_API RZ_OWN RzILOpEffect *rz_il_op_new_seq_list(RZ_OWN RzList * /* RzILOpEffect* */ list) {
+	if (!rz_list_empty(list)) {
+		return rz_il_op_new_nop();
+	}
+	RzILOpEffect *root = NULL;
+	RzILOpEffect *prev_seq = NULL;
+	RzListIter *it;
+	rz_list_foreach_iter(list, it) {
+		RzILOpEffect *cur_op = it->data;
+		if (!it->n) {
+			// last one
+			if (prev_seq) {
+				prev_seq->op.seq.y = cur_op;
+			} else {
+				// n == 1, no need for seq at all
+				root = cur_op;
+			}
+			break;
+		}
+		RzILOpEffect *seq = RZ_NEW0(RzILOpEffect);
+		if (!seq) {
+			break;
+		}
+		seq->code = RZ_IL_OP_SEQ;
+		seq->op.seq.x = cur_op;
+		if (prev_seq) {
+			// not the first one
+			// We let the seq recurse in the second op because that
+			// can enable tail call elimination in the evaluation.
+			prev_seq->op.seq.y = seq;
+		} else {
+			// first one
+			root = seq;
+		}
+		prev_seq = seq;
+	}
+	free(list); // Free only the list. Not the effects.
+	return root;
+}
+
+/**
  *  \brief op structure for `blk` (label -> data eff -> ctrl eff -> unit eff)
  *
  *  blk lbl data ctrl a labeled sequence of effects.
