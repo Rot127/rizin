@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-03-30 12:00:34-04:00
+// Date of code generation: 2022-03-30 14:06:19-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -3694,5 +3694,5 @@ typedef enum {
 	HEX_INS_X2_AUTOJOIN_SA1_ADDI_UNDOCUMENTED_SA2_TFRSI,
 	HEX_INS_X2_AUTOJOIN_SA1_SETI_UNDOCUMENTED_SA2_TFRSI,
 	HEX_INS_X2_AUTOJOIN_UNDOCUMENTED_SA2_TFRSI_UNDOCUMENTED_SA2_TFRSI,
-} HEX_INSN_ID;
+} HexInsnId;
 #endif
