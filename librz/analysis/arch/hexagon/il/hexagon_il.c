@@ -21,23 +21,30 @@ RZ_API RzILOpEffect *hex_get_pkt_il_ops(RZ_INOUT HexPkt *pkt) {
     return NOP;
   }
 
+  // Four instructions + 2 jump/loop effects + 1 commit regs
+
+
+  // DON'T FORGET: Implicit Pv writes detectetion during disassembly.
+
+
   // SLOT ORDER
   //
-  // 0x0    slot3
-  // 0x4    slot2
-  // 0x8    slot1
-  // 0xa    slot0
+  // Low address
+  //     slot3  XTYPE/ALU/J/CR
+  //     slot2  XTYPE/ALU/J/JR
+  //     slot1  LOAD/STORE/ALU                  \  Duplex
+  //     slot0  LOAD/STORE/ALU/MEMOP/NV/SYSTEM  /  instr.
+  // High address
   // 
   // ORDERING CONSTRAINTS
   //
   // General ordering constraints:                                                  [MANUAL v67 3.3.6]
   //
   // IL EXEC ORDERING CONSTRAINTS
-  // - [ ] Dual stores                                                              [MANUAL v67 5.4]
+  // - [ ] Dual stores                                                              [MANUAL v67 5.4]    -> Preserve order
   // - [ ] mem_noshuf from v65 onwards. Frist store then load.                      [MANUAL v67 5.5]
   // - [ ] .new value store  insn class NV                                          [MANUAL v67 5.6]
   // - [ ] .new predicates                                                          [MANUAL v67 6.1.4]
-  // - [ ] Double predicate write
   // - [ ] Dual jumps                                                               [MANUAL v67 8.7]
   // - [ ] .new value compare jumps                                                 [MANUAL v67 8.5]
   //   - We need to separate the `p0 = bla` part from the `if` part.
@@ -45,25 +52,28 @@ RZ_API RzILOpEffect *hex_get_pkt_il_ops(RZ_INOUT HexPkt *pkt) {
   // - [ ] Duplex instructions -> 28:16 slot 1 ; 13:0 slot 0                        [MANUAL v67 10.3]
   // - [ ] Harware loops.
   //
-  // DUAL STORES
-  //
-  // Go last. Order preserved.
-  // slot 1 then slot 0
-  //
   // COMPARE JUMPS
   //
-  // Compiler separates compare and jump into separated ops?
-  // Jump op to the end.
+  // Example: P0 = R1; if (P0.new) jump #0x55120
   //
-  // Priority of op execution.
-  // 0. -> Highest priority -> Last in sequence.
-  // Order of instrucions.
+  // Compiler separates compare and jump into separated ops.
+  // Jump op to the end of execution.
   // 
-  // 10. direct jumps
-  // 9.  cond. jumps (Pv.new and Pv)
-  // 8.  small writes same reg - memb(R3)
-  // 7.  large writes same reg - memw(R3)
-  // 6.  .new reads
+  // EXECUTION ORDER
+  //
+  // Posible algo described in: qemu/quic::decode.c::decode_shuffle_for_execution()
+  //
+  // First
+  // 1.  Non memory insn
+  // 2.  Im/Explicit Pv writes (implicit via C4, spNloop, other) -> Needs detection execution execution.
+  // 3.  .new reads
+  // 4.  LOADs which are before STOREs
+  // 4.  STOREs (double STOREs: preserve order)
+  // 5.  LOADs after STOREs (if they were there before).
+  // 6.  direct jumps
+  // 7.  cond. jumps (Pv.new and Pv) - if executed after direct jump; they update PC to their value.
+  // 8.  commit regs (regs_tmp -> regs. PC is actually written)
+  // Last
  
   return NULL;
 }
