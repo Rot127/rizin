@@ -3,6 +3,10 @@
 #include <rz_il.h>
 #include <rz_il/rz_il_opbuilder_begin.h>
 
+RzILOpEffect *hex_il_nop() {
+  return NOP;
+}
+
 /**
  * \brief Returns the packet's instructions IL operations as sequence.
  * The IL ops order does not necessarily match the asm instructions order!

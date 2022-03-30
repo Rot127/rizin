@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-03-28 14:29:07-04:00
+// Date of code generation: 2022-03-30 10:10:55-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -16,7 +16,7 @@
 #include <rz_il.h>
 
 #define HEX_PC_SIZE       32
-#define HEX_ADDR_SIZE     39 // 7bit thread ID + 32bit vaddr
+#define HEX_ADDR_SIZE     39 // 7bits thread ID + 32bits vaddr
 #define HEX_ADDR_MEM_BASE 0x0
 #define HEX_ARCH_BITS     32
 
@@ -31,6 +31,7 @@
 // Give argument is Bitvector returned by TREG or REG macro.
 #define PRED_B(v) LSB(v)
 
+RzILOpEffect *hex_il_nop();
 RzILOpEffect *hex_ins_a2_abs(HexInsn *hi);
 RzILOpEffect *hex_ins_a2_absp(HexInsn *hi);
 RzILOpEffect *hex_ins_a2_abssat(HexInsn *hi);
