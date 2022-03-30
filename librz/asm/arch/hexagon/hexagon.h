@@ -3,11 +3,12 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-03-28 08:07:01-04:00
+// Date of code generation: 2022-03-30 11:58:43-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
 // https://github.com/rizinorg/rz-hexagon
+
 #ifndef HEXAGON_H
 #define HEXAGON_H
 
@@ -17,6 +18,53 @@
 
 #define MAX_CONST_EXT      512
 #define HEXAGON_STATE_PKTS 8
+
+/**
+ * \brief Instruction classes. As described in:
+ * https://github.com/quic/qemu/blob/1416688c53be6535be755b44c15fb2eb9defd20f/target/hexagon/imported/iclass.def
+ */
+typedef enum {
+	HEX_INSN_CLASS_EXTENDER = 0,
+	HEX_INSN_CLASS_CJ = 1,
+	HEX_INSN_CLASS_NCJ = 2,
+	HEX_INSN_CLASS_V4LDST = 3,
+	HEX_INSN_CLASS_V2LDST = 4,
+	HEX_INSN_CLASS_J = 5,
+	HEX_INSN_CLASS_CR = 6,
+	HEX_INSN_CLASS_ALU32_2_OP = 7,
+	HEX_INSN_CLASS_S_2_OP = 8,
+	HEX_INSN_CLASS_LD = 9,
+	HEX_INSN_CLASS_ST = 10,
+	HEX_INSN_CLASS_ALU32_ADDI = 11,
+	HEX_INSN_CLASS_S_3_OP = 12,
+	HEX_INSN_CLASS_ALU64 = 13,
+	HEX_INSN_CLASS_M = 14,
+	HEX_INSN_CLASS_ALU32_3_OP = 15
+} HexIClass;
+
+/**
+ * \brief Duplex instruction classes. As described in:
+ * Programmers Reference Manual v67 Table 10-5
+ */
+typedef enum {
+	HEX_INSN_CLASS_L1_L1 = 0,
+	HEX_INSN_CLASS_L2_L1 = 1,
+	HEX_INSN_CLASS_L2_L2 = 2,
+	HEX_INSN_CLASS_A_A = 3,
+	HEX_INSN_CLASS_L1_A = 4,
+	HEX_INSN_CLASS_L2_A = 5,
+	HEX_INSN_CLASS_S1_A = 6,
+	HEX_INSN_CLASS_S2_A = 7,
+	HEX_INSN_CLASS_S1_L1 = 8,
+	HEX_INSN_CLASS_S1_L2 = 8,
+	HEX_INSN_CLASS_S1_L2 = 9,
+	HEX_INSN_CLASS_S1_S1 = 10,
+	HEX_INSN_CLASS_S2_S1 = 11,
+	HEX_INSN_CLASS_S2_L1 = 12,
+	HEX_INSN_CLASS_S2_L2 = 13,
+	HEX_INSN_CLASS_S2_S2 = 14,
+	HEX_INSN_CLASS_RESERVED = 15
+} HexIClassDup;
 
 // Predicates - declare the predicate state
 typedef enum {
@@ -91,7 +139,11 @@ typedef struct {
 typedef struct {
 	ut32 opcode;
 	ut8 parse_bits;
-	int instruction;
+	HEX_INSN_ID instruction;
+	union {
+		HexIClass i;
+		HexIClassDup d;
+	} iclass;
 	ut32 mask;
 	HexPred pred; // Predicate type
 	bool duplex; // is part of duplex container?

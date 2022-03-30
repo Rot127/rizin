@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-03-26 15:23:57-04:00
+// Date of code generation: 2022-03-30 10:10:55-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -255,8 +255,7 @@ static inline bool is_pkt_full(const HexPkt *p) {
  * \param prefix True: Return the prefix indicator. False: Return the postfix.
  * If there is no prefix/postfix for a given indicator type (e.g. for the utf8 version of 'endloop01')
  * it returns an empty string.
- * \param ind_type The
- * \param prefix
+ * \param ind_type The indicator to return.
  * \return char* The indicator string according to the given flags.
  */
 static char *get_pkt_indicator(const bool utf8, const bool sdk, const bool prefix, HexPktSyntaxIndicator ind_type) {

@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-01-24 07:53:55-05:00
+// Date of code generation: 2022-03-30 12:00:34-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -11,8 +11,7 @@
 
 #ifndef HEXAGON_INSN_H
 #define HEXAGON_INSN_H
-
-enum HEX_INS {
+typedef enum {
 	HEX_INS_INVALID_DECODE = 0,
 	HEX_INS_A2_ABS,
 	HEX_INS_A2_ABSP,
@@ -3695,6 +3694,5 @@ enum HEX_INS {
 	HEX_INS_X2_AUTOJOIN_SA1_ADDI_UNDOCUMENTED_SA2_TFRSI,
 	HEX_INS_X2_AUTOJOIN_SA1_SETI_UNDOCUMENTED_SA2_TFRSI,
 	HEX_INS_X2_AUTOJOIN_UNDOCUMENTED_SA2_TFRSI_UNDOCUMENTED_SA2_TFRSI,
-};
-
+} HEX_INSN_ID;
 #endif
