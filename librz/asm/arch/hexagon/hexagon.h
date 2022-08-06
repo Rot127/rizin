@@ -160,22 +160,22 @@ typedef struct {
 /**
  * \brief Represents an Hexagon instruction packet.
  * We do not assign instructions to slots, but the order of instructions matters nonetheless.
- * The layout of a packet is:
+ * The layout of a real packet is:
  *
  * low addr | Slot 3
  * ---------+----------
  *          | Slot 2
  * ---------+----------
- *          | Slot 1    -> High Sub-Instruction is always in Slot 1
+ *          | Slot 1    -> High Sub-Instruction of Duplex is always in Slot 1
  * ---------+----------
- * high addr| Slot 0    -> Low Sub-Instruction is always in Slot 0
+ * high addr| Slot 0    -> Low Sub-Instruction of Duplex is always in Slot 0
  *
  * Because of this order the textual disassembly of duplex instructions is: "<high-text> ; <low-text>".
  * Also, the high sub-instruction is located at the _lower_ memory address (aligned to 4 bytes).
  * The low sub-instruction at <high.addr + 2>.
  *
  * This said: The HexPkt.bin holds only instruction container, no instructions!
- * The container holds the instructions or sub-instructions.
+ * The container holds a normal instruction or two sub-instructions.
  */
 typedef struct {
 	RzList /* HexInsnContainer */ *bin; ///< Descending by address sorted list of instruction containers.
