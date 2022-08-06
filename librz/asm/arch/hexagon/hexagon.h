@@ -77,14 +77,53 @@ typedef struct {
 } HexPktInfo;
 
 typedef struct {
-	ut8 type;
+	ut8 /* HexOpType */ type; ///< Operand type: Immediate or register
+	ut8 class; ///< Equivalent to: HexRegClass (for registers) OR HexOpTemplateFlag (for immediate values).
+	char isa_id; ///< The identifier character in the ISA of this instruction: 'd' for Rdd, I for Ii etc. 0x0 if not known.
 	union {
-		ut8 reg; // + additional Hi or Lo selector // + additional shift // + additional :brev //
-		st64 imm;
-	} op;
-	HexOpAttr attr;
-	ut8 shift;
+		ut8 reg; ///< Register number. E.g. 3 for R3 etc.
+		st64 imm; ///< Immediate value.
+	} op; ///< Actual value of the operand.
+	HexOpAttr attr; ///< Attributes of the operand.
+	ut8 shift; ///< Number of bits to shift the bits in the opcode to retrieve the operand value.
 } HexOp;
+
+typedef RzILOpEffect *(*HexILOpGetter)(void /* HexInsnPktBundle */ *);
+
+typedef enum {
+	HEX_IL_INSN_ATTR_INVALID = 0, ///< Operation was not set or implemented.
+	HEX_IL_INSN_ATTR_NONE = 1 << 0, ///< Nothing special about this operation.
+	HEX_IL_INSN_ATTR_COND = 1 << 1, ///< Executes differently if a certain condition is met.
+	HEX_IL_INSN_ATTR_SUB = 1 << 2, ///< Operation is a sub-instruction.
+	HEX_IL_INSN_ATTR_BRANCH = 1 << 3, ///< Operation contains a branch.
+	HEX_IL_INSN_ATTR_MEM_READ = 1 << 4, ///< Operation reads from the memory.
+	HEX_IL_INSN_ATTR_MEM_WRITE = 1 << 5, ///< Operation writes to the memory.
+	HEX_IL_INSN_ATTR_NEW = 1 << 6, ///< Operation reads a .new value.
+	HEX_IL_INSN_ATTR_WPRED = 1 << 7, ///< Operation writes a predicate register.
+	HEX_IL_INSN_ATTR_WRITE_P0 = 1 << 8, ///< Writes predicate register P0
+	HEX_IL_INSN_ATTR_WRITE_P1 = 1 << 9, ///< Writes predicate register P1
+	HEX_IL_INSN_ATTR_WRITE_P2 = 1 << 10, ///< Writes predicate register P2
+	HEX_IL_INSN_ATTR_WRITE_P3 = 1 << 11, ///< Writes predicate register P3
+} HexILInsnAttr;
+
+/**
+ * \brief Represents a single operation of an instruction.
+ */
+typedef struct {
+	HexILOpGetter get_il_op; ///< Pointer to the getter to retrieve the RzILOpEffects of this operation.
+	HexILInsnAttr attr; ///< Attributes to shuffle it to the correct position in the packets IL ops.
+} HexILOp;
+
+/**
+ * \brief Struct of instruction operations. Usually an instruction has only one operation
+ * but duplex and compound instructions can have more.
+ * The last op in this struct has all members set to NULL/0.
+ */
+typedef struct {
+	HexILOp op0;
+	HexILOp op1;
+	HexILOp end;
+} HexILInsn;
 
 typedef struct {
 	bool is_sub; ///< Flag for sub-instructions.
@@ -95,6 +134,7 @@ typedef struct {
 	HexInsnID identifier; ///< The instruction identifier
 	char text_infix[128]; ///< Textual disassembly of the instruction.
 	HexOp ops[HEX_MAX_OPERANDS]; ///< The operands of the instructions.
+	HexILInsn il_insn; ///< RZIL instruction. These are not meant for execution! Use the packet ops for that.
 } HexInsn;
 
 /**
@@ -146,7 +186,13 @@ typedef struct {
 	ut64 last_access; ///< Last time accessed in milliseconds
 	ut32 pkt_addr; ///< Address of the packet. Equals the address of the first instruction.
 	bool is_eob; ///< Is this packet the end of a code block? E.g. contains unconditional jmp.
+	RzList /* HexILOp */ *il_ops; ///< RZIL ops of the packet.
 } HexPkt;
+
+typedef struct {
+	HexInsn *insn;
+	HexPkt *pkt;
+} HexInsnPktBundle;
 
 typedef struct {
 	ut32 addr; // Address of the instruction which gets the extender applied.
