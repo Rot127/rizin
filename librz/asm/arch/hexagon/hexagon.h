@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-08-07 13:35:47-04:00
+// Date of code generation: 2022-08-06 07:37:43-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -16,7 +16,6 @@
 #include <rz_config.h>
 #include <rz_list.h>
 #include <rz_types.h>
-#include <rz_util/rz_print.h>
 #include "hexagon_insn.h"
 
 #define HEX_MAX_OPERANDS    6
@@ -24,6 +23,19 @@
 
 #define MAX_CONST_EXT      512
 #define HEXAGON_STATE_PKTS 8
+#define ARRAY_LEN(a)       (sizeof(a) / sizeof((a)[0]))
+
+typedef struct {
+	const char *name;
+	const char *alias;
+	const char *name_tmp;
+	const char *alias_tmp;
+} HexRegNames;
+
+typedef struct {
+	ut32 /* Reg class */ cls;
+	ut32 /* Reg Enum */ reg_enum;
+} HexRegAliasMapping;
 
 typedef enum {
 	HEX_OP_TYPE_IMM,
@@ -91,7 +103,7 @@ typedef struct {
  */
 typedef struct {
 	ut8 parse_bits; ///< Parse bits of instruction.
-	bool is_duplex; ///< Does this container hold two sub-instructions?
+	bool is_duplex; ///< DOes this container hold two sub-instructions?
 	ut32 identifier; ///< Equals instruction ID if is_duplex = false. Otherwise: (high.id << 16) | (low.id & 0xffff)
 	union {
 		HexInsn *sub[2]; ///< Pointer to sub-instructions if is_duplex = true. sub[0] = high, sub[1] = low
@@ -100,9 +112,8 @@ typedef struct {
 	ut32 addr; ///< Address of container. Equals address of instruction or of the high sub-instruction if this is a duplex.
 	ut32 opcode; ///< The instruction opcode.
 	HexPktInfo pkt_info; ///< Packet related information. First/last instr., prefix and postfix for text etc.
-	// Deprecated members will be removed on RzArch introduction.
-	RZ_DEPRECATE RzAsmOp asm_op; ///< Private copy of AsmOp. Currently only of interest because it holds the utf8 flag.
-	RZ_DEPRECATE RzAnalysisOp ana_op; ///< Private copy of AnalysisOp. Analysis info is written into it.
+	RzAsmOp asm_op; ///< Private copy of AsmOp. Currently only of interest because it holds the utf8 flag.
+	RzAnalysisOp ana_op; ///< Private copy of AnalysisOp. Analysis info is written into it.
 	char text[296]; ///< Textual disassembly
 } HexInsnContainer;
 
@@ -151,7 +162,6 @@ typedef struct {
 	RzList *const_ext_l; // Constant extender values.
 	RzAsm rz_asm; // Copy of RzAsm struct. Holds certain flags of interesed for disassembly formatting.
 	RzConfig *cfg;
-	RzPVector /* RzAsmTokenPattern* */ *token_patterns; ///< PVector with token patterns. Priority ordered.
 } HexState;
 
 typedef enum {
@@ -573,34 +583,123 @@ typedef enum {
 	HEX_REG_SYS_REGS64_S79_78 = 78,
 } HEX_SYS_REGS64; // SysRegs64
 
-#define BIT_MASK(len)          (BIT(len) - 1)
-#define BF_MASK(start, len)    (BIT_MASK(len) << (start))
-#define BF_PREP(x, start, len) (((x)&BIT_MASK(len)) << (start))
-#define BF_GET(y, start, len)  (((y) >> (start)) & BIT_MASK(len))
-#define BF_GETB(y, start, end) (BF_GET((y), (start), (end) - (start) + 1)
+typedef enum {
+	HEX_REG_ALIAS_SA0 = 0,
+	HEX_REG_ALIAS_LC0 = 1,
+	HEX_REG_ALIAS_SA1 = 2,
+	HEX_REG_ALIAS_LC1 = 3,
+	HEX_REG_ALIAS_P3_0 = 4,
+	HEX_REG_ALIAS_C5 = 5,
+	HEX_REG_ALIAS_M0 = 6,
+	HEX_REG_ALIAS_M1 = 7,
+	HEX_REG_ALIAS_USR = 8,
+	HEX_REG_ALIAS_PC = 9,
+	HEX_REG_ALIAS_UGP = 10,
+	HEX_REG_ALIAS_GP = 11,
+	HEX_REG_ALIAS_CS0 = 12,
+	HEX_REG_ALIAS_CS1 = 13,
+	HEX_REG_ALIAS_UPCYCLELO = 14,
+	HEX_REG_ALIAS_UPCYCLEHI = 15,
+	HEX_REG_ALIAS_FRAMELIMIT = 16,
+	HEX_REG_ALIAS_FRAMEKEY = 17,
+	HEX_REG_ALIAS_PKTCOUNTLO = 18,
+	HEX_REG_ALIAS_PKTCOUNTHI = 19,
+	HEX_REG_ALIAS_UTIMERLO = 20,
+	HEX_REG_ALIAS_UTIMERHI = 21,
+	HEX_REG_ALIAS_LC0_SA0 = 22,
+	HEX_REG_ALIAS_LC1_SA1 = 23,
+	HEX_REG_ALIAS_M1_0 = 24,
+	HEX_REG_ALIAS_CS1_0 = 25,
+	HEX_REG_ALIAS_UPCYCLE = 26,
+	HEX_REG_ALIAS_PKTCOUNT = 27,
+	HEX_REG_ALIAS_UTIMER = 28,
+	HEX_REG_ALIAS_LR_FP = 29,
+	HEX_REG_ALIAS_GELR = 30,
+	HEX_REG_ALIAS_GSR = 31,
+	HEX_REG_ALIAS_GOSP = 32,
+	HEX_REG_ALIAS_GBADVA = 33,
+	HEX_REG_ALIAS_GPMUCNT4 = 34,
+	HEX_REG_ALIAS_GPMUCNT5 = 35,
+	HEX_REG_ALIAS_GPMUCNT6 = 36,
+	HEX_REG_ALIAS_GPMUCNT7 = 37,
+	HEX_REG_ALIAS_GPCYCLELO = 38,
+	HEX_REG_ALIAS_GPCYCLEHI = 39,
+	HEX_REG_ALIAS_GPMUCNT0 = 40,
+	HEX_REG_ALIAS_GPMUCNT1 = 41,
+	HEX_REG_ALIAS_GPMUCNT2 = 42,
+	HEX_REG_ALIAS_GPMUCNT3 = 43,
+	HEX_REG_ALIAS_SP = 44,
+	HEX_REG_ALIAS_FP = 45,
+	HEX_REG_ALIAS_LR = 46,
+	HEX_REG_ALIAS_SGP0 = 47,
+	HEX_REG_ALIAS_SGP1 = 48,
+	HEX_REG_ALIAS_STID = 49,
+	HEX_REG_ALIAS_ELR = 50,
+	HEX_REG_ALIAS_BADVA0 = 51,
+	HEX_REG_ALIAS_BADVA1 = 52,
+	HEX_REG_ALIAS_SSR = 53,
+	HEX_REG_ALIAS_CCR = 54,
+	HEX_REG_ALIAS_HTID = 55,
+	HEX_REG_ALIAS_BADVA = 56,
+	HEX_REG_ALIAS_IMASK = 57,
+	HEX_REG_ALIAS_EVB = 58,
+	HEX_REG_ALIAS_MODECTL = 59,
+	HEX_REG_ALIAS_SYSCFG = 60,
+	HEX_REG_ALIAS_S19 = 61,
+	HEX_REG_ALIAS_S20 = 62,
+	HEX_REG_ALIAS_VID = 63,
+	HEX_REG_ALIAS_S22 = 64,
+	HEX_REG_ALIAS_CFGBASE = 65,
+	HEX_REG_ALIAS_DIAG = 66,
+	HEX_REG_ALIAS_REV = 67,
+	HEX_REG_ALIAS_PCYCLELO = 68,
+	HEX_REG_ALIAS_PCYCLEHI = 69,
+	HEX_REG_ALIAS_ISDBST = 70,
+	HEX_REG_ALIAS_ISDBCFG0 = 71,
+	HEX_REG_ALIAS_ISDBCFG1 = 72,
+	HEX_REG_ALIAS_BRKPTPC0 = 73,
+	HEX_REG_ALIAS_BRKPTCFG0 = 74,
+	HEX_REG_ALIAS_BRKPTPC1 = 75,
+	HEX_REG_ALIAS_BRKPTCFG1 = 76,
+	HEX_REG_ALIAS_ISDBMBXIN = 77,
+	HEX_REG_ALIAS_ISDBMBXOUT = 78,
+	HEX_REG_ALIAS_ISDBEN = 79,
+	HEX_REG_ALIAS_ISDBGPR = 80,
+	HEX_REG_ALIAS_PMUCNT0 = 81,
+	HEX_REG_ALIAS_PMUCNT1 = 82,
+	HEX_REG_ALIAS_PMUCNT2 = 83,
+	HEX_REG_ALIAS_PMUCNT3 = 84,
+	HEX_REG_ALIAS_PMUEVTCFG = 85,
+	HEX_REG_ALIAS_PMUCFG = 86,
+	HEX_REG_ALIAS_SGP1_0 = 87,
+	HEX_REG_ALIAS_BADVA1_0 = 88,
+	HEX_REG_ALIAS_CCR_SSR = 89,
+	HEX_REG_ALIAS_PCYCLE = 90,
+} HexRegAlias;
 
-char *hex_get_ctr_regs(int opcode_reg, bool get_alias);
-char *hex_get_ctr_regs64(int opcode_reg, bool get_alias);
-char *hex_get_double_regs(int opcode_reg, bool get_alias);
-char *hex_get_general_double_low8_regs(int opcode_reg, bool get_alias);
-char *hex_get_general_sub_regs(int opcode_reg, bool get_alias);
-char *hex_get_guest_regs(int opcode_reg, bool get_alias);
-char *hex_get_guest_regs64(int opcode_reg, bool get_alias);
-char *hex_get_hvx_qr(int opcode_reg, bool get_alias);
-char *hex_get_hvx_vqr(int opcode_reg, bool get_alias);
-char *hex_get_hvx_vr(int opcode_reg, bool get_alias);
-char *hex_get_hvx_wr(int opcode_reg, bool get_alias);
-char *hex_get_int_regs(int opcode_reg, bool get_alias);
-char *hex_get_int_regs_low8(int opcode_reg, bool get_alias);
-char *hex_get_mod_regs(int opcode_reg, bool get_alias);
-char *hex_get_pred_regs(int opcode_reg, bool get_alias);
-char *hex_get_sys_regs(int opcode_reg, bool get_alias);
-char *hex_get_sys_regs64(int opcode_reg, bool get_alias);
-char *hex_get_reg_in_class(HexRegClass cls, int opcode_reg, bool get_alias);
+const char *hex_get_ctr_regs(int reg_num, bool get_alias, bool get_new, bool reg_num_is_enum);
+const char *hex_get_ctr_regs64(int reg_num, bool get_alias, bool get_new, bool reg_num_is_enum);
+const char *hex_get_double_regs(int reg_num, bool get_alias, bool get_new, bool reg_num_is_enum);
+const char *hex_get_general_double_low8_regs(int reg_num, bool get_alias, bool get_new, bool reg_num_is_enum);
+const char *hex_get_general_sub_regs(int reg_num, bool get_alias, bool get_new, bool reg_num_is_enum);
+const char *hex_get_guest_regs(int reg_num, bool get_alias, bool get_new, bool reg_num_is_enum);
+const char *hex_get_guest_regs64(int reg_num, bool get_alias, bool get_new, bool reg_num_is_enum);
+const char *hex_get_hvx_qr(int reg_num, bool get_alias, bool get_new, bool reg_num_is_enum);
+const char *hex_get_hvx_vqr(int reg_num, bool get_alias, bool get_new, bool reg_num_is_enum);
+const char *hex_get_hvx_vr(int reg_num, bool get_alias, bool get_new, bool reg_num_is_enum);
+const char *hex_get_hvx_wr(int reg_num, bool get_alias, bool get_new, bool reg_num_is_enum);
+const char *hex_get_int_regs(int reg_num, bool get_alias, bool get_new, bool reg_num_is_enum);
+const char *hex_get_int_regs_low8(int reg_num, bool get_alias, bool get_new, bool reg_num_is_enum);
+const char *hex_get_mod_regs(int reg_num, bool get_alias, bool get_new, bool reg_num_is_enum);
+const char *hex_get_pred_regs(int reg_num, bool get_alias, bool get_new, bool reg_num_is_enum);
+const char *hex_get_sys_regs(int reg_num, bool get_alias, bool get_new, bool reg_num_is_enum);
+const char *hex_get_sys_regs64(int reg_num, bool get_alias, bool get_new, bool reg_num_is_enum);
+const char *hex_get_reg_in_class(HexRegClass cls, int reg_num, bool get_alias, bool get_new, bool reg_num_is_enum);
 
 RZ_API RZ_BORROW RzConfig *hexagon_get_config();
 RZ_API void hex_extend_op(HexState *state, RZ_INOUT HexOp *op, const bool set_new_extender, const ut32 addr);
 int resolve_n_register(const int reg_num, const ut32 addr, const HexPkt *p);
 int hexagon_disasm_instruction(HexState *state, const ut32 hi_u32, RZ_INOUT HexInsnContainer *hi, HexPkt *pkt);
+RZ_IPI const char *hex_alias_to_reg(HexRegAlias alias);
 
 #endif
