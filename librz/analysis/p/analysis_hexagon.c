@@ -14,6 +14,7 @@
 #include <rz_asm.h>
 #include <rz_analysis.h>
 #include <rz_lib.h>
+#include "analysis/arch/hexagon/hexagon_il.h"
 #include "hexagon.h"
 #include "hexagon_insn.h"
 #include "hexagon_arch.h"
@@ -30,6 +31,7 @@ RZ_API int hexagon_v6_op(RzAnalysis *analysis, RzAnalysisOp *op, ut64 addr, cons
 	HexReversedOpcode rev = { .action = HEXAGON_ANALYSIS, .ana_op = op, .asm_op = NULL };
 
 	hexagon_reverse_opcode(NULL, &rev, buf, addr);
+	op->il_op = hex_get_il_op(addr);
 
 	return op->size;
 }
@@ -693,6 +695,7 @@ RZ_API char *get_reg_profile(RzAnalysis *analysis) {
 		"sys	S77:76_tmp	.64	77088	0\n";
 	return strdup(p);
 }
+
 RzAnalysisPlugin rz_analysis_plugin_hexagon = {
 	.name = "hexagon",
 	.desc = "Qualcomm Hexagon (QDSP6) V6",
