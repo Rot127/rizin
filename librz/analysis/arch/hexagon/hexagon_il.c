@@ -3,20 +3,19 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-07-22 07:12:48-04:00
+// Date of code generation: 2022-08-07 16:37:12-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
 // https://github.com/rizinorg/rz-hexagon
 
 #include "hexagon_il.h"
-#include <rz_il/rz_il_opcodes.h>
 #include <hexagon.h>
 #include <hexagon_arch.h>
 #include <rz_list.h>
 #include <rz_types.h>
 #include <rz_util/rz_assert.h>
-
+#include <rz_il/rz_il_opcodes.h>
 #include <rz_il/rz_il_opbuilder_begin.h>
 
 /**
@@ -365,13 +364,13 @@ RZ_IPI RzILOpEffect *hex_get_il_op(const ut32 addr) {
 		return NULL;
 	}
 
-	// if (p->hw_loop == HEX_LOOP_0) {
-	// 	rz_list_append(p->il_ops, hex_il_op_j2_endloop0());
-	// } else if (p->hw_loop == HEX_LOOP_1) {
-	// 	rz_list_append(p->il_ops, hex_il_op_j2_endloop1());
-	// } else if (p->hw_loop == HEX_LOOP_01) {
-	// 	rz_list_append(p->il_ops, hex_il_op_j2_endloop01());
-	// }
+	if (p->hw_loop == HEX_LOOP_0) {
+	     rz_list_append(p->il_ops, hex_il_op_j2_endloop0());
+	} else if (p->hw_loop == HEX_LOOP_1) {
+	     rz_list_append(p->il_ops, hex_il_op_j2_endloop1());
+	} else if (p->hw_loop == HEX_LOOP_01) {
+	     rz_list_append(p->il_ops, hex_il_op_j2_endloop01());
+	}
 
 	// rz_list_append(p->il_ops, hex_il_op_sync_tmp_regs());
 	return hex_pkt_to_il_seq(p);

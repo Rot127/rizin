@@ -205,6 +205,7 @@ rz_analysis_sources = [
   'arch/hexagon/il_ops/hexagon_il_Y4_ops.c',
   'arch/hexagon/il_ops/hexagon_il_Y5_ops.c',
   'arch/hexagon/il_ops/hexagon_il_Y6_ops.c',
+  'arch/hexagon/il_ops/hexagon_il_non_insn_ops.c',
   '../asm/arch/amd29k/amd29k.c',
   '../asm/arch/avr/disassembler.c',
   '../asm/arch/cil/cil_dis.c',

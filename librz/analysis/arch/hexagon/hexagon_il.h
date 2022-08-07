@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-08-06 11:05:56-04:00
+// Date of code generation: 2022-08-07 17:26:27-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -28,7 +28,10 @@
 RZ_IPI bool hex_shuffle_insns(RZ_INOUT HexPkt *p);
 RZ_IPI HexILOp *hex_copy_il_op(const HexILOp *io);
 RZ_IPI RzILOpEffect *hex_get_il_op(const ut32 addr);
-
+RZ_IPI RzAnalysisILConfig *rz_hexagon_il_config(bool big_endian);
+RzILOpEffect *hex_il_op_j2_endloop0();
+RzILOpEffect *hex_il_op_j2_endloop1();
+RzILOpEffect *hex_il_op_j2_endloop01();
 RzILOpEffect *hex_il_op_a2_abs(HexInsnPktBundle *bundle);
 RzILOpEffect *hex_il_op_a2_absp(HexInsnPktBundle *bundle);
 RzILOpEffect *hex_il_op_a2_abssat(HexInsnPktBundle *bundle);
@@ -4087,13 +4090,13 @@ static HexILInsn hex_il_getter_lt[] = {
 	{ { (HexILOpGetter)hex_il_op_l2_loadalignb_pcr, HEX_IL_INSN_ATTR_INVALID },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID } },
-	{ { (HexILOpGetter)hex_il_op_l2_loadalignb_pi, HEX_IL_INSN_ATTR_MEM_READ },
+	{ { (HexILOpGetter)hex_il_op_l2_loadalignb_pi, HEX_IL_INSN_ATTR_INVALID },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID } },
-	{ { (HexILOpGetter)hex_il_op_l2_loadalignb_pr, HEX_IL_INSN_ATTR_MEM_READ },
+	{ { (HexILOpGetter)hex_il_op_l2_loadalignb_pr, HEX_IL_INSN_ATTR_INVALID },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID } },
-	{ { (HexILOpGetter)hex_il_op_l2_loadalignh_io, HEX_IL_INSN_ATTR_MEM_READ },
+	{ { (HexILOpGetter)hex_il_op_l2_loadalignh_io, HEX_IL_INSN_ATTR_INVALID },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID } },
 	{ { (HexILOpGetter)hex_il_op_l2_loadalignh_pbr, HEX_IL_INSN_ATTR_INVALID },
@@ -4111,7 +4114,7 @@ static HexILInsn hex_il_getter_lt[] = {
 	{ { (HexILOpGetter)hex_il_op_l2_loadalignh_pr, HEX_IL_INSN_ATTR_INVALID },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID } },
-	{ { (HexILOpGetter)hex_il_op_l2_loadbsw2_io, HEX_IL_INSN_ATTR_INVALID },
+	{ { (HexILOpGetter)hex_il_op_l2_loadbsw2_io, HEX_IL_INSN_ATTR_MEM_READ },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID } },
 	{ { (HexILOpGetter)hex_il_op_l2_loadbsw2_pbr, HEX_IL_INSN_ATTR_INVALID },
@@ -4123,10 +4126,10 @@ static HexILInsn hex_il_getter_lt[] = {
 	{ { (HexILOpGetter)hex_il_op_l2_loadbsw2_pcr, HEX_IL_INSN_ATTR_INVALID },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID } },
-	{ { (HexILOpGetter)hex_il_op_l2_loadbsw2_pi, HEX_IL_INSN_ATTR_MEM_READ },
+	{ { (HexILOpGetter)hex_il_op_l2_loadbsw2_pi, HEX_IL_INSN_ATTR_INVALID },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID } },
-	{ { (HexILOpGetter)hex_il_op_l2_loadbsw2_pr, HEX_IL_INSN_ATTR_MEM_READ },
+	{ { (HexILOpGetter)hex_il_op_l2_loadbsw2_pr, HEX_IL_INSN_ATTR_INVALID },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID } },
 	{ { (HexILOpGetter)hex_il_op_l2_loadbsw4_io, HEX_IL_INSN_ATTR_INVALID },
@@ -4147,7 +4150,7 @@ static HexILInsn hex_il_getter_lt[] = {
 	{ { (HexILOpGetter)hex_il_op_l2_loadbsw4_pr, HEX_IL_INSN_ATTR_MEM_READ },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID } },
-	{ { (HexILOpGetter)hex_il_op_l2_loadbzw2_io, HEX_IL_INSN_ATTR_MEM_READ },
+	{ { (HexILOpGetter)hex_il_op_l2_loadbzw2_io, HEX_IL_INSN_ATTR_INVALID },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID } },
 	{ { (HexILOpGetter)hex_il_op_l2_loadbzw2_pbr, HEX_IL_INSN_ATTR_INVALID },
@@ -4513,19 +4516,19 @@ static HexILInsn hex_il_getter_lt[] = {
 	{ { (HexILOpGetter)hex_il_op_l4_isub_memopw_io, HEX_IL_INSN_ATTR_MEM_WRITE | HEX_IL_INSN_ATTR_MEM_READ },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID } },
-	{ { (HexILOpGetter)hex_il_op_l4_loadalignb_ap, HEX_IL_INSN_ATTR_INVALID },
+	{ { (HexILOpGetter)hex_il_op_l4_loadalignb_ap, HEX_IL_INSN_ATTR_MEM_READ },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID } },
 	{ { (HexILOpGetter)hex_il_op_l4_loadalignb_ur, HEX_IL_INSN_ATTR_MEM_READ },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID } },
-	{ { (HexILOpGetter)hex_il_op_l4_loadalignh_ap, HEX_IL_INSN_ATTR_MEM_READ },
+	{ { (HexILOpGetter)hex_il_op_l4_loadalignh_ap, HEX_IL_INSN_ATTR_INVALID },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID } },
 	{ { (HexILOpGetter)hex_il_op_l4_loadalignh_ur, HEX_IL_INSN_ATTR_INVALID },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID } },
-	{ { (HexILOpGetter)hex_il_op_l4_loadbsw2_ap, HEX_IL_INSN_ATTR_INVALID },
+	{ { (HexILOpGetter)hex_il_op_l4_loadbsw2_ap, HEX_IL_INSN_ATTR_MEM_READ },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID } },
 	{ { (HexILOpGetter)hex_il_op_l4_loadbsw2_ur, HEX_IL_INSN_ATTR_INVALID },
@@ -4540,7 +4543,7 @@ static HexILInsn hex_il_getter_lt[] = {
 	{ { (HexILOpGetter)hex_il_op_l4_loadbzw2_ap, HEX_IL_INSN_ATTR_MEM_READ },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID } },
-	{ { (HexILOpGetter)hex_il_op_l4_loadbzw2_ur, HEX_IL_INSN_ATTR_INVALID },
+	{ { (HexILOpGetter)hex_il_op_l4_loadbzw2_ur, HEX_IL_INSN_ATTR_MEM_READ },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID },
 		{ (HexILOpGetter)NULL, HEX_IL_INSN_ATTR_INVALID } },
 	{ { (HexILOpGetter)hex_il_op_l4_loadbzw4_ap, HEX_IL_INSN_ATTR_MEM_READ },
