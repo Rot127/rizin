@@ -115,7 +115,7 @@ static void hex_send_insn_to_i(RzList /* HexILOp* */ *ops, ut8 start, ut8 newloc
  * \brief Shuffles the IL operations of the packet instructions into the correct execution order
  * and stores the result in \p p->il_ops
  *
- * The shuffle algorithm implemented here is a copy of Qualcomms implementation in QEMU:
+ * The shuffle algorithm implemented here is a copy of Qualcomm's implementation in QEMU:
  * https://github.com/quic/qemu/blob/d48125de38f48a61d6423ef6a01156d6dff9ee2c/target/hexagon/decode.c#L423-L543
  *
  * Though some changes were made:
@@ -285,8 +285,9 @@ static RZ_OWN RzILOpEffect *hex_pkt_to_il_seq(const HexPkt *pkt) {
 
 static bool set_pkt_il_ops(RZ_INOUT HexPkt *p) {
 	rz_return_val_if_fail(p, false);
-	// TODO The assignment of IL instructions to their actual instructions should be done alread in the instruction template.
-	// But with the current separation between Asm and Analysis Plugin this is not possible.
+	// This function is a lot of unnecessary overhead so:
+	// TODO The assignment of IL instructions to their actual instructions should be done in the instruction template.
+	// But with the current separation between Asm and Analysis plugins this is not possible.
 	// Because Asm is not allowed to depend on Analysis and the RZIL code.
 	// This should be fixed ASAP after RzArch has been introduced.
 	HexInsnContainer *pos;

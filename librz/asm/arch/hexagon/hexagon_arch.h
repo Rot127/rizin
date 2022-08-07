@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-07-22 18:59:16-04:00
+// Date of code generation: 2022-08-07 15:18:28-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -75,5 +75,5 @@ RZ_API const char *hex_isa_to_reg(const HexInsn *hi, const char *isa_var, bool n
 RZ_API ut64 hex_isa_to_imm(const HexInsn *hi, const char *isa_var);
 void hex_set_hic_text(RZ_INOUT HexInsnContainer *hic);
 RZ_API void hex_copy_insn_container(RZ_OUT HexInsnContainer *dest, const HexInsnContainer *src);
-RZ_IPI HexPkt *hex_get_pkt(HexState *state, const ut32 addr);
+RZ_IPI HexPkt *hex_get_pkt(const HexState *state, const ut32 addr);
 #endif

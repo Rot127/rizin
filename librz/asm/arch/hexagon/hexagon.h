@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-08-07 05:39:29-04:00
+// Date of code generation: 2022-08-07 15:18:28-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -191,19 +191,22 @@ typedef struct {
 	RzList /* HexILOp */ *il_ops; ///< RZIL ops of the packet. If empty the il ops were not shuffled into order yet.
 } HexPkt;
 
+/**
+ * \brief This struct is given to the IL getter of each instruction.
+ * They use it for resolving register names, alias and the like.
+ */
 typedef struct {
 	const HexInsn *insn;
 	const HexPkt *pkt;
 } HexInsnPktBundle;
 
 typedef struct {
-	ut32 addr; // Address of the instruction which gets the extender applied.
-	ut32 const_ext; // The constant extender value.
+	ut32 addr; ///< Address of the instruction which gets the extender applied.
+	ut32 const_ext; ///< The constant extender value.
 } HexConstExt;
 
 /**
  * \brief Buffer packets for reversed instructions.
- *
  */
 typedef struct {
 	HexPkt pkts[HEXAGON_STATE_PKTS]; // buffered instructions
