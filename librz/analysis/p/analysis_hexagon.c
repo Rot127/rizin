@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-04-17 16:44:52+02:00
+// Date of code generation: 2022-08-07 16:03:08-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -14,10 +14,10 @@
 #include <rz_asm.h>
 #include <rz_analysis.h>
 #include <rz_lib.h>
-#include "analysis/arch/hexagon/hexagon_il.h"
 #include "hexagon.h"
 #include "hexagon_insn.h"
 #include "hexagon_arch.h"
+#include "analysis/arch/hexagon/hexagon_il.h"
 
 RZ_API int hexagon_v6_op(RzAnalysis *analysis, RzAnalysisOp *op, ut64 addr, const ut8 *buf, int len, RzAnalysisOpMask mask) {
 	rz_return_val_if_fail(analysis && op && buf, -1);
@@ -36,9 +36,13 @@ RZ_API int hexagon_v6_op(RzAnalysis *analysis, RzAnalysisOp *op, ut64 addr, cons
 	return op->size;
 }
 
+RZ_IPI RzAnalysisILConfig *rz_hexagon_il_config(bool big_endian) {
+	return rz_analysis_il_config_new(32, big_endian, 39);
+}
+
 RZ_API char *get_reg_profile(RzAnalysis *analysis) {
 	const char *p =
-		"=PC	pc\n"
+		"=PC	C9\n"
 		"=SP	R29\n"
 		"=BP	R30\n"
 		"=LR	R31\n"
@@ -705,6 +709,7 @@ RzAnalysisPlugin rz_analysis_plugin_hexagon = {
 	.op = hexagon_v6_op,
 	.esil = false,
 	.get_reg_profile = get_reg_profile,
+	.get_il_config = hex_get_il_config,
 };
 
 #ifndef RZ_PLUGIN_INCORE
