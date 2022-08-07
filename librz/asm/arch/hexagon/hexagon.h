@@ -112,6 +112,7 @@ typedef enum {
 typedef struct {
 	HexILOpGetter get_il_op; ///< Pointer to the getter to retrieve the RzILOpEffects of this operation.
 	HexILInsnAttr attr; ///< Attributes to shuffle it to the correct position in the packets IL ops.
+	void /* HexInsn */ *hi; ///< The instruction this op belongs to.
 } HexILOp;
 
 /**
@@ -187,12 +188,12 @@ typedef struct {
 	ut32 pkt_addr; ///< Address of the packet. Equals the address of the first instruction.
 	ut64 last_access; ///< Last time accessed in milliseconds
 	RzList /* HexInsnContainer */ *bin; ///< Descending by address sorted list of instruction containers.
-	RzList /* HexILOp */ *il_ops; ///< RZIL ops of the packet.
+	RzList /* HexILOp */ *il_ops; ///< RZIL ops of the packet. If empty the il ops were not shuffled into order yet.
 } HexPkt;
 
 typedef struct {
-	HexInsn *insn;
-	HexPkt *pkt;
+	const HexInsn *insn;
+	const HexPkt *pkt;
 } HexInsnPktBundle;
 
 typedef struct {

@@ -162,7 +162,7 @@ static HexPkt *hex_get_stale_pkt(HexState *state) {
  * \param addr The address of an instruction.
  * \return HexPkt* The packet to which this address belongs to or NULL if no packet was found.
  */
-static HexPkt *hex_get_pkt(HexState *state, const ut32 addr) {
+RZ_IPI HexPkt *hex_get_pkt(HexState *state, const ut32 addr) {
 	HexPkt *p = NULL;
 	HexInsnContainer *hic = NULL;
 	RzListIter *iter = NULL;
