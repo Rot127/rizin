@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-08-07 17:26:27-04:00
+// Date of code generation: 2022-08-07 19:19:30-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -24,11 +24,13 @@
 #define ISA2REG(hi, var, new_reg) hex_isa_to_reg(hi, var, new_reg)
 #define ISA2IMM(hi, var)          hex_isa_to_imm(hi, var)
 #define ALIAS2REG(alias)          hex_alias_to_reg(alias)
+#define HEX_REGFIELD(prop, reg)   hex_get_rf_property_val(prop, reg)
 
 RZ_IPI bool hex_shuffle_insns(RZ_INOUT HexPkt *p);
 RZ_IPI HexILOp *hex_copy_il_op(const HexILOp *io);
 RZ_IPI RzILOpEffect *hex_get_il_op(const ut32 addr);
 RZ_IPI RzAnalysisILConfig *rz_hexagon_il_config(bool big_endian);
+RZ_IPI ut32 hex_get_rf_property_val(const HexRegFieldProperty property, const HexRegField field);
 RzILOpEffect *hex_il_op_j2_endloop0();
 RzILOpEffect *hex_il_op_j2_endloop1();
 RzILOpEffect *hex_il_op_j2_endloop01();

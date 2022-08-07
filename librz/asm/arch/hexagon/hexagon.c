@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-08-06 07:37:43-04:00
+// Date of code generation: 2022-08-07 19:19:30-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -468,4 +468,31 @@ RZ_IPI const char *hex_alias_to_reg(HexRegAlias alias) {
 	HexRegClass reg_class = hex_alias_reg_lt_v69[alias].cls;
 	int reg_enum = hex_alias_reg_lt_v69[alias].reg_enum;
 	return hex_get_reg_in_class(reg_class, reg_enum, false, false, true);
+}
+
+/**
+ * \brief Returns the value of an register field property.
+ *
+ * \param property The property to get the value for.
+ * \param field The register field.
+ * \return ut32 The value as integer or UT32_MAX on failure.
+ */
+RZ_IPI ut32 hex_get_rf_property_val(const HexRegFieldProperty property, const HexRegField field) {
+	switch (field) {
+	default:
+		RZ_LOG_WARN("Register field not implemented.\n");
+		return UT32_MAX;
+	case HEX_REG_FIELD_USR_LPCFG:
+		if (property == HEX_RF_WIDTH) {
+			return 2;
+		} else if (property == HEX_RF_OFFSET) {
+			return 8;
+		}
+	case HEX_REG_FIELD_USR_OVF:
+		if (property == HEX_RF_WIDTH) {
+			return 1;
+		} else if (property == HEX_RF_OFFSET) {
+			return 0;
+		}
+	}
 }

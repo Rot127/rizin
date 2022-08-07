@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-08-07 15:18:28-04:00
+// Date of code generation: 2022-08-07 19:19:30-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -214,6 +214,19 @@ typedef struct {
 	RzAsm rz_asm; // Copy of RzAsm struct. Holds certain flags of interesed for disassembly formatting.
 	RzConfig *cfg;
 } HexState;
+
+/**
+ * \brief Register fields of different registers.
+ */
+typedef enum {
+	HEX_REG_FIELD_USR_LPCFG, ///< The LPCFG field of the USR register
+	HEX_REG_FIELD_USR_OVF, ///< The OVF field of the USR register
+} HexRegField;
+
+typedef enum {
+	HEX_RF_WIDTH,
+	HEX_RF_OFFSET,
+} HexRegFieldProperty;
 
 typedef enum {
 	HEX_REG_CLASS_CTR_REGS,
