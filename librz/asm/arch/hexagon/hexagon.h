@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-08-06 07:37:43-04:00
+// Date of code generation: 2022-08-07 05:39:29-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -178,14 +178,15 @@ typedef struct {
  * The container holds a normal instruction or two sub-instructions.
  */
 typedef struct {
-	RzList /* HexInsnContainer */ *bin; ///< Descending by address sorted list of instruction containers.
 	bool last_instr_present; ///< Has an instruction the parsing bits 0b11 set (is last instruction).
 	bool is_valid; ///< Is it a valid packet? Do we know which instruction is the first?
+	bool is_eob; ///< Is this packet the end of a code block? E.g. contains unconditional jmp.
+	HexLoopAttr hw_loop; ///< If the packet is the end of a hardware loop, it stores here from which one.s
 	ut32 hw_loop0_addr; ///< Start address of hardware loop 0
 	ut32 hw_loop1_addr; ///< Start address of hardware loop 1
-	ut64 last_access; ///< Last time accessed in milliseconds
 	ut32 pkt_addr; ///< Address of the packet. Equals the address of the first instruction.
-	bool is_eob; ///< Is this packet the end of a code block? E.g. contains unconditional jmp.
+	ut64 last_access; ///< Last time accessed in milliseconds
+	RzList /* HexInsnContainer */ *bin; ///< Descending by address sorted list of instruction containers.
 	RzList /* HexILOp */ *il_ops; ///< RZIL ops of the packet.
 } HexPkt;
 
