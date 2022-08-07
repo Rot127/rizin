@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-08-06 11:05:56-04:00
+// Date of code generation: 2022-08-07 15:53:51-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -2222,19 +2222,19 @@ RzILOpEffect *hex_il_op_a4_vcmpweqi(HexInsnPktBundle *bundle) {
 	RzIlOpPure *cast_ut64_13 = CAST(64, IL_FALSE, op_EQ_12);
 	RzIlOpPure *op_LSHIFT_14 = SHIFTL0(cast_ut64_13, VARL("j"));
 	RzIlOpPure *op_OR_15 = LOGOR(op_AND_6, op_LSHIFT_14);
-	RzIlOpPure *op_LE_22 = LET("const_pos7", const_pos7, ULE(VARL("j"), VARLP("const_pos7")));
-	RzIlOpPure *op_LSHIFT_24 = LET("const_pos1ULL", const_pos1ULL, SHIFTL0(VARLP("const_pos1ULL"), VARL("j")));
-	RzIlOpPure *op_NOT_25 = LOGNOT(op_LSHIFT_24);
-	RzIlOpPure *op_AND_26 = LOGAND(DUP(Pd), op_NOT_25);
-	RzIlOpPure *op_MUL_27 = LET("const_pos1", const_pos1, LET("const_pos32", const_pos32, MUL(VARLP("const_pos1"), VARLP("const_pos32"))));
-	RzIlOpPure *op_RSHIFT_28 = SHIFTR0(DUP(Rss), op_MUL_27);
-	RzIlOpPure *op_AND_29 = LET("const_pos0x0ffffffffLL", const_pos0x0ffffffffLL, LOGAND(op_RSHIFT_28, VARLP("const_pos0x0ffffffffLL")));
-	RzIlOpPure *cast_st32_30 = CAST(32, MSB(op_AND_29), op_AND_29);
-	RzIlOpPure *cast_st64_31 = CAST(32, MSB(cast_st32_30), cast_st32_30);
-	RzIlOpPure *op_EQ_32 = EQ(cast_st64_31, VARL("s"));
-	RzIlOpPure *cast_ut64_33 = CAST(64, IL_FALSE, op_EQ_32);
-	RzIlOpPure *op_LSHIFT_34 = SHIFTL0(cast_ut64_33, VARL("j"));
-	RzIlOpPure *op_OR_35 = LOGOR(op_AND_26, op_LSHIFT_34);
+	RzIlOpPure *op_LE_23 = LET("const_pos7", const_pos7, ULE(VARL("j"), VARLP("const_pos7")));
+	RzIlOpPure *op_LSHIFT_25 = LET("const_pos1ULL", const_pos1ULL, SHIFTL0(VARLP("const_pos1ULL"), VARL("j")));
+	RzIlOpPure *op_NOT_26 = LOGNOT(op_LSHIFT_25);
+	RzIlOpPure *op_AND_27 = LOGAND(DUP(Pd), op_NOT_26);
+	RzIlOpPure *op_MUL_28 = LET("const_pos1", const_pos1, LET("const_pos32", const_pos32, MUL(VARLP("const_pos1"), VARLP("const_pos32"))));
+	RzIlOpPure *op_RSHIFT_29 = SHIFTR0(DUP(Rss), op_MUL_28);
+	RzIlOpPure *op_AND_30 = LET("const_pos0x0ffffffffLL", const_pos0x0ffffffffLL, LOGAND(op_RSHIFT_29, VARLP("const_pos0x0ffffffffLL")));
+	RzIlOpPure *cast_st32_31 = CAST(32, MSB(op_AND_30), op_AND_30);
+	RzIlOpPure *cast_st64_32 = CAST(32, MSB(cast_st32_31), cast_st32_31);
+	RzIlOpPure *op_EQ_33 = EQ(cast_st64_32, VARL("s"));
+	RzIlOpPure *cast_ut64_34 = CAST(64, IL_FALSE, op_EQ_33);
+	RzIlOpPure *op_LSHIFT_35 = SHIFTL0(cast_ut64_34, VARL("j"));
+	RzIlOpPure *op_OR_36 = LOGOR(op_AND_27, op_LSHIFT_35);
 
 	// WRITE
 	RzIlOpEffect *empty_0 = EMPTY();
@@ -2242,16 +2242,17 @@ RzILOpEffect *hex_il_op_a4_vcmpweqi(HexInsnPktBundle *bundle) {
 	RzIlOpEffect *op_INC_3 = SETL("j", INC(VARL("j")));
 	RzIlOpEffect *op_ASSIGN_16 = SETG(Pd_assoc, op_OR_15);
 	RzIlOpEffect *empty_17 = EMPTY();
-	RzIlOpEffect *seq_18 = SEQN(2, empty_17, op_INC_3);
+	RzIlOpEffect *seq_18 = SEQN(3, op_ASSIGN_16, empty_17, op_INC_3);
 	RzIlOpEffect *for_19 = SEQ2(SETL("j", const_pos0), REPEAT(op_LE_2, seq_18));
 	RzIlOpEffect *empty_20 = EMPTY();
-	RzIlOpEffect *op_ASSIGN_21 = SETL("j", const_pos4);
-	RzIlOpEffect *op_INC_23 = SETL("j", INC(VARL("j")));
-	RzIlOpEffect *op_ASSIGN_36 = SETG(Pd_assoc, op_OR_35);
-	RzIlOpEffect *empty_37 = EMPTY();
-	RzIlOpEffect *seq_38 = SEQN(2, empty_37, op_INC_23);
-	RzIlOpEffect *for_39 = SEQ2(SETL("j", const_pos4), REPEAT(op_LE_22, seq_38));
-	RzIlOpEffect *instruction_sequence = SEQN(4, empty_0, for_19, empty_20, for_39);
+	RzIlOpEffect *empty_21 = EMPTY();
+	RzIlOpEffect *op_ASSIGN_22 = SETL("j", const_pos4);
+	RzIlOpEffect *op_INC_24 = SETL("j", INC(VARL("j")));
+	RzIlOpEffect *op_ASSIGN_37 = SETG(Pd_assoc, op_OR_36);
+	RzIlOpEffect *empty_38 = EMPTY();
+	RzIlOpEffect *seq_39 = SEQN(2, empty_38, op_INC_24);
+	RzIlOpEffect *for_40 = SEQ2(SETL("j", const_pos4), REPEAT(op_LE_23, seq_39));
+	RzIlOpEffect *instruction_sequence = SEQN(5, empty_0, for_19, empty_20, empty_21, for_40);
 
 	return instruction_sequence;
 }
@@ -2355,20 +2356,20 @@ RzILOpEffect *hex_il_op_a4_vcmpwgtui(HexInsnPktBundle *bundle) {
 	RzIlOpPure *cast_ut64_14 = CAST(64, IL_FALSE, op_GT_13);
 	RzIlOpPure *op_LSHIFT_15 = SHIFTL0(cast_ut64_14, VARL("j"));
 	RzIlOpPure *op_OR_16 = LOGOR(op_AND_6, op_LSHIFT_15);
-	RzIlOpPure *op_LE_23 = LET("const_pos7", const_pos7, ULE(VARL("j"), VARLP("const_pos7")));
-	RzIlOpPure *op_LSHIFT_25 = LET("const_pos1ULL", const_pos1ULL, SHIFTL0(VARLP("const_pos1ULL"), VARL("j")));
-	RzIlOpPure *op_NOT_26 = LOGNOT(op_LSHIFT_25);
-	RzIlOpPure *op_AND_27 = LOGAND(DUP(Pd), op_NOT_26);
-	RzIlOpPure *op_MUL_28 = LET("const_pos1", const_pos1, LET("const_pos32", const_pos32, MUL(VARLP("const_pos1"), VARLP("const_pos32"))));
-	RzIlOpPure *op_RSHIFT_29 = SHIFTR0(DUP(Rss), op_MUL_28);
-	RzIlOpPure *op_AND_30 = LET("const_pos0x0ffffffffLL", const_pos0x0ffffffffLL, LOGAND(op_RSHIFT_29, VARLP("const_pos0x0ffffffffLL")));
-	RzIlOpPure *cast_ut32_31 = CAST(32, IL_FALSE, op_AND_30);
-	RzIlOpPure *cast_ut64_32 = CAST(32, IL_FALSE, cast_ut32_31);
-	RzIlOpPure *cast_ut32_33 = CAST(32, IL_FALSE, VARL("u"));
-	RzIlOpPure *op_GT_34 = UGT(cast_ut64_32, cast_ut32_33);
-	RzIlOpPure *cast_ut64_35 = CAST(64, IL_FALSE, op_GT_34);
-	RzIlOpPure *op_LSHIFT_36 = SHIFTL0(cast_ut64_35, VARL("j"));
-	RzIlOpPure *op_OR_37 = LOGOR(op_AND_27, op_LSHIFT_36);
+	RzIlOpPure *op_LE_24 = LET("const_pos7", const_pos7, ULE(VARL("j"), VARLP("const_pos7")));
+	RzIlOpPure *op_LSHIFT_26 = LET("const_pos1ULL", const_pos1ULL, SHIFTL0(VARLP("const_pos1ULL"), VARL("j")));
+	RzIlOpPure *op_NOT_27 = LOGNOT(op_LSHIFT_26);
+	RzIlOpPure *op_AND_28 = LOGAND(DUP(Pd), op_NOT_27);
+	RzIlOpPure *op_MUL_29 = LET("const_pos1", const_pos1, LET("const_pos32", const_pos32, MUL(VARLP("const_pos1"), VARLP("const_pos32"))));
+	RzIlOpPure *op_RSHIFT_30 = SHIFTR0(DUP(Rss), op_MUL_29);
+	RzIlOpPure *op_AND_31 = LET("const_pos0x0ffffffffLL", const_pos0x0ffffffffLL, LOGAND(op_RSHIFT_30, VARLP("const_pos0x0ffffffffLL")));
+	RzIlOpPure *cast_ut32_32 = CAST(32, IL_FALSE, op_AND_31);
+	RzIlOpPure *cast_ut64_33 = CAST(32, IL_FALSE, cast_ut32_32);
+	RzIlOpPure *cast_ut32_34 = CAST(32, IL_FALSE, VARL("u"));
+	RzIlOpPure *op_GT_35 = UGT(cast_ut64_33, cast_ut32_34);
+	RzIlOpPure *cast_ut64_36 = CAST(64, IL_FALSE, op_GT_35);
+	RzIlOpPure *op_LSHIFT_37 = SHIFTL0(cast_ut64_36, VARL("j"));
+	RzIlOpPure *op_OR_38 = LOGOR(op_AND_28, op_LSHIFT_37);
 
 	// WRITE
 	RzIlOpEffect *empty_0 = EMPTY();
@@ -2376,16 +2377,17 @@ RzILOpEffect *hex_il_op_a4_vcmpwgtui(HexInsnPktBundle *bundle) {
 	RzIlOpEffect *op_INC_3 = SETL("j", INC(VARL("j")));
 	RzIlOpEffect *op_ASSIGN_17 = SETG(Pd_assoc, op_OR_16);
 	RzIlOpEffect *empty_18 = EMPTY();
-	RzIlOpEffect *seq_19 = SEQN(2, empty_18, op_INC_3);
+	RzIlOpEffect *seq_19 = SEQN(3, op_ASSIGN_17, empty_18, op_INC_3);
 	RzIlOpEffect *for_20 = SEQ2(SETL("j", const_pos0), REPEAT(op_LE_2, seq_19));
 	RzIlOpEffect *empty_21 = EMPTY();
-	RzIlOpEffect *op_ASSIGN_22 = SETL("j", const_pos4);
-	RzIlOpEffect *op_INC_24 = SETL("j", INC(VARL("j")));
-	RzIlOpEffect *op_ASSIGN_38 = SETG(Pd_assoc, op_OR_37);
-	RzIlOpEffect *empty_39 = EMPTY();
-	RzIlOpEffect *seq_40 = SEQN(2, empty_39, op_INC_24);
-	RzIlOpEffect *for_41 = SEQ2(SETL("j", const_pos4), REPEAT(op_LE_23, seq_40));
-	RzIlOpEffect *instruction_sequence = SEQN(4, empty_0, for_20, empty_21, for_41);
+	RzIlOpEffect *empty_22 = EMPTY();
+	RzIlOpEffect *op_ASSIGN_23 = SETL("j", const_pos4);
+	RzIlOpEffect *op_INC_25 = SETL("j", INC(VARL("j")));
+	RzIlOpEffect *op_ASSIGN_39 = SETG(Pd_assoc, op_OR_38);
+	RzIlOpEffect *empty_40 = EMPTY();
+	RzIlOpEffect *seq_41 = SEQN(2, empty_40, op_INC_25);
+	RzIlOpEffect *for_42 = SEQ2(SETL("j", const_pos4), REPEAT(op_LE_24, seq_41));
+	RzIlOpEffect *instruction_sequence = SEQN(5, empty_0, for_20, empty_21, empty_22, for_42);
 
 	return instruction_sequence;
 }
