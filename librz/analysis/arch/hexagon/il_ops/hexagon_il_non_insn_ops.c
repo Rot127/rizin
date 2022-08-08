@@ -3,7 +3,13 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-08-07 17:26:27-04:00
+// Date of code generation: 2022-08-07 19:19:30-04:00
+// SPDX-FileCopyrightText: 2021 Rot127 <unisono@quyllur.org>
+// SPDX-License-Identifier: LGPL-3.0-only
+
+// LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
+// LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
+// Date of code generation: 2022-08-07 18:17:55-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -68,34 +74,34 @@ RzILOpEffect *hex_il_op_j2_endloop0() {
 	RzIlOpPure *op_SUB_48 = LET("const_pos1", const_pos1, SUB(lc1, VARLP("const_pos1")));
 
 	// WRITE
-	RzIlOpEffect *empty_11 = EMPTY();
-	RzIlOpEffect *op_PRED_WRITE_18 = write_pred(p3, const_pos0xff);
-	RzIlOpEffect *empty_19 = EMPTY();
-	RzIlOpEffect *seq_then_20 = SEQN(2, op_PRED_WRITE_18, empty_19);
-	RzIlOpEffect *empty_22 = EMPTY();
-	RzIlOpEffect *branch_21 = BRANCH(op_EQ_17, seq_then_20, empty_22);
-	RzIlOpEffect *seq_then_23 = SEQN(1, empty_11);
-	RzIlOpEffect *seq_else_25 = SEQN(1, branch_21);
-	RzIlOpEffect *branch_24 = BRANCH(op_GE_10, seq_then_23, seq_else_25);
-	RzIlOpEffect *op_ASSIGN_37 = SETG(usr_assoc, cond_36);
-	RzIlOpEffect *seq_then_38 = SEQN(2, branch_24, op_ASSIGN_37);
-	RzIlOpEffect *empty_40 = EMPTY();
-	RzIlOpEffect *branch_39 = BRANCH(cond_4, seq_then_38, empty_40);
-	RzIlOpEffect *jump_sa0 = JUMP(sa0);
-	RzIlOpEffect *empty_42 = EMPTY();
-	RzIlOpEffect *op_ASSIGN_44 = SETG(lc0_assoc, op_SUB_43);
-	RzIlOpEffect *empty_45 = EMPTY();
-	RzIlOpEffect *jump_sa1 = JUMP(sa1);
-	RzIlOpEffect *empty_47 = EMPTY();
-	RzIlOpEffect *op_ASSIGN_49 = SETG(lc1_assoc, op_SUB_48);
-	RzIlOpEffect *empty_50 = EMPTY();
-	RzIlOpEffect *seq_then_51 = SEQN(4, jump_sa1, empty_47, op_ASSIGN_49, empty_50);
-	RzIlOpEffect *empty_53 = EMPTY();
-	RzIlOpEffect *branch_52 = BRANCH(op_GT_46, seq_then_51, empty_53);
-	RzIlOpEffect *seq_then_54 = SEQN(4, jump_sa0, empty_42, op_ASSIGN_44, empty_45);
-	RzIlOpEffect *seq_else_56 = SEQN(1, branch_52);
-	RzIlOpEffect *branch_55 = BRANCH(op_GT_41, seq_then_54, seq_else_56);
-	RzIlOpEffect *instruction_sequence = SEQN(2, branch_39, branch_55);
+	RzILOpEffect *empty_11 = EMPTY();
+	RzILOpEffect *op_PRED_WRITE_18 = write_pred(p3, const_pos0xff);
+	RzILOpEffect *empty_19 = EMPTY();
+	RzILOpEffect *seq_then_20 = SEQN(2, op_PRED_WRITE_18, empty_19);
+	RzILOpEffect *empty_22 = EMPTY();
+	RzILOpEffect *branch_21 = BRANCH(op_EQ_17, seq_then_20, empty_22);
+	RzILOpEffect *seq_then_23 = SEQN(1, empty_11);
+	RzILOpEffect *seq_else_25 = SEQN(1, branch_21);
+	RzILOpEffect *branch_24 = BRANCH(op_GE_10, seq_then_23, seq_else_25);
+	RzILOpEffect *op_ASSIGN_37 = SETG(usr_assoc, cond_36);
+	RzILOpEffect *seq_then_38 = SEQN(2, branch_24, op_ASSIGN_37);
+	RzILOpEffect *empty_40 = EMPTY();
+	RzILOpEffect *branch_39 = BRANCH(cond_4, seq_then_38, empty_40);
+	RzILOpEffect *jump_sa0 = JUMP(sa0);
+	RzILOpEffect *empty_42 = EMPTY();
+	RzILOpEffect *op_ASSIGN_44 = SETG(lc0_assoc, op_SUB_43);
+	RzILOpEffect *empty_45 = EMPTY();
+	RzILOpEffect *jump_sa1 = JUMP(sa1);
+	RzILOpEffect *empty_47 = EMPTY();
+	RzILOpEffect *op_ASSIGN_49 = SETG(lc1_assoc, op_SUB_48);
+	RzILOpEffect *empty_50 = EMPTY();
+	RzILOpEffect *seq_then_51 = SEQN(4, jump_sa1, empty_47, op_ASSIGN_49, empty_50);
+	RzILOpEffect *empty_53 = EMPTY();
+	RzILOpEffect *branch_52 = BRANCH(op_GT_46, seq_then_51, empty_53);
+	RzILOpEffect *seq_then_54 = SEQN(4, jump_sa0, empty_42, op_ASSIGN_44, empty_45);
+	RzILOpEffect *seq_else_56 = SEQN(1, branch_52);
+	RzILOpEffect *branch_55 = BRANCH(op_GT_41, seq_then_54, seq_else_56);
+	RzILOpEffect *instruction_sequence = SEQN(2, branch_39, branch_55);
 
 	return instruction_sequence;
 }
@@ -148,27 +154,27 @@ RzILOpEffect *hex_il_op_j2_endloop0() {
 	RzIlOpPure *op_SUB_43 = LET("const_pos1", const_pos1, SUB(lc0, VARLP("const_pos1")));
 
 	// WRITE
-	RzIlOpEffect *empty_11 = EMPTY();
-	RzIlOpEffect *op_PRED_WRITE_18 = write_pred(p3, const_pos0xff);
-	RzIlOpEffect *empty_19 = EMPTY();
-	RzIlOpEffect *seq_then_20 = SEQN(2, op_PRED_WRITE_18, empty_19);
-	RzIlOpEffect *empty_22 = EMPTY();
-	RzIlOpEffect *branch_21 = BRANCH(op_EQ_17, seq_then_20, empty_22);
-	RzIlOpEffect *seq_then_23 = SEQN(1, empty_11);
-	RzIlOpEffect *seq_else_25 = SEQN(1, branch_21);
-	RzIlOpEffect *branch_24 = BRANCH(op_GE_10, seq_then_23, seq_else_25);
-	RzIlOpEffect *op_ASSIGN_37 = SETG(usr_assoc, cond_36);
-	RzIlOpEffect *seq_then_38 = SEQN(2, branch_24, op_ASSIGN_37);
-	RzIlOpEffect *empty_40 = EMPTY();
-	RzIlOpEffect *branch_39 = BRANCH(cond_4, seq_then_38, empty_40);
-	RzIlOpEffect *jump_sa0 = JUMP(sa0);
-	RzIlOpEffect *empty_42 = EMPTY();
-	RzIlOpEffect *op_ASSIGN_44 = SETG(lc0_assoc, op_SUB_43);
-	RzIlOpEffect *empty_45 = EMPTY();
-	RzIlOpEffect *seq_then_46 = SEQN(4, jump_sa0, empty_42, op_ASSIGN_44, empty_45);
-	RzIlOpEffect *empty_48 = EMPTY();
-	RzIlOpEffect *branch_47 = BRANCH(op_GT_41, seq_then_46, empty_48);
-	RzIlOpEffect *instruction_sequence = SEQN(2, branch_39, branch_47);
+	RzILOpEffect *empty_11 = EMPTY();
+	RzILOpEffect *op_PRED_WRITE_18 = write_pred(p3, const_pos0xff);
+	RzILOpEffect *empty_19 = EMPTY();
+	RzILOpEffect *seq_then_20 = SEQN(2, op_PRED_WRITE_18, empty_19);
+	RzILOpEffect *empty_22 = EMPTY();
+	RzILOpEffect *branch_21 = BRANCH(op_EQ_17, seq_then_20, empty_22);
+	RzILOpEffect *seq_then_23 = SEQN(1, empty_11);
+	RzILOpEffect *seq_else_25 = SEQN(1, branch_21);
+	RzILOpEffect *branch_24 = BRANCH(op_GE_10, seq_then_23, seq_else_25);
+	RzILOpEffect *op_ASSIGN_37 = SETG(usr_assoc, cond_36);
+	RzILOpEffect *seq_then_38 = SEQN(2, branch_24, op_ASSIGN_37);
+	RzILOpEffect *empty_40 = EMPTY();
+	RzILOpEffect *branch_39 = BRANCH(cond_4, seq_then_38, empty_40);
+	RzILOpEffect *jump_sa0 = JUMP(sa0);
+	RzILOpEffect *empty_42 = EMPTY();
+	RzILOpEffect *op_ASSIGN_44 = SETG(lc0_assoc, op_SUB_43);
+	RzILOpEffect *empty_45 = EMPTY();
+	RzILOpEffect *seq_then_46 = SEQN(4, jump_sa0, empty_42, op_ASSIGN_44, empty_45);
+	RzILOpEffect *empty_48 = EMPTY();
+	RzILOpEffect *branch_47 = BRANCH(op_GT_41, seq_then_46, empty_48);
+	RzILOpEffect *instruction_sequence = SEQN(2, branch_39, branch_47);
 
 	return instruction_sequence;
 }
@@ -186,14 +192,14 @@ RzILOpEffect *hex_il_op_j2_endloop1() {
 	RzIlOpPure *op_SUB_2 = LET("const_pos1", const_pos1, SUB(lc1, VARLP("const_pos1")));
 
 	// WRITE
-	RzIlOpEffect *jump_sa1 = JUMP(sa1);
-	RzIlOpEffect *empty_1 = EMPTY();
-	RzIlOpEffect *op_ASSIGN_3 = SETG(lc1_assoc, op_SUB_2);
-	RzIlOpEffect *empty_4 = EMPTY();
-	RzIlOpEffect *seq_then_5 = SEQN(4, jump_sa1, empty_1, op_ASSIGN_3, empty_4);
-	RzIlOpEffect *empty_7 = EMPTY();
-	RzIlOpEffect *branch_6 = BRANCH(op_GT_0, seq_then_5, empty_7);
-	RzIlOpEffect *instruction_sequence = SEQN(1, branch_6);
+	RzILOpEffect *jump_sa1 = JUMP(sa1);
+	RzILOpEffect *empty_1 = EMPTY();
+	RzILOpEffect *op_ASSIGN_3 = SETG(lc1_assoc, op_SUB_2);
+	RzILOpEffect *empty_4 = EMPTY();
+	RzILOpEffect *seq_then_5 = SEQN(4, jump_sa1, empty_1, op_ASSIGN_3, empty_4);
+	RzILOpEffect *empty_7 = EMPTY();
+	RzILOpEffect *branch_6 = BRANCH(op_GT_0, seq_then_5, empty_7);
+	RzILOpEffect *instruction_sequence = SEQN(1, branch_6);
 
 	return instruction_sequence;
 }

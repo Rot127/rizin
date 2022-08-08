@@ -365,11 +365,11 @@ RZ_IPI RzILOpEffect *hex_get_il_op(const ut32 addr) {
 	}
 
 	if (p->hw_loop == HEX_LOOP_0) {
-	     rz_list_append(p->il_ops, hex_il_op_j2_endloop0());
+		rz_list_append(p->il_ops, hex_il_op_j2_endloop0());
 	} else if (p->hw_loop == HEX_LOOP_1) {
-	     rz_list_append(p->il_ops, hex_il_op_j2_endloop1());
+		rz_list_append(p->il_ops, hex_il_op_j2_endloop1());
 	} else if (p->hw_loop == HEX_LOOP_01) {
-	     rz_list_append(p->il_ops, hex_il_op_j2_endloop01());
+		rz_list_append(p->il_ops, hex_il_op_j2_endloop01());
 	}
 
 	// rz_list_append(p->il_ops, hex_il_op_sync_tmp_regs());

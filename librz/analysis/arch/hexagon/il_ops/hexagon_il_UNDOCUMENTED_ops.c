@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-08-07 15:53:51-04:00
+// Date of code generation: 2022-08-07 19:19:30-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -14,17 +14,28 @@
 
 #include <rz_il/rz_il_opbuilder_begin.h>
 
-RzILOpEffect *hex_il_op_undocumented_sa2_tfrsi(HexInsnPktBundle *bundle) {
-	const HexInsn *hi = bundle->insn;
+RzILOpEffect *hex_il_op_undocumented_sa2_tfrsi_part0(HexInsnPktBundle *bundle) {
 	// READ
 	RzILOpPure *s = SN(32, (st32)ISA2IMM(hi, "s"));
-	const char *Rd_assoc = ISA2REG(hi, "Rd", false);
+	const char *Rd_assoc = ISA2REG(hi, 'd', false);
 
 	// EXEC
 
 	// WRITE
-	RzIlOpEffect *op_ASSIGN_0 = SETG(Rd_assoc, s);
-	RzIlOpEffect *instruction_sequence = SEQN(1, op_ASSIGN_0);
+	RzILOpEffect *op_ASSIGN_0 = SETG(Rd_assoc, s);
+	RzILOpEffect *instruction_sequence = SEQN(1, op_ASSIGN_0);
+
+	return instruction_sequence;
+	const HexInsn *hi = bundle->insn;
+	// READ
+	RzILOpPure *s = SN(32, (st32)ISA2IMM(hi, "s"));
+	const char *Rd_assoc = ISA2REG(hi, 'd', false);
+
+	// EXEC
+
+	// WRITE
+	RzILOpEffect *op_ASSIGN_0 = SETG(Rd_assoc, s);
+	RzILOpEffect *instruction_sequence = SEQN(1, op_ASSIGN_0);
 
 	return instruction_sequence;
 }

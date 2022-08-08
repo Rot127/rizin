@@ -3,7 +3,13 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-08-07 15:53:51-04:00
+// Date of code generation: 2022-08-07 19:19:30-04:00
+// SPDX-FileCopyrightText: 2021 Rot127 <unisono@quyllur.org>
+// SPDX-License-Identifier: LGPL-3.0-only
+
+// LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
+// LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
+// Date of code generation: 2022-08-07 18:17:55-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -14,47 +20,56 @@
 
 #include <rz_il/rz_il_opbuilder_begin.h>
 
-RzILOpEffect *hex_il_op_y6_diag(HexInsnPktBundle *bundle) {
+RzILOpEffect *hex_il_op_y6_diag_part0(HexInsnPktBundle *bundle) {
+	NOT_IMPLEMENTED;
 	const HexInsn *hi = bundle->insn;
 	NOT_IMPLEMENTED;
 }
 
-RzILOpEffect *hex_il_op_y6_diag0(HexInsnPktBundle *bundle) {
+RzILOpEffect *hex_il_op_y6_diag0_part0(HexInsnPktBundle *bundle) {
+	NOT_IMPLEMENTED;
 	const HexInsn *hi = bundle->insn;
 	NOT_IMPLEMENTED;
 }
 
-RzILOpEffect *hex_il_op_y6_diag1(HexInsnPktBundle *bundle) {
+RzILOpEffect *hex_il_op_y6_diag1_part0(HexInsnPktBundle *bundle) {
+	NOT_IMPLEMENTED;
 	const HexInsn *hi = bundle->insn;
 	NOT_IMPLEMENTED;
 }
 
-RzILOpEffect *hex_il_op_y6_dmlink(HexInsnPktBundle *bundle) {
+RzILOpEffect *hex_il_op_y6_dmlink_part0(HexInsnPktBundle *bundle) {
+	NOT_IMPLEMENTED;
 	const HexInsn *hi = bundle->insn;
 	NOT_IMPLEMENTED;
 }
 
-RzILOpEffect *hex_il_op_y6_dmpause(HexInsnPktBundle *bundle) {
+RzILOpEffect *hex_il_op_y6_dmpause_part0(HexInsnPktBundle *bundle) {
+	NOT_IMPLEMENTED;
 	const HexInsn *hi = bundle->insn;
 	NOT_IMPLEMENTED;
 }
 
-RzILOpEffect *hex_il_op_y6_dmpoll(HexInsnPktBundle *bundle) {
+RzILOpEffect *hex_il_op_y6_dmpoll_part0(HexInsnPktBundle *bundle) {
+	NOT_IMPLEMENTED;
 	const HexInsn *hi = bundle->insn;
 	NOT_IMPLEMENTED;
 }
 
-RzILOpEffect *hex_il_op_y6_dmresume(HexInsnPktBundle *bundle) {
+RzILOpEffect *hex_il_op_y6_dmresume_part0(HexInsnPktBundle *bundle) {
+	NOT_IMPLEMENTED;
 	const HexInsn *hi = bundle->insn;
 	NOT_IMPLEMENTED;
 }
 
-RzILOpEffect *hex_il_op_y6_dmstart(HexInsnPktBundle *bundle) {
+RzILOpEffect *hex_il_op_y6_dmstart_part0(HexInsnPktBundle *bundle) {
+	NOT_IMPLEMENTED;
 	const HexInsn *hi = bundle->insn;
 	NOT_IMPLEMENTED;
 }
 
-RzILOpEffect *hex_il_op_y6_dmwait(HexInsnPktBundle *bundle) {
+RzILOpEffect *hex_il_op_y6_dmwait_part0(HexInsnPktBundle *bundle) {
+	NOT_IMPLEMENTED;
 	const HexInsn *hi = bundle->insn;
 	NOT_IMPLEMENTED;
 }
