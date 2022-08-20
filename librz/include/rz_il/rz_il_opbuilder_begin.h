@@ -35,6 +35,12 @@
 
 #include <rz_il/rz_il_opcodes.h>
 
+#define NOT_IMPLEMENTED \
+	do { \
+		RZ_LOG_INFO("IL instruction not implemented."); \
+		return EMPTY(); \
+	} while (0)
+
 #define ITE(c, t, f) rz_il_op_new_ite(c, t, f)
 
 #define UN(l, val)       rz_il_op_new_bitv_from_ut64(l, val)
