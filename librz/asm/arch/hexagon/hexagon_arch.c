@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-08-06 14:13:29-04:00
+// Date of code generation: 2022-08-16 08:31:12-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -104,6 +104,50 @@ static inline bool hic_at_addr(RZ_NONNULL const HexInsnContainer *hic, const ut3
 }
 
 /**
+ * \brief Gives for an ISA register character the register name.
+ * E.g.: If the ISA instruction uses the variable "Rd", it passes 'd' as identifier to this function.
+ * The function returns a concrete register name like "R3", "R10" or any other name which is associated with the id.
+ *
+ * \param hi The hexagon instruction.
+ * \param isa_id The ISA register character.
+ * \param new_reg If true it will return the .new register name ("R3_tmp", "R10_tmp" etc.)
+ * \return const char * The concrete register name. Or NULL on error.
+ */
+RZ_API const char *hex_isa_to_reg(const HexInsn *hi, const char isa_id, bool new_reg) {
+	rz_return_val_if_fail(hi && isa_id, NULL);
+	const HexOp *op = NULL;
+	for (ut32 i = 0; i < hi->op_count; ++i) {
+		if (hi->ops[i].isa_id == isa_id) {
+			op = &hi->ops[i];
+			break;
+		}
+	}
+	if (!op) {
+		RZ_LOG_WARN("Could not find equivalent register for ISA variable \"%c\"\n", isa_id);
+		return NULL;
+	}
+	return hex_get_reg_in_class(op->type, op->op.reg, false, new_reg, false);
+}
+
+/**
+ * \brief Gives for a ISA immediate character the immediate value stored in the instruction.
+ *
+ * \param hi The hexagon instruction.
+ * \param isa_id The character which identifies the immediate.
+ * \return ut64 The immediate value.
+ */
+RZ_API ut64 hex_isa_to_imm(const HexInsn *hi, const char isa_id) {
+	rz_return_val_if_fail(hi && isa_id, 0);
+	for (ut32 i = 0; i < hi->op_count; ++i) {
+		if (hi->ops[i].isa_id == isa_id) {
+			return hi->ops[i].op.imm;
+		}
+	}
+	RZ_LOG_WARN("No immediate operand for \"%c\" found.\n", isa_id);
+	return 0;
+}
+
+/**
  * \brief Returns the index of an addr in a given packet.
  *
  * \param addr Address of an instruction.
@@ -135,6 +179,7 @@ static void hex_clear_pkt(RZ_NONNULL HexPkt *p) {
 	p->is_valid = false;
 	p->last_access = 0;
 	rz_list_purge(p->bin);
+	rz_list_purge(p->il_ops);
 }
 
 /**
@@ -162,7 +207,7 @@ static HexPkt *hex_get_stale_pkt(HexState *state) {
  * \param addr The address of an instruction.
  * \return HexPkt* The packet to which this address belongs to or NULL if no packet was found.
  */
-RZ_IPI HexPkt *hex_get_pkt(HexState *state, const ut32 addr) {
+RZ_IPI HexPkt *hex_get_pkt(RZ_BORROW HexState *state, const ut32 addr) {
 	HexPkt *p = NULL;
 	HexInsnContainer *hic = NULL;
 	RzListIter *iter = NULL;
@@ -262,6 +307,7 @@ RZ_API HexState *hexagon_get_state() {
 	}
 	for (int i = 0; i < HEXAGON_STATE_PKTS; ++i) {
 		state->pkts[i].bin = rz_list_newf((RzListFree)hex_insn_container_free);
+		state->pkts[i].il_ops = rz_list_new();
 		if (!state->pkts[i].bin) {
 			RZ_LOG_FATAL("Could not initialize instruction list!");
 		}

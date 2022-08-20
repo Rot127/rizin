@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-08-15 11:57:41-04:00
+// Date of code generation: 2022-08-19 17:38:03-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -767,6 +767,6 @@ RZ_API RZ_BORROW RzConfig *hexagon_get_config();
 RZ_API void hex_extend_op(HexState *state, RZ_INOUT HexOp *op, const bool set_new_extender, const ut32 addr);
 int resolve_n_register(const int reg_num, const ut32 addr, const HexPkt *p);
 int hexagon_disasm_instruction(HexState *state, const ut32 hi_u32, RZ_INOUT HexInsnContainer *hi, HexPkt *pkt);
-RZ_IPI const char *hex_alias_to_reg(HexRegAlias alias);
+RZ_API const char *hex_alias_to_reg(HexRegAlias alias, bool tmp_reg);
 
 #endif
