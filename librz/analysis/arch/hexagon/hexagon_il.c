@@ -297,7 +297,7 @@ static bool set_pkt_il_ops(RZ_INOUT HexPkt *p) {
 		if (pos->is_duplex) {
 			il_insn = hex_il_getter_lt[pos->bin.sub[0]->identifier];
 			pos->bin.sub[0]->il_insn = il_insn;
-			if (!(il_insn.op0.attr == HEX_IL_INSN_ATTR_INVALID)) {
+			if (il_insn.op0.attr == HEX_IL_INSN_ATTR_INVALID) {
 				RZ_LOG_INFO("Hexagon instruction %" PFMT32d " not implemented.\n", pos->bin.sub[0]->identifier);
 				return false;
 			}
@@ -319,7 +319,7 @@ static bool set_pkt_il_ops(RZ_INOUT HexPkt *p) {
 		} else {
 			il_insn = hex_il_getter_lt[pos->bin.insn->identifier];
 			pos->bin.insn->il_insn = il_insn;
-			if (!(pos->bin.insn->il_insn.op0.attr == HEX_IL_INSN_ATTR_INVALID)) {
+			if (pos->bin.insn->il_insn.op0.attr == HEX_IL_INSN_ATTR_INVALID) {
 				RZ_LOG_INFO("Hexagon instruction %" PFMT32d " not implemented.\n", pos->bin.insn->identifier);
 				return false;
 			}
