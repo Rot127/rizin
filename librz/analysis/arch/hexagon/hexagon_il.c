@@ -365,15 +365,25 @@ RZ_IPI RzILOpEffect *hex_get_il_op(const ut32 addr) {
 		return NULL;
 	}
 
+	HexILOp op;
 	if (p->hw_loop == HEX_LOOP_0) {
-		rz_list_append(p->il_ops, hex_il_op_j2_endloop0());
+		op.attr = HEX_IL_INSN_ATTR_BRANCH | HEX_IL_INSN_ATTR_COND;
+		op.get_il_op = hex_il_op_j2_endloop0;
+		rz_list_append(p->il_ops, &op);
 	} else if (p->hw_loop == HEX_LOOP_1) {
-		rz_list_append(p->il_ops, hex_il_op_j2_endloop1());
+		op.attr = HEX_IL_INSN_ATTR_BRANCH | HEX_IL_INSN_ATTR_COND;
+		op.get_il_op = hex_il_op_j2_endloop1;
+		rz_list_append(p->il_ops, &op);
 	} else if (p->hw_loop == HEX_LOOP_01) {
-		rz_list_append(p->il_ops, hex_il_op_j2_endloop01());
+		op.attr = HEX_IL_INSN_ATTR_BRANCH | HEX_IL_INSN_ATTR_COND;
+		op.get_il_op = hex_il_op_j2_endloop01;
+		rz_list_append(p->il_ops, &op);
 	}
 
-	// rz_list_append(p->il_ops, hex_il_op_sync_tmp_regs());
+	op.attr = HEX_IL_INSN_ATTR_NONE;
+	op.get_il_op = hex_sync_regs;
+	rz_list_append(p->il_ops, &op);
+
 	return hex_pkt_to_il_seq(p);
 }
 
