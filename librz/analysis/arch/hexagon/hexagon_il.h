@@ -24,19 +24,17 @@
 #define HEX_SEXTRACT64(val, start, len)          hex_sextract64(val, start, len)
 #define HEX_DEPOSIT64(val, start, len, fieldval) hex_deposit64(val, start, len, fieldval)
 #define HEX_GET_NPC(pkt)                         hex_get_npc(pkt)
-#define HEX_CLO32(val) hex_clo32(val)
-#define HEX_CLZ32(val) hex_clz32(val)
-#define HEX_WRITE_PRED(pred, cond) hex_write_pred(pred, cond)
+#define HEX_CLO32(val)                           hex_clo32(val)
+#define HEX_CLZ32(val)                           hex_clz32(val)
+#define HEX_WRITE_PRED(pred, cond)               hex_write_pred(pred, cond)
 #define INC(val, size)                           ADD(val, UN(size, 1))
 #define DEC(val, size)                           SUB(val, UN(size, 1))
 
 RZ_IPI bool hex_shuffle_insns(RZ_INOUT HexPkt *p);
-RZ_IPI HexILOp *hex_copy_il_op(const HexILOp *io);
 RZ_IPI RzILOpEffect *hex_get_il_op(const ut32 addr);
-RZ_IPI RzAnalysisILConfig *rz_hexagon_il_config(bool big_endian);
-RzILOpEffect *hex_il_op_j2_endloop0();
-RzILOpEffect *hex_il_op_j2_endloop1();
-RzILOpEffect *hex_il_op_j2_endloop01();
+RzILOpEffect *hex_il_op_j2_endloop0(HexInsnPktBundle *bundle);
+RzILOpEffect *hex_il_op_j2_endloop1(HexInsnPktBundle *bundle);
+RzILOpEffect *hex_il_op_j2_endloop01(HexInsnPktBundle *bundle);
 RZ_OWN RzILOpEffect *hex_extract64(RZ_BORROW RzILOpPure *value, RZ_BORROW RzILOpPure *start, RZ_BORROW RzILOpPure *length);
 RZ_OWN RzILOpEffect *hex_sextract64(RZ_BORROW RzILOpPure *value, RZ_BORROW RzILOpPure *start, RZ_BORROW RzILOpPure *length);
 RZ_OWN RzILOpEffect *hex_deposit64(RZ_BORROW RzILOpPure *value, RZ_BORROW RzILOpPure *start, RZ_BORROW RzILOpPure *length, RZ_BORROW RzILOpPure *fieldval);
@@ -45,6 +43,7 @@ RZ_IPI RZ_OWN RzILOpEffect *hex_get_npc(const HexPkt *pkt);
 RZ_IPI RZ_OWN RzILOpEffect *hex_clz32(RZ_BORROW RzILOpPure *val);
 RZ_IPI RZ_OWN RzILOpEffect *hex_clo32(RZ_BORROW RzILOpPure *val);
 RZ_IPI RZ_OWN RzILOpEffect *hex_write_pred(RZ_BORROW RzILOpPure *pred, RZ_BORROW RzILOpPure *cond);
+RZ_IPI RZ_OWN RzILOpEffect *hex_sync_regs(HexInsnPktBundle *bundle);
 RzILOpEffect *hex_il_op_a2_abs(HexInsnPktBundle *bundle);
 RzILOpEffect *hex_il_op_a2_absp(HexInsnPktBundle *bundle);
 RzILOpEffect *hex_il_op_a2_abssat(HexInsnPktBundle *bundle);
