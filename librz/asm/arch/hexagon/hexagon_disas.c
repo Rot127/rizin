@@ -34021,6 +34021,7 @@ static void hex_disasm_with_templates(const HexInsnTemplate *tpl, HexState *stat
 
 		hi->op_count++;
 		hi->ops[i].attr = 0;
+		hi->ops[i].isa_id = op->isa_id;
 		switch (type) {
 		case HEX_OP_TEMPLATE_TYPE_IMM: {
 			hi->ops[i].type = HEX_OP_TYPE_IMM;
