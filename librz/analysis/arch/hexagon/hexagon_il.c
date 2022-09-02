@@ -220,17 +220,10 @@ static RzILOpEffect *hex_il_op_to_effect(const HexILOp *il_op, const HexPkt *pkt
  */
 static RZ_OWN RzILOpEffect *hex_pkt_to_il_seq(const HexPkt *pkt) {
 	rz_return_val_if_fail(pkt && pkt->il_ops, NULL);
-	RzVector *ops = pkt->il_ops;
-	HexILOp *tmp[9] = {0};
-	HexILOp *it;
-	int i = 0;
-	rz_vector_foreach(pkt->il_ops, it) {
-		tmp[i++] = it;
-	}
 
-#define GET_N(vec, n) hex_il_op_to_effect(tmp[n], pkt)
+#define GET_N(n) hex_il_op_to_effect(rz_vector_index_ptr(pkt->il_ops, n), pkt)
 
-	switch (rz_vector_len(ops)) {
+	switch (rz_vector_len(pkt->il_ops)) {
 	default:
 		RZ_LOG_WARN("Lists with more than 9 IL ops are not supported yet.\n");
 		return NOP();
@@ -240,21 +233,21 @@ static RZ_OWN RzILOpEffect *hex_pkt_to_il_seq(const HexPkt *pkt) {
 		RZ_LOG_WARN("Invalid il ops sequence! There should be at least two il ops per packet.\n");
 		return NULL;
 	case 2:
-		return SEQ2(GET_N(ops, 0), GET_N(ops, 1));
+		return SEQ2(GET_N(0), GET_N(1));
 	case 3:
-		return SEQ3(GET_N(ops, 0), GET_N(ops, 1), GET_N(ops, 2));
+		return SEQ3(GET_N(0), GET_N(1), GET_N(2));
 	case 4:
-		return SEQ4(GET_N(ops, 0), GET_N(ops, 1), GET_N(ops, 2), GET_N(ops, 3));
+		return SEQ4(GET_N(0), GET_N(1), GET_N(2), GET_N(3));
 	case 5:
-		return SEQ5(GET_N(ops, 0), GET_N(ops, 1), GET_N(ops, 2), GET_N(ops, 3), GET_N(ops, 4));
+		return SEQ5(GET_N(0), GET_N(1), GET_N(2), GET_N(3), GET_N(4));
 	case 6:
-		return SEQ6(GET_N(ops, 0), GET_N(ops, 1), GET_N(ops, 2), GET_N(ops, 3), GET_N(ops, 4), GET_N(ops, 5));
+		return SEQ6(GET_N(0), GET_N(1), GET_N(2), GET_N(3), GET_N(4), GET_N(5));
 	case 7:
-		return SEQ7(GET_N(ops, 0), GET_N(ops, 1), GET_N(ops, 2), GET_N(ops, 3), GET_N(ops, 4), GET_N(ops, 5), GET_N(ops, 6));
+		return SEQ7(GET_N(0), GET_N(1), GET_N(2), GET_N(3), GET_N(4), GET_N(5), GET_N(6));
 	case 8:
-		return SEQ8(GET_N(ops, 0), GET_N(ops, 1), GET_N(ops, 2), GET_N(ops, 3), GET_N(ops, 4), GET_N(ops, 5), GET_N(ops, 6), GET_N(ops, 7));
+		return SEQ8(GET_N(0), GET_N(1), GET_N(2), GET_N(3), GET_N(4), GET_N(5), GET_N(6), GET_N(7));
 	case 9:
-		return SEQ9(GET_N(ops, 0), GET_N(ops, 1), GET_N(ops, 2), GET_N(ops, 3), GET_N(ops, 4), GET_N(ops, 5), GET_N(ops, 6), GET_N(ops, 7), GET_N(ops, 8));
+		return SEQ9(GET_N(0), GET_N(1), GET_N(2), GET_N(3), GET_N(4), GET_N(5), GET_N(6), GET_N(7), GET_N(8));
 	}
 }
 
@@ -366,21 +359,21 @@ RZ_IPI RzILOpEffect *hex_get_il_op(const ut32 addr) {
 	if (p->hw_loop == HEX_LOOP_0) {
 		op->attr = HEX_IL_INSN_ATTR_BRANCH | HEX_IL_INSN_ATTR_COND;
 		op->get_il_op = (HexILOpGetter)hex_il_op_j2_endloop0;
-		rz_vector_push(p->il_ops, &op);
+		rz_vector_push(p->il_ops, op);
 	} else if (p->hw_loop == HEX_LOOP_1) {
 		op->attr = HEX_IL_INSN_ATTR_BRANCH | HEX_IL_INSN_ATTR_COND;
 		op->get_il_op = (HexILOpGetter)hex_il_op_j2_endloop1;
-		rz_vector_push(p->il_ops, &op);
+		rz_vector_push(p->il_ops, op);
 	} else if (p->hw_loop == HEX_LOOP_01) {
 		op->attr = HEX_IL_INSN_ATTR_BRANCH | HEX_IL_INSN_ATTR_COND;
 		op->get_il_op = (HexILOpGetter)hex_il_op_j2_endloop01;
-		rz_vector_push(p->il_ops, &op);
+		rz_vector_push(p->il_ops, op);
 	}
 
 	op = RZ_NEW0(HexILOp);
 	op->attr = HEX_IL_INSN_ATTR_NONE;
 	op->get_il_op = (HexILOpGetter)hex_sync_regs;
-	rz_vector_push(p->il_ops, &op);
+	rz_vector_push(p->il_ops, op);
 
 	return hex_pkt_to_il_seq(p);
 }

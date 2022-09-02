@@ -308,7 +308,7 @@ RZ_API HexState *hexagon_get_state() {
 	}
 	for (int i = 0; i < HEXAGON_STATE_PKTS; ++i) {
 		state->pkts[i].bin = rz_list_newf((RzListFree)hex_insn_container_free);
-		state->pkts[i].il_ops = rz_vector_new(sizeof(HexILOp*), NULL, NULL);
+		state->pkts[i].il_ops = rz_vector_new(sizeof(HexILOp), NULL, NULL);
 		if (!state->pkts[i].bin) {
 			RZ_LOG_FATAL("Could not initialize instruction list!");
 		}
