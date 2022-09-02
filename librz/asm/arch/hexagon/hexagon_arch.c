@@ -78,7 +78,7 @@ static inline bool is_endloop01_pkt(const ut8 pb_hi_0, const ut8 pb_hi_1) {
  * \param addr The address of the instruction.
  * \return Pointer to instruction or NULL if none was found.
  */
-static HexInsnContainer *hex_get_hic_at_addr(HexState *state, const ut32 addr) {
+RZ_API HexInsnContainer *hex_get_hic_at_addr(HexState *state, const ut32 addr) {
 	HexPkt *p;
 	for (ut8 i = 0; i < HEXAGON_STATE_PKTS; ++i) {
 		p = &state->pkts[i];
@@ -208,7 +208,7 @@ static HexPkt *hex_get_stale_pkt(HexState *state) {
  * \param addr The address of an instruction.
  * \return HexPkt* The packet to which this address belongs to or NULL if no packet was found.
  */
-RZ_IPI HexPkt *hex_get_pkt(RZ_BORROW HexState *state, const ut32 addr) {
+RZ_API HexPkt *hex_get_pkt(RZ_BORROW HexState *state, const ut32 addr) {
 	HexPkt *p = NULL;
 	HexInsnContainer *hic = NULL;
 	RzListIter *iter = NULL;

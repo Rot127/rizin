@@ -75,5 +75,6 @@ RZ_API const char *hex_isa_to_reg(const HexInsn *hi, const char isa_id, bool new
 RZ_API ut64 hex_isa_to_imm(const HexInsn *hi, const char isa_id);
 void hex_set_hic_text(RZ_INOUT HexInsnContainer *hic);
 RZ_API void hex_copy_insn_container(RZ_OUT HexInsnContainer *dest, const HexInsnContainer *src);
-RZ_IPI HexPkt *hex_get_pkt(RZ_BORROW HexState *state, const ut32 addr);
+RZ_API HexPkt *hex_get_pkt(RZ_BORROW HexState *state, const ut32 addr);
+RZ_API HexInsnContainer *hex_get_hic_at_addr(HexState *state, const ut32 addr);
 #endif
