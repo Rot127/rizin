@@ -297,7 +297,7 @@ static bool set_pkt_il_ops(RZ_INOUT HexPkt *p) {
 				RZ_LOG_INFO("Hexagon instruction %" PFMT32d " not implemented.\n", pos->bin.insn->identifier);
 				return false;
 			}
-			rz_vector_push(p->il_ops, &il_insn.op1);
+			rz_vector_push(p->il_ops, &il_insn.op0);
 			if (il_insn.op1.attr != HEX_IL_INSN_ATTR_INVALID) {
 				rz_vector_push(p->il_ops, &il_insn.op1);
 			}
