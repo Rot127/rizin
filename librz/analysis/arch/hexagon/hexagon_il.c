@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-08-19 17:38:03-04:00
+// Date of code generation: 2022-08-21 04:47:31-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -11,6 +11,7 @@
 
 #include "hexagon_il.h"
 #include "hexagon_il_getter_table.h"
+#include "rz_vector.h"
 #include <hexagon.h>
 #include <hexagon_arch.h>
 #include <rz_list.h>
@@ -18,40 +19,6 @@
 #include <rz_util/rz_assert.h>
 #include <rz_il/rz_il_opcodes.h>
 #include <rz_il/rz_il_opbuilder_begin.h>
-
-/**
- * \brief Copies an IL op to the heap and returns its pointer.
- *
- * \param io Pointer to an IL op struct.
- * \return HexILOp* The copied IL op on the heap.
- */
-RZ_IPI HexILOp *hex_copy_il_op(const HexILOp *io) {
-	rz_return_val_if_fail(io, NULL);
-	HexILOp *new_io = RZ_NEW0(HexILOp);
-	memcpy(new_io, io, sizeof(HexILOp));
-	return new_io;
-}
-
-/**
- * \brief Appends IL ops from an IL instruction to a given list.
- * It only copies ops which have a valid attribute set and will fail if \p ii->op0
- * is invalid.
- *
- * \param list The target list.
- * \param ii The IL instruction struct.
- */
-static void hex_append_il_ops_to_list(RZ_OUT RzList *list, const HexILInsn *ii) {
-	rz_return_if_fail(list && ii);
-	if (ii->op0.attr == HEX_IL_INSN_ATTR_INVALID) {
-		RZ_LOG_WARN("At least one il operation must be set.\n");
-		rz_warn_if_reached();
-		return;
-	}
-	rz_list_append(list, hex_copy_il_op(&ii->op0));
-	if (ii->op1.attr != HEX_IL_INSN_ATTR_INVALID) {
-		rz_list_append(list, hex_copy_il_op(&ii->op1));
-	}
-}
 
 /**
  * \brief Copies all IL ops from the packets instructions to the \p p->il_ops list.
@@ -69,11 +36,11 @@ static void hex_fill_pkt_il_ops(HexPkt *p) {
 	rz_list_foreach (p->bin, it, hic) {
 		if (hic->is_duplex) {
 			rz_return_if_fail(hic->bin.sub[0] && hic->bin.sub[1]);
-			hex_append_il_ops_to_list(p->il_ops, &hic->bin.sub[0]->il_insn);
-			hex_append_il_ops_to_list(p->il_ops, &hic->bin.sub[1]->il_insn);
+			rz_vector_push(p->il_ops, &hic->bin.sub[0]->il_insn);
+			rz_vector_push(p->il_ops, &hic->bin.sub[1]->il_insn);
 		} else {
 			rz_return_if_fail(hic->bin.insn);
-			hex_append_il_ops_to_list(p->il_ops, &hic->bin.insn->il_insn);
+			rz_vector_push(p->il_ops, &hic->bin.insn->il_insn);
 		}
 	}
 }
@@ -88,7 +55,7 @@ static void hex_fill_pkt_il_ops(HexPkt *p) {
  * \param start Index of the op to move.
  * \param newloc Position the op shall be moved to.
  */
-static void hex_send_insn_to_i(RzList /* HexILOp* */ *ops, ut8 start, ut8 newloc) {
+static void hex_send_insn_to_i(RzVector /* HexILOp* */ *ops, ut8 start, ut8 newloc) {
 	rz_return_if_fail(ops);
 
 	HexILOp *tmp_op;
@@ -105,9 +72,9 @@ static void hex_send_insn_to_i(RzList /* HexILOp* */ *ops, ut8 start, ut8 newloc
 		direction = -1;
 	}
 	for (i = start; i != newloc; i += direction) {
-		tmp_op = rz_list_get_n(ops, i);
-		rz_list_set_n(ops, i, rz_list_get_n(ops, i + direction));
-		rz_list_set_n(ops, i + direction, tmp_op);
+		tmp_op = rz_vector_index_ptr(ops, i);
+		rz_vector_insert(ops, i, rz_vector_index_ptr(ops, i + direction));
+		rz_vector_insert(ops, i + direction, tmp_op);
 	}
 }
 
@@ -132,12 +99,11 @@ RZ_IPI bool hex_shuffle_insns(RZ_INOUT HexPkt *p) {
 		// Incomplete packets cannot be executed.
 		return false;
 	}
-	if (rz_list_empty(p->il_ops)) {
+	if (rz_vector_empty(p->il_ops)) {
 		RZ_LOG_WARN("Valid packet without RZIL instructions encountered! pkt addr = 0x%" PFMT32x "\n", p->pkt_addr);
 		return false;
 	}
-	hex_fill_pkt_il_ops(p);
-	RzList *ops = p->il_ops;
+	RzVector *ops = p->il_ops;
 
 	//
 	// Do the shuffle
@@ -161,7 +127,7 @@ RZ_IPI bool hex_shuffle_insns(RZ_INOUT HexPkt *p) {
 		n_mems = 0;
 		flag = false;
 		for (flag = false, n_mems = 0, i = last_insn; i >= 0; i--) {
-			op = rz_list_get_n(ops, i);
+			op = rz_vector_index_ptr(ops, i);
 			if (flag && (op->attr & HEX_IL_INSN_ATTR_MEM_WRITE)) {
 				hex_send_insn_to_i(ops, i, last_insn - n_mems);
 				n_mems++;
@@ -189,7 +155,7 @@ RZ_IPI bool hex_shuffle_insns(RZ_INOUT HexPkt *p) {
 		}
 		/* Compares go first, may be reordered with regard to each other */
 		for (flag = false, i = 0; i < last_insn + 1; i++) {
-			op = rz_list_get_n(ops, i);
+			op = rz_vector_index_ptr(ops, i);
 			if ((op->attr & HEX_IL_INSN_ATTR_WPRED) &&
 				(op->attr & HEX_IL_INSN_ATTR_MEM_WRITE)) {
 				/* This should be a compare (not a store conditional) */
@@ -226,7 +192,7 @@ RZ_IPI bool hex_shuffle_insns(RZ_INOUT HexPkt *p) {
 	 * very end, past stores
 	 */
 	for (i = 0; i < last_insn; i++) {
-		op = rz_list_get_n(ops, i);
+		op = rz_vector_index_ptr(ops, i);
 		if (op->attr & HEX_IL_INSN_ATTR_NEW) {
 			hex_send_insn_to_i(ops, i, last_insn);
 			break;
@@ -251,11 +217,17 @@ static RzILOpEffect *hex_il_op_to_effect(const HexILOp *il_op, const HexPkt *pkt
  */
 static RZ_OWN RzILOpEffect *hex_pkt_to_il_seq(const HexPkt *pkt) {
 	rz_return_val_if_fail(pkt && pkt->il_ops, NULL);
-	RzList *ops = pkt->il_ops;
+	RzVector *ops = pkt->il_ops;
+	HexILOp *tmp[9] = {0};
+	HexILOp *it;
+	int i = 0;
+	rz_vector_foreach(pkt->il_ops, it) {
+		tmp[i++] = it;
+	}
 
-#define GET_N(list, n) hex_il_op_to_effect((HexILOp *)rz_list_get_n(list, n), pkt)
+#define GET_N(vec, n) hex_il_op_to_effect(tmp[n], pkt)
 
-	switch (rz_list_length(ops)) {
+	switch (rz_vector_len(ops)) {
 	default:
 		RZ_LOG_WARN("Lists with more than 9 IL ops are not supported yet.\n");
 		return NOP();
@@ -263,7 +235,7 @@ static RZ_OWN RzILOpEffect *hex_pkt_to_il_seq(const HexPkt *pkt) {
 		// We need at least the instruction op and the register sync op.
 		// So if there aren't at least two ops something went wrong.
 		RZ_LOG_WARN("Invalid il ops sequence! There should be at least two il ops per packet.\n");
-		return GET_N(ops, 0);
+		return NULL;
 	case 2:
 		return SEQ2(GET_N(ops, 0), GET_N(ops, 1));
 	case 3:
@@ -295,26 +267,28 @@ static bool set_pkt_il_ops(RZ_INOUT HexPkt *p) {
 	rz_list_foreach (p->bin, it, pos) {
 		HexILInsn il_insn;
 		if (pos->is_duplex) {
+			// High sub-instructions
 			il_insn = hex_il_getter_lt[pos->bin.sub[0]->identifier];
 			pos->bin.sub[0]->il_insn = il_insn;
 			if (il_insn.op0.attr == HEX_IL_INSN_ATTR_INVALID) {
 				RZ_LOG_INFO("Hexagon instruction %" PFMT32d " not implemented.\n", pos->bin.sub[0]->identifier);
 				return false;
 			}
-			rz_list_append(p->il_ops, &il_insn.op0);
+			rz_vector_push(p->il_ops, &il_insn.op0);
 			if (il_insn.op1.attr != HEX_IL_INSN_ATTR_INVALID) {
-				rz_list_append(p->il_ops, &il_insn.op1);
+				rz_vector_push(p->il_ops, &il_insn.op1);
 			}
 
+			// Low sub-instructions
 			il_insn = hex_il_getter_lt[pos->bin.sub[1]->identifier];
 			pos->bin.sub[1]->il_insn = il_insn;
-			if (!(pos->bin.sub[1]->il_insn.op0.attr == HEX_IL_INSN_ATTR_INVALID)) {
+			if (il_insn.op0.attr == HEX_IL_INSN_ATTR_INVALID) {
 				RZ_LOG_INFO("Hexagon instruction %" PFMT32d " not implemented.\n", pos->bin.sub[1]->identifier);
 				return false;
 			}
-			rz_list_append(p->il_ops, &il_insn.op1);
+			rz_vector_push(p->il_ops, &il_insn.op0);
 			if (il_insn.op1.attr != HEX_IL_INSN_ATTR_INVALID) {
-				rz_list_append(p->il_ops, &il_insn.op1);
+				rz_vector_push(p->il_ops, &il_insn.op1);
 			}
 		} else {
 			il_insn = hex_il_getter_lt[pos->bin.insn->identifier];
@@ -323,9 +297,9 @@ static bool set_pkt_il_ops(RZ_INOUT HexPkt *p) {
 				RZ_LOG_INFO("Hexagon instruction %" PFMT32d " not implemented.\n", pos->bin.insn->identifier);
 				return false;
 			}
-			rz_list_append(p->il_ops, &il_insn.op1);
+			rz_vector_push(p->il_ops, &il_insn.op1);
 			if (il_insn.op1.attr != HEX_IL_INSN_ATTR_INVALID) {
-				rz_list_append(p->il_ops, &il_insn.op1);
+				rz_vector_push(p->il_ops, &il_insn.op1);
 			}
 		}
 	}
@@ -343,16 +317,22 @@ RZ_IPI RzILOpEffect *hex_get_il_op(const ut32 addr) {
 		RZ_LOG_WARN("Packet was NULL although it should have been disassembled at this point.\n");
 		return NULL;
 	}
+	HexInsnContainer *hic = hex_get_hic_at_addr(state, addr);
+	if (state->just_init) {
+		// Assume that the instruction at the address the VM was initialized is the first instruction.
+		p->is_valid = true;
+		hic->pkt_info.first_insn = true;
+		state->just_init = false;
+	}
 	if (!p->is_valid) {
 		return NULL;
 	}
-	HexInsnContainer *hic = rz_list_get_top(p->bin);
-	if (hic->addr != addr) {
+	if (!hic->pkt_info.last_insn) {
 		// Only at the last instruciton we execute all il ops of the packet.
 		return NOP();
 	}
 
-	if (!rz_list_empty(p->il_ops)) {
+	if (!rz_vector_empty(p->il_ops)) {
 		return hex_pkt_to_il_seq(p);
 	}
 
@@ -368,21 +348,21 @@ RZ_IPI RzILOpEffect *hex_get_il_op(const ut32 addr) {
 	HexILOp op;
 	if (p->hw_loop == HEX_LOOP_0) {
 		op.attr = HEX_IL_INSN_ATTR_BRANCH | HEX_IL_INSN_ATTR_COND;
-		op.get_il_op = hex_il_op_j2_endloop0;
-		rz_list_append(p->il_ops, &op);
+		op.get_il_op = (HexILOpGetter)hex_il_op_j2_endloop0;
+		rz_vector_push(p->il_ops, &op);
 	} else if (p->hw_loop == HEX_LOOP_1) {
 		op.attr = HEX_IL_INSN_ATTR_BRANCH | HEX_IL_INSN_ATTR_COND;
-		op.get_il_op = hex_il_op_j2_endloop1;
-		rz_list_append(p->il_ops, &op);
+		op.get_il_op = (HexILOpGetter)hex_il_op_j2_endloop1;
+		rz_vector_push(p->il_ops, &op);
 	} else if (p->hw_loop == HEX_LOOP_01) {
 		op.attr = HEX_IL_INSN_ATTR_BRANCH | HEX_IL_INSN_ATTR_COND;
-		op.get_il_op = hex_il_op_j2_endloop01;
-		rz_list_append(p->il_ops, &op);
+		op.get_il_op = (HexILOpGetter)hex_il_op_j2_endloop01;
+		rz_vector_push(p->il_ops, &op);
 	}
 
 	op.attr = HEX_IL_INSN_ATTR_NONE;
-	op.get_il_op = hex_sync_regs;
-	rz_list_append(p->il_ops, &op);
+	op.get_il_op = (HexILOpGetter)hex_sync_regs;
+	rz_vector_push(p->il_ops, &op);
 
 	return hex_pkt_to_il_seq(p);
 }
