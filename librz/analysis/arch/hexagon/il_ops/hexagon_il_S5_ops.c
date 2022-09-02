@@ -3,13 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-08-19 17:38:03-04:00
-// SPDX-FileCopyrightText: 2021 Rot127 <unisono@quyllur.org>
-// SPDX-License-Identifier: LGPL-3.0-only
-
-// LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
-// LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-08-19 17:04:30-04:00
+// Date of code generation: 2022-08-21 16:48:53-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -100,7 +94,7 @@ RzILOpEffect *hex_il_op_s5_asrhub_rnd_sat(HexInsnPktBundle *bundle) {
 	RzILOpEffect *op_INC_3 = SETL("i", INC(VARL("i"), 32));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_4 = SETL("h_tmp0", VARL("i"));
 	RzILOpEffect *seq_5 = SEQN(2, op_ASSIGN_hybrid_tmp_4, op_INC_3);
-	RzILOpEffect *c_call_18 = HEX_EXTRACT64(op_RSHIFT_17, VARLP("const_pos0"), VARLP("const_pos8"));
+	RzILOpEffect *c_call_18 = HEX_EXTRACT64(op_RSHIFT_17, LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos8", const_pos8, VARLP("const_pos8")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_19 = SETL("h_tmp1", UNSIGNED(32, VARL("ret_val")));
 	RzILOpEffect *seq_20 = SEQN(2, c_call_18, op_ASSIGN_hybrid_tmp_19);
 	RzILOpEffect *seq_21 = SEQN(2, seq_5, seq_20);
@@ -116,7 +110,7 @@ RzILOpEffect *hex_il_op_s5_asrhub_rnd_sat(HexInsnPktBundle *bundle) {
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_47 = SETL("h_tmp4", UNSIGNED(32, VARL("ret_val")));
 	RzILOpEffect *seq_48 = SEQN(2, c_call_46, op_ASSIGN_hybrid_tmp_47);
 	RzILOpEffect *seq_49 = SEQN(2, seq_45, seq_48);
-	RzILOpEffect *c_call_50 = HEX_DEPOSIT64(VARG(usr_assoc_tmp), VARL("h_tmp3"), VARL("h_tmp4"), VARLP("const_pos1"));
+	RzILOpEffect *c_call_50 = HEX_DEPOSIT64(VARG(usr_assoc_tmp), VARL("h_tmp3"), VARL("h_tmp4"), LET("const_pos1", const_pos1, VARLP("const_pos1")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_51 = SETL("h_tmp5", UNSIGNED(64, VARL("ret_val")));
 	RzILOpEffect *seq_52 = SEQN(2, c_call_50, op_ASSIGN_hybrid_tmp_51);
 	RzILOpEffect *seq_53 = SEQN(2, seq_49, seq_52);
@@ -203,7 +197,7 @@ RzILOpEffect *hex_il_op_s5_asrhub_sat(HexInsnPktBundle *bundle) {
 	RzILOpEffect *op_INC_3 = SETL("i", INC(VARL("i"), 32));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_4 = SETL("h_tmp0", VARL("i"));
 	RzILOpEffect *seq_5 = SEQN(2, op_ASSIGN_hybrid_tmp_4, op_INC_3);
-	RzILOpEffect *c_call_16 = HEX_EXTRACT64(op_RSHIFT_15, VARLP("const_pos0"), VARLP("const_pos8"));
+	RzILOpEffect *c_call_16 = HEX_EXTRACT64(op_RSHIFT_15, LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos8", const_pos8, VARLP("const_pos8")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_17 = SETL("h_tmp1", UNSIGNED(32, VARL("ret_val")));
 	RzILOpEffect *seq_18 = SEQN(2, c_call_16, op_ASSIGN_hybrid_tmp_17);
 	RzILOpEffect *seq_19 = SEQN(2, seq_5, seq_18);
@@ -219,7 +213,7 @@ RzILOpEffect *hex_il_op_s5_asrhub_sat(HexInsnPktBundle *bundle) {
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_41 = SETL("h_tmp4", UNSIGNED(32, VARL("ret_val")));
 	RzILOpEffect *seq_42 = SEQN(2, c_call_40, op_ASSIGN_hybrid_tmp_41);
 	RzILOpEffect *seq_43 = SEQN(2, seq_39, seq_42);
-	RzILOpEffect *c_call_44 = HEX_DEPOSIT64(VARG(usr_assoc_tmp), VARL("h_tmp3"), VARL("h_tmp4"), VARLP("const_pos1"));
+	RzILOpEffect *c_call_44 = HEX_DEPOSIT64(VARG(usr_assoc_tmp), VARL("h_tmp3"), VARL("h_tmp4"), LET("const_pos1", const_pos1, VARLP("const_pos1")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_45 = SETL("h_tmp5", UNSIGNED(64, VARL("ret_val")));
 	RzILOpEffect *seq_46 = SEQN(2, c_call_44, op_ASSIGN_hybrid_tmp_45);
 	RzILOpEffect *seq_47 = SEQN(2, seq_43, seq_46);

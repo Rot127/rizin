@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-08-19 17:38:03-04:00
+// Date of code generation: 2022-08-21 16:48:53-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -101,7 +101,7 @@ RzILOpEffect *hex_il_op_a4_bitspliti(HexInsnPktBundle *bundle) {
 	// WRITE
 	RzILOpEffect *op_ASSIGN_10 = SETG(Rdd_assoc_tmp, op_OR_9);
 	RzILOpEffect *empty_11 = EMPTY();
-	RzILOpEffect *c_call_17 = HEX_EXTRACT64(DUP(Rs), VARLP("const_pos0"), VARLP("u"));
+	RzILOpEffect *c_call_17 = HEX_EXTRACT64(DUP(Rs), LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("u", u, VARLP("u")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_18 = SETL("h_tmp0", UNSIGNED(64, VARL("ret_val")));
 	RzILOpEffect *seq_19 = SEQN(2, c_call_17, op_ASSIGN_hybrid_tmp_18);
 	RzILOpEffect *op_ASSIGN_25 = SETG(Rdd_assoc_tmp, op_OR_24);
@@ -924,7 +924,7 @@ RzILOpEffect *hex_il_op_a4_psxtbf(HexInsnPktBundle *bundle) {
 	RzILOpPure *cond_5 = LET("const_pos0LL", const_pos0LL, ITE(op_NE_1, VARL("h_tmp0"), VARLP("const_pos0LL")));
 
 	// WRITE
-	RzILOpEffect *c_call_2 = HEX_SEXTRACT64(Rs, VARLP("const_pos0"), VARLP("const_pos8"));
+	RzILOpEffect *c_call_2 = HEX_SEXTRACT64(Rs, LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos8", const_pos8, VARLP("const_pos8")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_3 = SETL("h_tmp0", SIGNED(64, VARL("ret_val")));
 	RzILOpEffect *seq_4 = SEQN(2, c_call_2, op_ASSIGN_hybrid_tmp_3);
 	RzILOpEffect *op_ASSIGN_6 = SETG(Rd_assoc_tmp, cond_5);
@@ -958,7 +958,7 @@ RzILOpEffect *hex_il_op_a4_psxtbfnew(HexInsnPktBundle *bundle) {
 	RzILOpPure *cond_5 = LET("const_pos0LL", const_pos0LL, ITE(op_NE_1, VARL("h_tmp0"), VARLP("const_pos0LL")));
 
 	// WRITE
-	RzILOpEffect *c_call_2 = HEX_SEXTRACT64(Rs, VARLP("const_pos0"), VARLP("const_pos8"));
+	RzILOpEffect *c_call_2 = HEX_SEXTRACT64(Rs, LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos8", const_pos8, VARLP("const_pos8")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_3 = SETL("h_tmp0", SIGNED(64, VARL("ret_val")));
 	RzILOpEffect *seq_4 = SEQN(2, c_call_2, op_ASSIGN_hybrid_tmp_3);
 	RzILOpEffect *op_ASSIGN_6 = SETG(Rd_assoc_tmp, cond_5);
@@ -992,7 +992,7 @@ RzILOpEffect *hex_il_op_a4_psxtbt(HexInsnPktBundle *bundle) {
 	RzILOpPure *cond_5 = LET("const_pos0LL", const_pos0LL, ITE(op_NE_1, VARL("h_tmp0"), VARLP("const_pos0LL")));
 
 	// WRITE
-	RzILOpEffect *c_call_2 = HEX_SEXTRACT64(Rs, VARLP("const_pos0"), VARLP("const_pos8"));
+	RzILOpEffect *c_call_2 = HEX_SEXTRACT64(Rs, LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos8", const_pos8, VARLP("const_pos8")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_3 = SETL("h_tmp0", SIGNED(64, VARL("ret_val")));
 	RzILOpEffect *seq_4 = SEQN(2, c_call_2, op_ASSIGN_hybrid_tmp_3);
 	RzILOpEffect *op_ASSIGN_6 = SETG(Rd_assoc_tmp, cond_5);
@@ -1026,7 +1026,7 @@ RzILOpEffect *hex_il_op_a4_psxtbtnew(HexInsnPktBundle *bundle) {
 	RzILOpPure *cond_5 = LET("const_pos0LL", const_pos0LL, ITE(op_NE_1, VARL("h_tmp0"), VARLP("const_pos0LL")));
 
 	// WRITE
-	RzILOpEffect *c_call_2 = HEX_SEXTRACT64(Rs, VARLP("const_pos0"), VARLP("const_pos8"));
+	RzILOpEffect *c_call_2 = HEX_SEXTRACT64(Rs, LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos8", const_pos8, VARLP("const_pos8")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_3 = SETL("h_tmp0", SIGNED(64, VARL("ret_val")));
 	RzILOpEffect *seq_4 = SEQN(2, c_call_2, op_ASSIGN_hybrid_tmp_3);
 	RzILOpEffect *op_ASSIGN_6 = SETG(Rd_assoc_tmp, cond_5);
@@ -1060,7 +1060,7 @@ RzILOpEffect *hex_il_op_a4_psxthf(HexInsnPktBundle *bundle) {
 	RzILOpPure *cond_5 = LET("const_pos0LL", const_pos0LL, ITE(op_NE_1, VARL("h_tmp0"), VARLP("const_pos0LL")));
 
 	// WRITE
-	RzILOpEffect *c_call_2 = HEX_SEXTRACT64(Rs, VARLP("const_pos0"), VARLP("const_pos16"));
+	RzILOpEffect *c_call_2 = HEX_SEXTRACT64(Rs, LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos16", const_pos16, VARLP("const_pos16")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_3 = SETL("h_tmp0", SIGNED(64, VARL("ret_val")));
 	RzILOpEffect *seq_4 = SEQN(2, c_call_2, op_ASSIGN_hybrid_tmp_3);
 	RzILOpEffect *op_ASSIGN_6 = SETG(Rd_assoc_tmp, cond_5);
@@ -1094,7 +1094,7 @@ RzILOpEffect *hex_il_op_a4_psxthfnew(HexInsnPktBundle *bundle) {
 	RzILOpPure *cond_5 = LET("const_pos0LL", const_pos0LL, ITE(op_NE_1, VARL("h_tmp0"), VARLP("const_pos0LL")));
 
 	// WRITE
-	RzILOpEffect *c_call_2 = HEX_SEXTRACT64(Rs, VARLP("const_pos0"), VARLP("const_pos16"));
+	RzILOpEffect *c_call_2 = HEX_SEXTRACT64(Rs, LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos16", const_pos16, VARLP("const_pos16")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_3 = SETL("h_tmp0", SIGNED(64, VARL("ret_val")));
 	RzILOpEffect *seq_4 = SEQN(2, c_call_2, op_ASSIGN_hybrid_tmp_3);
 	RzILOpEffect *op_ASSIGN_6 = SETG(Rd_assoc_tmp, cond_5);
@@ -1128,7 +1128,7 @@ RzILOpEffect *hex_il_op_a4_psxtht(HexInsnPktBundle *bundle) {
 	RzILOpPure *cond_5 = LET("const_pos0LL", const_pos0LL, ITE(op_NE_1, VARL("h_tmp0"), VARLP("const_pos0LL")));
 
 	// WRITE
-	RzILOpEffect *c_call_2 = HEX_SEXTRACT64(Rs, VARLP("const_pos0"), VARLP("const_pos16"));
+	RzILOpEffect *c_call_2 = HEX_SEXTRACT64(Rs, LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos16", const_pos16, VARLP("const_pos16")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_3 = SETL("h_tmp0", SIGNED(64, VARL("ret_val")));
 	RzILOpEffect *seq_4 = SEQN(2, c_call_2, op_ASSIGN_hybrid_tmp_3);
 	RzILOpEffect *op_ASSIGN_6 = SETG(Rd_assoc_tmp, cond_5);
@@ -1162,7 +1162,7 @@ RzILOpEffect *hex_il_op_a4_psxthtnew(HexInsnPktBundle *bundle) {
 	RzILOpPure *cond_5 = LET("const_pos0LL", const_pos0LL, ITE(op_NE_1, VARL("h_tmp0"), VARLP("const_pos0LL")));
 
 	// WRITE
-	RzILOpEffect *c_call_2 = HEX_SEXTRACT64(Rs, VARLP("const_pos0"), VARLP("const_pos16"));
+	RzILOpEffect *c_call_2 = HEX_SEXTRACT64(Rs, LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos16", const_pos16, VARLP("const_pos16")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_3 = SETL("h_tmp0", SIGNED(64, VARL("ret_val")));
 	RzILOpEffect *seq_4 = SEQN(2, c_call_2, op_ASSIGN_hybrid_tmp_3);
 	RzILOpEffect *op_ASSIGN_6 = SETG(Rd_assoc_tmp, cond_5);
@@ -1196,7 +1196,7 @@ RzILOpEffect *hex_il_op_a4_pzxtbf(HexInsnPktBundle *bundle) {
 	RzILOpPure *cond_5 = LET("const_pos0LL", const_pos0LL, ITE(op_NE_1, VARL("h_tmp0"), VARLP("const_pos0LL")));
 
 	// WRITE
-	RzILOpEffect *c_call_2 = HEX_EXTRACT64(Rs, VARLP("const_pos0"), VARLP("const_pos8"));
+	RzILOpEffect *c_call_2 = HEX_EXTRACT64(Rs, LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos8", const_pos8, VARLP("const_pos8")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_3 = SETL("h_tmp0", UNSIGNED(64, VARL("ret_val")));
 	RzILOpEffect *seq_4 = SEQN(2, c_call_2, op_ASSIGN_hybrid_tmp_3);
 	RzILOpEffect *op_ASSIGN_6 = SETG(Rd_assoc_tmp, cond_5);
@@ -1230,7 +1230,7 @@ RzILOpEffect *hex_il_op_a4_pzxtbfnew(HexInsnPktBundle *bundle) {
 	RzILOpPure *cond_5 = LET("const_pos0LL", const_pos0LL, ITE(op_NE_1, VARL("h_tmp0"), VARLP("const_pos0LL")));
 
 	// WRITE
-	RzILOpEffect *c_call_2 = HEX_EXTRACT64(Rs, VARLP("const_pos0"), VARLP("const_pos8"));
+	RzILOpEffect *c_call_2 = HEX_EXTRACT64(Rs, LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos8", const_pos8, VARLP("const_pos8")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_3 = SETL("h_tmp0", UNSIGNED(64, VARL("ret_val")));
 	RzILOpEffect *seq_4 = SEQN(2, c_call_2, op_ASSIGN_hybrid_tmp_3);
 	RzILOpEffect *op_ASSIGN_6 = SETG(Rd_assoc_tmp, cond_5);
@@ -1264,7 +1264,7 @@ RzILOpEffect *hex_il_op_a4_pzxtbt(HexInsnPktBundle *bundle) {
 	RzILOpPure *cond_5 = LET("const_pos0LL", const_pos0LL, ITE(op_NE_1, VARL("h_tmp0"), VARLP("const_pos0LL")));
 
 	// WRITE
-	RzILOpEffect *c_call_2 = HEX_EXTRACT64(Rs, VARLP("const_pos0"), VARLP("const_pos8"));
+	RzILOpEffect *c_call_2 = HEX_EXTRACT64(Rs, LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos8", const_pos8, VARLP("const_pos8")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_3 = SETL("h_tmp0", UNSIGNED(64, VARL("ret_val")));
 	RzILOpEffect *seq_4 = SEQN(2, c_call_2, op_ASSIGN_hybrid_tmp_3);
 	RzILOpEffect *op_ASSIGN_6 = SETG(Rd_assoc_tmp, cond_5);
@@ -1298,7 +1298,7 @@ RzILOpEffect *hex_il_op_a4_pzxtbtnew(HexInsnPktBundle *bundle) {
 	RzILOpPure *cond_5 = LET("const_pos0LL", const_pos0LL, ITE(op_NE_1, VARL("h_tmp0"), VARLP("const_pos0LL")));
 
 	// WRITE
-	RzILOpEffect *c_call_2 = HEX_EXTRACT64(Rs, VARLP("const_pos0"), VARLP("const_pos8"));
+	RzILOpEffect *c_call_2 = HEX_EXTRACT64(Rs, LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos8", const_pos8, VARLP("const_pos8")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_3 = SETL("h_tmp0", UNSIGNED(64, VARL("ret_val")));
 	RzILOpEffect *seq_4 = SEQN(2, c_call_2, op_ASSIGN_hybrid_tmp_3);
 	RzILOpEffect *op_ASSIGN_6 = SETG(Rd_assoc_tmp, cond_5);
@@ -1332,7 +1332,7 @@ RzILOpEffect *hex_il_op_a4_pzxthf(HexInsnPktBundle *bundle) {
 	RzILOpPure *cond_5 = LET("const_pos0LL", const_pos0LL, ITE(op_NE_1, VARL("h_tmp0"), VARLP("const_pos0LL")));
 
 	// WRITE
-	RzILOpEffect *c_call_2 = HEX_EXTRACT64(Rs, VARLP("const_pos0"), VARLP("const_pos16"));
+	RzILOpEffect *c_call_2 = HEX_EXTRACT64(Rs, LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos16", const_pos16, VARLP("const_pos16")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_3 = SETL("h_tmp0", UNSIGNED(64, VARL("ret_val")));
 	RzILOpEffect *seq_4 = SEQN(2, c_call_2, op_ASSIGN_hybrid_tmp_3);
 	RzILOpEffect *op_ASSIGN_6 = SETG(Rd_assoc_tmp, cond_5);
@@ -1366,7 +1366,7 @@ RzILOpEffect *hex_il_op_a4_pzxthfnew(HexInsnPktBundle *bundle) {
 	RzILOpPure *cond_5 = LET("const_pos0LL", const_pos0LL, ITE(op_NE_1, VARL("h_tmp0"), VARLP("const_pos0LL")));
 
 	// WRITE
-	RzILOpEffect *c_call_2 = HEX_EXTRACT64(Rs, VARLP("const_pos0"), VARLP("const_pos16"));
+	RzILOpEffect *c_call_2 = HEX_EXTRACT64(Rs, LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos16", const_pos16, VARLP("const_pos16")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_3 = SETL("h_tmp0", UNSIGNED(64, VARL("ret_val")));
 	RzILOpEffect *seq_4 = SEQN(2, c_call_2, op_ASSIGN_hybrid_tmp_3);
 	RzILOpEffect *op_ASSIGN_6 = SETG(Rd_assoc_tmp, cond_5);
@@ -1400,7 +1400,7 @@ RzILOpEffect *hex_il_op_a4_pzxtht(HexInsnPktBundle *bundle) {
 	RzILOpPure *cond_5 = LET("const_pos0LL", const_pos0LL, ITE(op_NE_1, VARL("h_tmp0"), VARLP("const_pos0LL")));
 
 	// WRITE
-	RzILOpEffect *c_call_2 = HEX_EXTRACT64(Rs, VARLP("const_pos0"), VARLP("const_pos16"));
+	RzILOpEffect *c_call_2 = HEX_EXTRACT64(Rs, LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos16", const_pos16, VARLP("const_pos16")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_3 = SETL("h_tmp0", UNSIGNED(64, VARL("ret_val")));
 	RzILOpEffect *seq_4 = SEQN(2, c_call_2, op_ASSIGN_hybrid_tmp_3);
 	RzILOpEffect *op_ASSIGN_6 = SETG(Rd_assoc_tmp, cond_5);
@@ -1434,7 +1434,7 @@ RzILOpEffect *hex_il_op_a4_pzxthtnew(HexInsnPktBundle *bundle) {
 	RzILOpPure *cond_5 = LET("const_pos0LL", const_pos0LL, ITE(op_NE_1, VARL("h_tmp0"), VARLP("const_pos0LL")));
 
 	// WRITE
-	RzILOpEffect *c_call_2 = HEX_EXTRACT64(Rs, VARLP("const_pos0"), VARLP("const_pos16"));
+	RzILOpEffect *c_call_2 = HEX_EXTRACT64(Rs, LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos16", const_pos16, VARLP("const_pos16")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_3 = SETL("h_tmp0", UNSIGNED(64, VARL("ret_val")));
 	RzILOpEffect *seq_4 = SEQN(2, c_call_2, op_ASSIGN_hybrid_tmp_3);
 	RzILOpEffect *op_ASSIGN_6 = SETG(Rd_assoc_tmp, cond_5);
@@ -1613,7 +1613,7 @@ RzILOpEffect *hex_il_op_a4_round_ri_sat(HexInsnPktBundle *bundle) {
 	RzILOpPure *op_RSHIFT_62 = LET("u", u, SHIFTR0(cond_61, VARLP("u")));
 
 	// WRITE
-	RzILOpEffect *c_call_8 = HEX_SEXTRACT64(cond_7, VARLP("const_pos0"), VARLP("const_pos32"));
+	RzILOpEffect *c_call_8 = HEX_SEXTRACT64(cond_7, LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos32", const_pos32, VARLP("const_pos32")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_9 = SETL("h_tmp0", UNSIGNED(32, VARL("ret_val")));
 	RzILOpEffect *seq_10 = SEQN(2, c_call_8, op_ASSIGN_hybrid_tmp_9);
 	RzILOpEffect *c_call_27 = HEX_REGFIELD(HEX_RF_WIDTH, HEX_REG_FIELD_USR_OVF);
@@ -1628,7 +1628,7 @@ RzILOpEffect *hex_il_op_a4_round_ri_sat(HexInsnPktBundle *bundle) {
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_36 = SETL("h_tmp3", UNSIGNED(32, VARL("ret_val")));
 	RzILOpEffect *seq_37 = SEQN(2, c_call_35, op_ASSIGN_hybrid_tmp_36);
 	RzILOpEffect *seq_38 = SEQN(2, seq_34, seq_37);
-	RzILOpEffect *c_call_39 = HEX_DEPOSIT64(VARG(usr_assoc_tmp), VARL("h_tmp2"), VARL("h_tmp3"), VARLP("const_pos1"));
+	RzILOpEffect *c_call_39 = HEX_DEPOSIT64(VARG(usr_assoc_tmp), VARL("h_tmp2"), VARL("h_tmp3"), LET("const_pos1", const_pos1, VARLP("const_pos1")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_40 = SETL("h_tmp4", UNSIGNED(64, VARL("ret_val")));
 	RzILOpEffect *seq_41 = SEQN(2, c_call_39, op_ASSIGN_hybrid_tmp_40);
 	RzILOpEffect *seq_42 = SEQN(2, seq_38, seq_41);
@@ -1673,14 +1673,14 @@ RzILOpEffect *hex_il_op_a4_round_rr(HexInsnPktBundle *bundle) {
 	RzILOpPure *op_RSHIFT_24 = SHIFTR0(cond_17, cond_23);
 
 	// WRITE
-	RzILOpEffect *c_call_1 = HEX_EXTRACT64(Rt, VARLP("const_pos0"), VARLP("const_pos5"));
+	RzILOpEffect *c_call_1 = HEX_EXTRACT64(Rt, LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos5", const_pos5, VARLP("const_pos5")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_2 = SETL("h_tmp0", UNSIGNED(32, VARL("ret_val")));
 	RzILOpEffect *seq_3 = SEQN(2, c_call_1, op_ASSIGN_hybrid_tmp_2);
-	RzILOpEffect *c_call_9 = HEX_EXTRACT64(DUP(Rt), VARLP("const_pos0"), VARLP("const_pos5"));
+	RzILOpEffect *c_call_9 = HEX_EXTRACT64(DUP(Rt), LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos5", const_pos5, VARLP("const_pos5")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_10 = SETL("h_tmp1", UNSIGNED(32, VARL("ret_val")));
 	RzILOpEffect *seq_11 = SEQN(2, c_call_9, op_ASSIGN_hybrid_tmp_10);
 	RzILOpEffect *seq_12 = SEQN(2, seq_3, seq_11);
-	RzILOpEffect *c_call_19 = HEX_EXTRACT64(DUP(Rt), VARLP("const_pos0"), VARLP("const_pos5"));
+	RzILOpEffect *c_call_19 = HEX_EXTRACT64(DUP(Rt), LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos5", const_pos5, VARLP("const_pos5")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_20 = SETL("h_tmp2", UNSIGNED(64, VARL("ret_val")));
 	RzILOpEffect *seq_21 = SEQN(2, c_call_19, op_ASSIGN_hybrid_tmp_20);
 	RzILOpEffect *seq_22 = SEQN(2, seq_12, seq_21);
@@ -1784,30 +1784,30 @@ RzILOpEffect *hex_il_op_a4_round_rr_sat(HexInsnPktBundle *bundle) {
 	RzILOpPure *op_RSHIFT_115 = SHIFTR0(cond_109, cond_114);
 
 	// WRITE
-	RzILOpEffect *c_call_2 = HEX_EXTRACT64(Rt, VARLP("const_pos0"), VARLP("const_pos5"));
+	RzILOpEffect *c_call_2 = HEX_EXTRACT64(Rt, LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos5", const_pos5, VARLP("const_pos5")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_3 = SETL("h_tmp0", UNSIGNED(32, VARL("ret_val")));
 	RzILOpEffect *seq_4 = SEQN(2, c_call_2, op_ASSIGN_hybrid_tmp_3);
-	RzILOpEffect *c_call_10 = HEX_EXTRACT64(DUP(Rt), VARLP("const_pos0"), VARLP("const_pos5"));
+	RzILOpEffect *c_call_10 = HEX_EXTRACT64(DUP(Rt), LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos5", const_pos5, VARLP("const_pos5")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_11 = SETL("h_tmp1", UNSIGNED(32, VARL("ret_val")));
 	RzILOpEffect *seq_12 = SEQN(2, c_call_10, op_ASSIGN_hybrid_tmp_11);
 	RzILOpEffect *seq_13 = SEQN(2, seq_4, seq_12);
-	RzILOpEffect *c_call_19 = HEX_SEXTRACT64(cond_18, VARLP("const_pos0"), VARLP("const_pos32"));
+	RzILOpEffect *c_call_19 = HEX_SEXTRACT64(cond_18, LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos32", const_pos32, VARLP("const_pos32")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_20 = SETL("h_tmp2", UNSIGNED(32, VARL("ret_val")));
 	RzILOpEffect *seq_21 = SEQN(2, c_call_19, op_ASSIGN_hybrid_tmp_20);
 	RzILOpEffect *seq_22 = SEQN(2, seq_13, seq_21);
-	RzILOpEffect *c_call_25 = HEX_EXTRACT64(DUP(Rt), VARLP("const_pos0"), VARLP("const_pos5"));
+	RzILOpEffect *c_call_25 = HEX_EXTRACT64(DUP(Rt), LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos5", const_pos5, VARLP("const_pos5")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_26 = SETL("h_tmp3", UNSIGNED(32, VARL("ret_val")));
 	RzILOpEffect *seq_27 = SEQN(2, c_call_25, op_ASSIGN_hybrid_tmp_26);
 	RzILOpEffect *seq_28 = SEQN(2, seq_22, seq_27);
-	RzILOpEffect *c_call_34 = HEX_EXTRACT64(DUP(Rt), VARLP("const_pos0"), VARLP("const_pos5"));
+	RzILOpEffect *c_call_34 = HEX_EXTRACT64(DUP(Rt), LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos5", const_pos5, VARLP("const_pos5")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_35 = SETL("h_tmp4", UNSIGNED(32, VARL("ret_val")));
 	RzILOpEffect *seq_36 = SEQN(2, c_call_34, op_ASSIGN_hybrid_tmp_35);
 	RzILOpEffect *seq_37 = SEQN(2, seq_28, seq_36);
-	RzILOpEffect *c_call_45 = HEX_EXTRACT64(DUP(Rt), VARLP("const_pos0"), VARLP("const_pos5"));
+	RzILOpEffect *c_call_45 = HEX_EXTRACT64(DUP(Rt), LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos5", const_pos5, VARLP("const_pos5")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_46 = SETL("h_tmp5", UNSIGNED(32, VARL("ret_val")));
 	RzILOpEffect *seq_47 = SEQN(2, c_call_45, op_ASSIGN_hybrid_tmp_46);
 	RzILOpEffect *seq_48 = SEQN(2, seq_37, seq_47);
-	RzILOpEffect *c_call_54 = HEX_EXTRACT64(DUP(Rt), VARLP("const_pos0"), VARLP("const_pos5"));
+	RzILOpEffect *c_call_54 = HEX_EXTRACT64(DUP(Rt), LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos5", const_pos5, VARLP("const_pos5")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_55 = SETL("h_tmp6", UNSIGNED(32, VARL("ret_val")));
 	RzILOpEffect *seq_56 = SEQN(2, c_call_54, op_ASSIGN_hybrid_tmp_55);
 	RzILOpEffect *seq_57 = SEQN(2, seq_48, seq_56);
@@ -1823,21 +1823,21 @@ RzILOpEffect *hex_il_op_a4_round_rr_sat(HexInsnPktBundle *bundle) {
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_72 = SETL("h_tmp9", UNSIGNED(32, VARL("ret_val")));
 	RzILOpEffect *seq_73 = SEQN(2, c_call_71, op_ASSIGN_hybrid_tmp_72);
 	RzILOpEffect *seq_74 = SEQN(2, seq_70, seq_73);
-	RzILOpEffect *c_call_75 = HEX_DEPOSIT64(VARG(usr_assoc_tmp), VARL("h_tmp8"), VARL("h_tmp9"), VARLP("const_pos1"));
+	RzILOpEffect *c_call_75 = HEX_DEPOSIT64(VARG(usr_assoc_tmp), VARL("h_tmp8"), VARL("h_tmp9"), LET("const_pos1", const_pos1, VARLP("const_pos1")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_76 = SETL("h_tmp10", UNSIGNED(64, VARL("ret_val")));
 	RzILOpEffect *seq_77 = SEQN(2, c_call_75, op_ASSIGN_hybrid_tmp_76);
 	RzILOpEffect *seq_78 = SEQN(2, seq_74, seq_77);
 	RzILOpEffect *op_ASSIGN_80 = SETG(usr_assoc_tmp, cond_79);
 	RzILOpEffect *seq_81 = SEQN(2, seq_78, op_ASSIGN_80);
-	RzILOpEffect *c_call_83 = HEX_EXTRACT64(DUP(Rt), VARLP("const_pos0"), VARLP("const_pos5"));
+	RzILOpEffect *c_call_83 = HEX_EXTRACT64(DUP(Rt), LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos5", const_pos5, VARLP("const_pos5")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_84 = SETL("h_tmp11", UNSIGNED(32, VARL("ret_val")));
 	RzILOpEffect *seq_85 = SEQN(2, c_call_83, op_ASSIGN_hybrid_tmp_84);
-	RzILOpEffect *c_call_91 = HEX_EXTRACT64(DUP(Rt), VARLP("const_pos0"), VARLP("const_pos5"));
+	RzILOpEffect *c_call_91 = HEX_EXTRACT64(DUP(Rt), LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos5", const_pos5, VARLP("const_pos5")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_92 = SETL("h_tmp12", UNSIGNED(32, VARL("ret_val")));
 	RzILOpEffect *seq_93 = SEQN(2, c_call_91, op_ASSIGN_hybrid_tmp_92);
 	RzILOpEffect *seq_94 = SEQN(2, seq_85, seq_93);
 	RzILOpEffect *seq_108 = SEQN(2, seq_94, seq_81);
-	RzILOpEffect *c_call_111 = HEX_EXTRACT64(DUP(Rt), VARLP("const_pos0"), VARLP("const_pos5"));
+	RzILOpEffect *c_call_111 = HEX_EXTRACT64(DUP(Rt), LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos5", const_pos5, VARLP("const_pos5")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_112 = SETL("h_tmp13", UNSIGNED(64, VARL("ret_val")));
 	RzILOpEffect *seq_113 = SEQN(2, c_call_111, op_ASSIGN_hybrid_tmp_112);
 	RzILOpEffect *op_ASSIGN_116 = SETG(Rd_assoc_tmp, op_RSHIFT_115);
@@ -2417,19 +2417,19 @@ RzILOpEffect *hex_il_op_a4_vcmpwgti(HexInsnPktBundle *bundle) {
 	RzILOpPure *cast_ut64_15 = CAST(64, IL_FALSE, op_GT_14);
 	RzILOpPure *op_LSHIFT_16 = SHIFTL0(cast_ut64_15, VARL("j"));
 	RzILOpPure *op_OR_17 = LOGOR(op_AND_8, op_LSHIFT_16);
-	RzILOpPure *op_LE_25 = LET("const_pos7", const_pos7, ULE(VARL("j"), VARLP("const_pos7")));
-	RzILOpPure *op_LSHIFT_29 = LET("const_pos1ULL", const_pos1ULL, SHIFTL0(VARLP("const_pos1ULL"), VARL("j")));
-	RzILOpPure *op_NOT_30 = LOGNOT(op_LSHIFT_29);
-	RzILOpPure *op_AND_31 = LOGAND(VARG(Pd_assoc_tmp), op_NOT_30);
-	RzILOpPure *op_MUL_32 = LET("const_pos1", const_pos1, LET("const_pos32", const_pos32, MUL(VARLP("const_pos1"), VARLP("const_pos32"))));
-	RzILOpPure *op_RSHIFT_33 = SHIFTR0(DUP(Rss), op_MUL_32);
-	RzILOpPure *op_AND_34 = LET("const_pos0x0ffffffffLL", const_pos0x0ffffffffLL, LOGAND(op_RSHIFT_33, VARLP("const_pos0x0ffffffffLL")));
-	RzILOpPure *cast_st32_35 = CAST(32, MSB(op_AND_34), op_AND_34);
-	RzILOpPure *cast_st64_36 = CAST(32, MSB(cast_st32_35), cast_st32_35);
-	RzILOpPure *op_GT_37 = LET("s", s, SGT(cast_st64_36, VARLP("s")));
-	RzILOpPure *cast_ut64_38 = CAST(64, IL_FALSE, op_GT_37);
-	RzILOpPure *op_LSHIFT_39 = SHIFTL0(cast_ut64_38, VARL("j"));
-	RzILOpPure *op_OR_40 = LOGOR(op_AND_31, op_LSHIFT_39);
+	RzILOpPure *op_LE_26 = LET("const_pos7", const_pos7, ULE(VARL("j"), VARLP("const_pos7")));
+	RzILOpPure *op_LSHIFT_30 = LET("const_pos1ULL", const_pos1ULL, SHIFTL0(VARLP("const_pos1ULL"), VARL("j")));
+	RzILOpPure *op_NOT_31 = LOGNOT(op_LSHIFT_30);
+	RzILOpPure *op_AND_32 = LOGAND(VARG(Pd_assoc_tmp), op_NOT_31);
+	RzILOpPure *op_MUL_33 = LET("const_pos1", const_pos1, LET("const_pos32", const_pos32, MUL(VARLP("const_pos1"), VARLP("const_pos32"))));
+	RzILOpPure *op_RSHIFT_34 = SHIFTR0(DUP(Rss), op_MUL_33);
+	RzILOpPure *op_AND_35 = LET("const_pos0x0ffffffffLL", const_pos0x0ffffffffLL, LOGAND(op_RSHIFT_34, VARLP("const_pos0x0ffffffffLL")));
+	RzILOpPure *cast_st32_36 = CAST(32, MSB(op_AND_35), op_AND_35);
+	RzILOpPure *cast_st64_37 = CAST(32, MSB(cast_st32_36), cast_st32_36);
+	RzILOpPure *op_GT_38 = LET("s", s, SGT(cast_st64_37, VARLP("s")));
+	RzILOpPure *cast_ut64_39 = CAST(64, IL_FALSE, op_GT_38);
+	RzILOpPure *op_LSHIFT_40 = SHIFTL0(cast_ut64_39, VARL("j"));
+	RzILOpPure *op_OR_41 = LOGOR(op_AND_32, op_LSHIFT_40);
 
 	// WRITE
 	RzILOpEffect *empty_0 = EMPTY();
@@ -2440,19 +2440,21 @@ RzILOpEffect *hex_il_op_a4_vcmpwgti(HexInsnPktBundle *bundle) {
 	RzILOpEffect *op_ASSIGN_18 = SETG(Pd_assoc_tmp, op_OR_17);
 	RzILOpEffect *seq_19 = SEQN(2, seq_5, op_ASSIGN_18);
 	RzILOpEffect *empty_20 = EMPTY();
-	RzILOpEffect *seq_21 = SEQN(1, empty_20);
+	RzILOpEffect *seq_21 = SEQN(2, seq_19, empty_20);
 	RzILOpEffect *for_22 = SEQ2(op_ASSIGN_1, REPEAT(op_LE_2, seq_21));
 	RzILOpEffect *empty_23 = EMPTY();
-	RzILOpEffect *op_ASSIGN_24 = SETL("j", LET("const_pos4", const_pos4, VARLP("const_pos4")));
-	RzILOpEffect *op_INC_26 = SETL("j", INC(VARL("j"), 32));
-	RzILOpEffect *op_ASSIGN_hybrid_tmp_27 = SETL("h_tmp1", VARL("j"));
-	RzILOpEffect *seq_28 = SEQN(2, op_ASSIGN_hybrid_tmp_27, op_INC_26);
-	RzILOpEffect *op_ASSIGN_41 = SETG(Pd_assoc_tmp, op_OR_40);
-	RzILOpEffect *seq_42 = SEQN(2, seq_28, op_ASSIGN_41);
-	RzILOpEffect *empty_43 = EMPTY();
-	RzILOpEffect *seq_44 = SEQN(1, empty_43);
-	RzILOpEffect *for_45 = SEQ2(op_ASSIGN_24, REPEAT(op_LE_25, seq_44));
-	RzILOpEffect *instruction_sequence = SEQN(6, empty_0, for_22, empty_23, for_45, seq_19, seq_42);
+	RzILOpEffect *empty_24 = EMPTY();
+	RzILOpEffect *op_ASSIGN_25 = SETL("j", LET("const_pos4", const_pos4, VARLP("const_pos4")));
+	RzILOpEffect *op_INC_27 = SETL("j", INC(VARL("j"), 32));
+	RzILOpEffect *op_ASSIGN_hybrid_tmp_28 = SETL("h_tmp1", VARL("j"));
+	RzILOpEffect *seq_29 = SEQN(2, op_ASSIGN_hybrid_tmp_28, op_INC_27);
+	RzILOpEffect *op_ASSIGN_42 = SETG(Pd_assoc_tmp, op_OR_41);
+	RzILOpEffect *seq_43 = SEQN(2, seq_29, op_ASSIGN_42);
+	RzILOpEffect *empty_44 = EMPTY();
+	RzILOpEffect *seq_45 = SEQN(2, seq_43, empty_44);
+	RzILOpEffect *for_46 = SEQ2(op_ASSIGN_25, REPEAT(op_LE_26, seq_45));
+	RzILOpEffect *empty_47 = EMPTY();
+	RzILOpEffect *instruction_sequence = SEQN(6, empty_0, for_22, empty_23, empty_24, for_46, empty_47);
 
 	return instruction_sequence;
 }

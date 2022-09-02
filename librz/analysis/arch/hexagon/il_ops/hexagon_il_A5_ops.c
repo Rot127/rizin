@@ -3,13 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-08-19 17:38:03-04:00
-// SPDX-FileCopyrightText: 2021 Rot127 <unisono@quyllur.org>
-// SPDX-License-Identifier: LGPL-3.0-only
-
-// LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
-// LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-08-19 17:04:30-04:00
+// Date of code generation: 2022-08-21 16:48:53-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -113,7 +107,7 @@ RzILOpEffect *hex_il_op_a5_vaddhubs(HexInsnPktBundle *bundle) {
 	RzILOpEffect *op_INC_3 = SETL("i", INC(VARL("i"), 32));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_4 = SETL("h_tmp0", VARL("i"));
 	RzILOpEffect *seq_5 = SEQN(2, op_ASSIGN_hybrid_tmp_4, op_INC_3);
-	RzILOpEffect *c_call_20 = HEX_EXTRACT64(op_ADD_19, VARLP("const_pos0"), VARLP("const_pos8"));
+	RzILOpEffect *c_call_20 = HEX_EXTRACT64(op_ADD_19, LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos8", const_pos8, VARLP("const_pos8")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_21 = SETL("h_tmp1", UNSIGNED(16, VARL("ret_val")));
 	RzILOpEffect *seq_22 = SEQN(2, c_call_20, op_ASSIGN_hybrid_tmp_21);
 	RzILOpEffect *seq_23 = SEQN(2, seq_5, seq_22);
@@ -129,7 +123,7 @@ RzILOpEffect *hex_il_op_a5_vaddhubs(HexInsnPktBundle *bundle) {
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_53 = SETL("h_tmp4", UNSIGNED(32, VARL("ret_val")));
 	RzILOpEffect *seq_54 = SEQN(2, c_call_52, op_ASSIGN_hybrid_tmp_53);
 	RzILOpEffect *seq_55 = SEQN(2, seq_51, seq_54);
-	RzILOpEffect *c_call_56 = HEX_DEPOSIT64(VARG(usr_assoc_tmp), VARL("h_tmp3"), VARL("h_tmp4"), VARLP("const_pos1"));
+	RzILOpEffect *c_call_56 = HEX_DEPOSIT64(VARG(usr_assoc_tmp), VARL("h_tmp3"), VARL("h_tmp4"), LET("const_pos1", const_pos1, VARLP("const_pos1")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_57 = SETL("h_tmp5", UNSIGNED(64, VARL("ret_val")));
 	RzILOpEffect *seq_58 = SEQN(2, c_call_56, op_ASSIGN_hybrid_tmp_57);
 	RzILOpEffect *seq_59 = SEQN(2, seq_55, seq_58);

@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-08-19 17:38:03-04:00
+// Date of code generation: 2022-08-21 16:48:53-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -14,7 +14,7 @@
 #include <hexagon.h>
 #include <rz_il/rz_il_opcodes.h>
 
-RzILOpEffect *hex_il_op_j2_endloop01() {
+RzILOpEffect *hex_il_op_j2_endloop01(HexInsnPktBundle *bundle) {
 	// READ
 	// Declare: ut32 h_tmp0;
 	const char *usr_assoc_tmp = ALIAS2REG(HEX_REG_ALIAS_USR, true);
@@ -180,7 +180,7 @@ RzILOpEffect *hex_il_op_j2_endloop01() {
 	return instruction_sequence;
 }
 
-RzILOpEffect *hex_il_op_j2_endloop0() {
+RzILOpEffect *hex_il_op_j2_endloop0(HexInsnPktBundle *bundle) {
 	// READ
 	// Declare: ut32 h_tmp0;
 	const char *usr_assoc_tmp = ALIAS2REG(HEX_REG_ALIAS_USR, true);
@@ -334,7 +334,7 @@ RzILOpEffect *hex_il_op_j2_endloop0() {
 	return instruction_sequence;
 }
 
-RzILOpEffect *hex_il_op_j2_endloop1() {
+RzILOpEffect *hex_il_op_j2_endloop1(HexInsnPktBundle *bundle) {
 	// READ
 	const char *lc1_assoc_tmp = ALIAS2REG(HEX_REG_ALIAS_LC1, true);
 	RzILOpPure *const_pos1 = UN(32, 0x1);
@@ -460,23 +460,112 @@ RZ_IPI RZ_OWN RzILOpEffect *hex_get_npc(const HexPkt *pkt) {
 }
 
 RZ_IPI RZ_OWN RzILOpEffect *hex_clz32(RZ_BORROW RzILOpPure *val) {
-    rz_return_val_if_fail(val, NULL);
-    return SEQ4(SETL("ret_val", U64(0)),
-                SETL("bit", U32(0x80000000)),
-                SETL("val", CAST(32, MSB(DUP(val)), DUP(val))),
-				REPEAT(AND(IS_ZERO(LOGAND(VARL("val"), VARL("bit"))),
-                            NON_ZERO(VARL("bit"))),
-                        SEQ2(SETL("ret_val", INC(VARL("ret_val"), 64)),
-                            SETL("bit", SHIFTR0(VARL("bit"), U32(1))))));
+	rz_return_val_if_fail(val, NULL);
+	return SEQ4(SETL("ret_val", U64(0)),
+		SETL("bit", U32(0x80000000)),
+		SETL("val", CAST(32, MSB(DUP(val)), DUP(val))),
+		REPEAT(AND(IS_ZERO(LOGAND(VARL("val"), VARL("bit"))),
+			       NON_ZERO(VARL("bit"))),
+			SEQ2(SETL("ret_val", INC(VARL("ret_val"), 64)),
+				SETL("bit", SHIFTR0(VARL("bit"), U32(1))))));
 }
 
 RZ_IPI RZ_OWN RzILOpEffect *hex_clo32(RZ_BORROW RzILOpPure *val) {
-    rz_return_val_if_fail(val, NULL);
-    return hex_clz32(LOGNOT(DUP(val)));
+	rz_return_val_if_fail(val, NULL);
+	return hex_clz32(LOGNOT(DUP(val)));
 }
 
 RZ_IPI RZ_OWN RzILOpEffect *hex_write_pred(RZ_BORROW RzILOpPure *pred, RZ_BORROW RzILOpPure *cond) {
-    NOT_IMPLEMENTED;
+	NOT_IMPLEMENTED;
+}
+
+RZ_IPI RZ_OWN RzILOpEffect *hex_sync_regs(HexInsnPktBundle *bundle) {
+	return SEQN(85,
+		SETG("C0", VARG("C0_tmp")),
+		SETG("C1", VARG("C1_tmp")),
+		SETG("C2", VARG("C2_tmp")),
+		SETG("C3", VARG("C3_tmp")),
+		SETG("C4", VARG("C4_tmp")),
+		SETG("C5", VARG("C5_tmp")),
+		SETG("C6", VARG("C6_tmp")),
+		SETG("C7", VARG("C7_tmp")),
+		SETG("C8", VARG("C8_tmp")),
+		SETG("C9", VARG("C9_tmp")),
+		SETG("C10", VARG("C10_tmp")),
+		SETG("C11", VARG("C11_tmp")),
+		SETG("C12", VARG("C12_tmp")),
+		SETG("C13", VARG("C13_tmp")),
+		SETG("C14", VARG("C14_tmp")),
+		SETG("C15", VARG("C15_tmp")),
+		SETG("C16", VARG("C16_tmp")),
+		SETG("C17", VARG("C17_tmp")),
+		SETG("C18", VARG("C18_tmp")),
+		SETG("C19", VARG("C19_tmp")),
+		SETG("C30", VARG("C30_tmp")),
+		SETG("C31", VARG("C31_tmp")),
+		SETG("C1:0", VARG("C1:0_tmp")),
+		SETG("C3:2", VARG("C3:2_tmp")),
+		SETG("C5:4", VARG("C5:4_tmp")),
+		SETG("C7:6", VARG("C7:6_tmp")),
+		SETG("C9:8", VARG("C9:8_tmp")),
+		SETG("C11:10", VARG("C11:10_tmp")),
+		SETG("C13:12", VARG("C13:12_tmp")),
+		SETG("C15:14", VARG("C15:14_tmp")),
+		SETG("C17:16", VARG("C17:16_tmp")),
+		SETG("C19:18", VARG("C19:18_tmp")),
+		SETG("C31:30", VARG("C31:30_tmp")),
+		SETG("R1:0", VARG("R1:0_tmp")),
+		SETG("R3:2", VARG("R3:2_tmp")),
+		SETG("R5:4", VARG("R5:4_tmp")),
+		SETG("R7:6", VARG("R7:6_tmp")),
+		SETG("R9:8", VARG("R9:8_tmp")),
+		SETG("R11:10", VARG("R11:10_tmp")),
+		SETG("R13:12", VARG("R13:12_tmp")),
+		SETG("R15:14", VARG("R15:14_tmp")),
+		SETG("R17:16", VARG("R17:16_tmp")),
+		SETG("R19:18", VARG("R19:18_tmp")),
+		SETG("R21:20", VARG("R21:20_tmp")),
+		SETG("R23:22", VARG("R23:22_tmp")),
+		SETG("R25:24", VARG("R25:24_tmp")),
+		SETG("R27:26", VARG("R27:26_tmp")),
+		SETG("R29:28", VARG("R29:28_tmp")),
+		SETG("R31:30", VARG("R31:30_tmp")),
+		SETG("R0", VARG("R0_tmp")),
+		SETG("R1", VARG("R1_tmp")),
+		SETG("R2", VARG("R2_tmp")),
+		SETG("R3", VARG("R3_tmp")),
+		SETG("R4", VARG("R4_tmp")),
+		SETG("R5", VARG("R5_tmp")),
+		SETG("R6", VARG("R6_tmp")),
+		SETG("R7", VARG("R7_tmp")),
+		SETG("R8", VARG("R8_tmp")),
+		SETG("R9", VARG("R9_tmp")),
+		SETG("R10", VARG("R10_tmp")),
+		SETG("R11", VARG("R11_tmp")),
+		SETG("R12", VARG("R12_tmp")),
+		SETG("R13", VARG("R13_tmp")),
+		SETG("R14", VARG("R14_tmp")),
+		SETG("R15", VARG("R15_tmp")),
+		SETG("R16", VARG("R16_tmp")),
+		SETG("R17", VARG("R17_tmp")),
+		SETG("R18", VARG("R18_tmp")),
+		SETG("R19", VARG("R19_tmp")),
+		SETG("R20", VARG("R20_tmp")),
+		SETG("R21", VARG("R21_tmp")),
+		SETG("R22", VARG("R22_tmp")),
+		SETG("R23", VARG("R23_tmp")),
+		SETG("R24", VARG("R24_tmp")),
+		SETG("R25", VARG("R25_tmp")),
+		SETG("R26", VARG("R26_tmp")),
+		SETG("R27", VARG("R27_tmp")),
+		SETG("R28", VARG("R28_tmp")),
+		SETG("R29", VARG("R29_tmp")),
+		SETG("R30", VARG("R30_tmp")),
+		SETG("R31", VARG("R31_tmp")),
+		SETG("P0", VARG("P0_tmp")),
+		SETG("P1", VARG("P1_tmp")),
+		SETG("P2", VARG("P2_tmp")),
+		SETG("P3", VARG("P3_tmp")));
 }
 
 #include <rz_il/rz_il_opbuilder_end.h>

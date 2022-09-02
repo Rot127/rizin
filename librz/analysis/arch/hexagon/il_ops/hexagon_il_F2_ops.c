@@ -3,13 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-08-19 17:38:03-04:00
-// SPDX-FileCopyrightText: 2021 Rot127 <unisono@quyllur.org>
-// SPDX-License-Identifier: LGPL-3.0-only
-
-// LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
-// LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-08-19 17:04:30-04:00
+// Date of code generation: 2022-08-21 16:48:53-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -257,7 +251,7 @@ RzILOpEffect *hex_il_op_f2_dfmpylh(HexInsnPktBundle *bundle) {
 	RzILOpPure *addop_LSHIFT_17Rxx = ADD(op_LSHIFT_17, Rxx);
 
 	// WRITE
-	RzILOpEffect *c_call_11 = HEX_EXTRACT64(cast_ut64_10, VARLP("const_pos0"), VARLP("const_pos20"));
+	RzILOpEffect *c_call_11 = HEX_EXTRACT64(cast_ut64_10, LET("const_pos0", const_pos0, VARLP("const_pos0")), LET("const_pos20", const_pos20, VARLP("const_pos20")));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_12 = SETL("h_tmp0", UNSIGNED(64, VARL("ret_val")));
 	RzILOpEffect *seq_13 = SEQN(2, c_call_11, op_ASSIGN_hybrid_tmp_12);
 	RzILOpEffect *op_ASSIGN_ADD_18 = SETG(Rxx_assoc_tmp, addop_LSHIFT_17Rxx);
