@@ -128,6 +128,9 @@ RZ_IPI bool hex_shuffle_insns(RZ_INOUT HexPkt *p) {
 		flag = false;
 		for (flag = false, n_mems = 0, i = last_insn; i >= 0; i--) {
 			op = rz_vector_index_ptr(ops, i);
+			if (!op) {
+				RZ_LOG_FATAL("NULL il op at index %" PFMT32d "\n", i);
+			}
 			if (flag && (op->attr & HEX_IL_INSN_ATTR_MEM_WRITE)) {
 				hex_send_insn_to_i(ops, i, last_insn - n_mems);
 				n_mems++;
@@ -202,7 +205,7 @@ RZ_IPI bool hex_shuffle_insns(RZ_INOUT HexPkt *p) {
 }
 
 static RzILOpEffect *hex_il_op_to_effect(const HexILOp *il_op, const HexPkt *pkt) {
-	rz_return_val_if_fail(il_op->get_il_op && il_op->hi, NULL);
+	rz_return_val_if_fail(il_op && il_op->get_il_op && il_op->hi, NULL);
 	HexInsnPktBundle bundle = { 0 };
 	bundle.insn = (HexInsn *)il_op->hi;
 	bundle.pkt = pkt;
