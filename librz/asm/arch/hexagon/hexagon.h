@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-08-19 17:38:03-04:00
+// Date of code generation: 2022-08-21 04:47:31-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -190,7 +190,7 @@ typedef struct {
 	ut32 pkt_addr; ///< Address of the packet. Equals the address of the first instruction.
 	ut64 last_access; ///< Last time accessed in milliseconds
 	RzList /* HexInsnContainer */ *bin; ///< Descending by address sorted list of instruction containers.
-	RzList /* HexILOp */ *il_ops; ///< RZIL ops of the packet. If empty the il ops were not shuffled into order yet.
+	RzVector /* HexILOp* */ *il_ops; ///< Pointer to RZIL ops of the packet. If empty the il ops were not shuffled into order yet.
 } HexPkt;
 
 /**
@@ -211,6 +211,7 @@ typedef struct {
  * \brief Buffer packets for reversed instructions.
  */
 typedef struct {
+	bool just_init; ///< Flag indicates if IL VM was just initialized.
 	HexPkt pkts[HEXAGON_STATE_PKTS]; // buffered instructions
 	RzList *const_ext_l; // Constant extender values.
 	RzAsm rz_asm; // Copy of RzAsm struct. Holds certain flags of interesed for disassembly formatting.

@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-08-16 08:31:12-04:00
+// Date of code generation: 2022-08-21 04:47:31-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -15,6 +15,7 @@
 #include "hexagon.h"
 #include "hexagon_insn.h"
 #include "hexagon_arch.h"
+#include "rz_vector.h"
 
 static inline bool is_last_instr(const ut8 parse_bits) {
 	// Duplex instr. (parse bits = 0) are always the last.
@@ -179,7 +180,7 @@ static void hex_clear_pkt(RZ_NONNULL HexPkt *p) {
 	p->is_valid = false;
 	p->last_access = 0;
 	rz_list_purge(p->bin);
-	rz_list_purge(p->il_ops);
+	rz_vector_clear(p->il_ops);
 }
 
 /**
@@ -307,7 +308,7 @@ RZ_API HexState *hexagon_get_state() {
 	}
 	for (int i = 0; i < HEXAGON_STATE_PKTS; ++i) {
 		state->pkts[i].bin = rz_list_newf((RzListFree)hex_insn_container_free);
-		state->pkts[i].il_ops = rz_list_new();
+		state->pkts[i].il_ops = rz_vector_new(sizeof(HexILOp*), NULL, NULL);
 		if (!state->pkts[i].bin) {
 			RZ_LOG_FATAL("Could not initialize instruction list!");
 		}

@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-08-19 17:38:03-04:00
+// Date of code generation: 2022-08-21 04:47:31-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -36,8 +36,10 @@ RZ_API int hexagon_v6_op(RzAnalysis *analysis, RzAnalysisOp *op, ut64 addr, cons
 	return op->size;
 }
 
-RZ_IPI RzAnalysisILConfig *rz_hexagon_il_config(bool big_endian) {
-	return rz_analysis_il_config_new(32, big_endian, 39);
+static RzAnalysisILConfig *rz_hexagon_il_config(RzAnalysis *a) {
+	HexState *state = hexagon_get_state();
+	state->just_init = true;
+	return rz_analysis_il_config_new(32, a->big_endian, 39);
 }
 
 RZ_API char *get_reg_profile(RzAnalysis *analysis) {
