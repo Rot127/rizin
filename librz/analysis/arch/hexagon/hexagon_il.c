@@ -272,6 +272,7 @@ static bool set_pkt_il_ops(RZ_INOUT HexPkt *p) {
 		if (pos->is_duplex) {
 			// High sub-instructions
 			il_insn = hex_il_getter_lt[pos->bin.sub[0]->identifier];
+			il_insn.op0.hi = pos->bin.sub[0];
 			pos->bin.sub[0]->il_insn = il_insn;
 			if (il_insn.op0.attr == HEX_IL_INSN_ATTR_INVALID) {
 				RZ_LOG_INFO("Hexagon instruction %" PFMT32d " not implemented.\n", pos->bin.sub[0]->identifier);
@@ -279,11 +280,13 @@ static bool set_pkt_il_ops(RZ_INOUT HexPkt *p) {
 			}
 			rz_vector_push(p->il_ops, &il_insn.op0);
 			if (il_insn.op1.attr != HEX_IL_INSN_ATTR_INVALID) {
+				il_insn.op1.hi = pos->bin.sub[1];
 				rz_vector_push(p->il_ops, &il_insn.op1);
 			}
 
 			// Low sub-instructions
 			il_insn = hex_il_getter_lt[pos->bin.sub[1]->identifier];
+			il_insn.op0.hi = pos->bin.sub[0];
 			pos->bin.sub[1]->il_insn = il_insn;
 			if (il_insn.op0.attr == HEX_IL_INSN_ATTR_INVALID) {
 				RZ_LOG_INFO("Hexagon instruction %" PFMT32d " not implemented.\n", pos->bin.sub[1]->identifier);
@@ -291,17 +294,20 @@ static bool set_pkt_il_ops(RZ_INOUT HexPkt *p) {
 			}
 			rz_vector_push(p->il_ops, &il_insn.op0);
 			if (il_insn.op1.attr != HEX_IL_INSN_ATTR_INVALID) {
+				il_insn.op1.hi = pos->bin.sub[1];
 				rz_vector_push(p->il_ops, &il_insn.op1);
 			}
 		} else {
 			il_insn = hex_il_getter_lt[pos->bin.insn->identifier];
 			pos->bin.insn->il_insn = il_insn;
+			il_insn.op0.hi = pos->bin.insn;
 			if (pos->bin.insn->il_insn.op0.attr == HEX_IL_INSN_ATTR_INVALID) {
 				RZ_LOG_INFO("Hexagon instruction %" PFMT32d " not implemented.\n", pos->bin.insn->identifier);
 				return false;
 			}
 			rz_vector_push(p->il_ops, &il_insn.op0);
 			if (il_insn.op1.attr != HEX_IL_INSN_ATTR_INVALID) {
+				il_insn.op1.hi = pos->bin.insn;
 				rz_vector_push(p->il_ops, &il_insn.op1);
 			}
 		}
