@@ -112,7 +112,7 @@ RZ_IPI bool hex_shuffle_insns(RZ_INOUT HexPkt *p) {
 	int i;
 	bool flag; /* flag means we've seen a non-memory instruction */
 	int n_mems; /* Number of memory instructions passed */
-	int last_insn = rz_list_length(p->bin) - 1;
+	int last_insn = rz_vector_len(p->il_ops) - 1;
 	HexILOp *op;
 
 	do {
