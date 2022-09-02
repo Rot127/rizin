@@ -144,7 +144,7 @@ RZ_API ut64 hex_isa_to_imm(const HexInsn *hi, const char isa_id) {
 			return hi->ops[i].op.imm;
 		}
 	}
-	RZ_LOG_WARN("No immediate operand for \"%c\" found.\n", isa_id);
+	RZ_LOG_WARN("No immediate operand for \'%c\' found.\n", isa_id);
 	return 0;
 }
 
