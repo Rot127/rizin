@@ -354,23 +354,24 @@ RZ_IPI RzILOpEffect *hex_get_il_op(const ut32 addr) {
 		return NULL;
 	}
 
-	HexILOp op;
+	HexILOp *op = RZ_NEW0(HexILOp);
 	if (p->hw_loop == HEX_LOOP_0) {
-		op.attr = HEX_IL_INSN_ATTR_BRANCH | HEX_IL_INSN_ATTR_COND;
-		op.get_il_op = (HexILOpGetter)hex_il_op_j2_endloop0;
+		op->attr = HEX_IL_INSN_ATTR_BRANCH | HEX_IL_INSN_ATTR_COND;
+		op->get_il_op = (HexILOpGetter)hex_il_op_j2_endloop0;
 		rz_vector_push(p->il_ops, &op);
 	} else if (p->hw_loop == HEX_LOOP_1) {
-		op.attr = HEX_IL_INSN_ATTR_BRANCH | HEX_IL_INSN_ATTR_COND;
-		op.get_il_op = (HexILOpGetter)hex_il_op_j2_endloop1;
+		op->attr = HEX_IL_INSN_ATTR_BRANCH | HEX_IL_INSN_ATTR_COND;
+		op->get_il_op = (HexILOpGetter)hex_il_op_j2_endloop1;
 		rz_vector_push(p->il_ops, &op);
 	} else if (p->hw_loop == HEX_LOOP_01) {
-		op.attr = HEX_IL_INSN_ATTR_BRANCH | HEX_IL_INSN_ATTR_COND;
-		op.get_il_op = (HexILOpGetter)hex_il_op_j2_endloop01;
+		op->attr = HEX_IL_INSN_ATTR_BRANCH | HEX_IL_INSN_ATTR_COND;
+		op->get_il_op = (HexILOpGetter)hex_il_op_j2_endloop01;
 		rz_vector_push(p->il_ops, &op);
 	}
 
-	op.attr = HEX_IL_INSN_ATTR_NONE;
-	op.get_il_op = (HexILOpGetter)hex_sync_regs;
+	op = RZ_NEW0(HexILOp);
+	op->attr = HEX_IL_INSN_ATTR_NONE;
+	op->get_il_op = (HexILOpGetter)hex_sync_regs;
 	rz_vector_push(p->il_ops, &op);
 
 	return hex_pkt_to_il_seq(p);
