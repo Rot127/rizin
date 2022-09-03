@@ -3,7 +3,13 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-08-21 16:48:53-04:00
+// Date of code generation: 2022-09-03 08:20:53-04:00
+// SPDX-FileCopyrightText: 2021 Rot127 <unisono@quyllur.org>
+// SPDX-License-Identifier: LGPL-3.0-only
+
+// LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
+// LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
+// Date of code generation: 2022-09-02 14:24:46-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -23,9 +29,9 @@ RzILOpEffect *hex_il_op_sl2_deallocframe(HexInsnPktBundle *bundle) {
 	RzILOpPure *framekey = VARG(framekey_assoc);
 	RzILOpPure *const_pos32 = UN(64, 0x20);
 	const char *lr_assoc_tmp = ALIAS2REG(HEX_REG_ALIAS_LR, true);
-	RzILOpPure *const_pos1 = UN(32, 0x1);
+	RzILOpPure *const_pos1 = UN(64, 0x1);
 	RzILOpPure *const_pos0x0ffffffffLL = UN(64, 0xffffffff);
-	RzILOpPure *const_pos0 = UN(32, 0x0);
+	RzILOpPure *const_pos0 = UN(64, 0x0);
 	const char *sp_assoc_tmp = ALIAS2REG(HEX_REG_ALIAS_SP, true);
 	RzILOpPure *const_pos8 = UN(32, 0x8);
 
@@ -35,14 +41,14 @@ RzILOpEffect *hex_il_op_sl2_deallocframe(HexInsnPktBundle *bundle) {
 	RzILOpPure *cast_ut64_5 = CAST(64, IL_FALSE, framekey);
 	RzILOpPure *op_LSHIFT_6 = LET("const_pos32", const_pos32, SHIFTL0(cast_ut64_5, VARLP("const_pos32")));
 	RzILOpPure *op_XOR_7 = LOGXOR(VARL("tmp"), op_LSHIFT_6);
-	RzILOpPure *op_MUL_9 = LET("const_pos1", const_pos1, LET("const_pos32", const_pos32, MUL(VARLP("const_pos1"), VARLP("const_pos32"))));
+	RzILOpPure *op_MUL_9 = LET("const_pos1", const_pos1, LET("const_pos32", DUP(const_pos32), MUL(VARLP("const_pos1"), VARLP("const_pos32"))));
 	RzILOpPure *op_RSHIFT_10 = SHIFTR0(VARL("tmp"), op_MUL_9);
 	RzILOpPure *op_AND_11 = LET("const_pos0x0ffffffffLL", const_pos0x0ffffffffLL, LOGAND(op_RSHIFT_10, VARLP("const_pos0x0ffffffffLL")));
 	RzILOpPure *cast_st32_12 = CAST(32, MSB(op_AND_11), op_AND_11);
 	RzILOpPure *cast_st64_13 = CAST(64, MSB(cast_st32_12), cast_st32_12);
-	RzILOpPure *op_MUL_16 = LET("const_pos0", const_pos0, LET("const_pos32", const_pos32, MUL(VARLP("const_pos0"), VARLP("const_pos32"))));
+	RzILOpPure *op_MUL_16 = LET("const_pos0", const_pos0, LET("const_pos32", DUP(const_pos32), MUL(VARLP("const_pos0"), VARLP("const_pos32"))));
 	RzILOpPure *op_RSHIFT_17 = SHIFTR0(VARL("tmp"), op_MUL_16);
-	RzILOpPure *op_AND_18 = LET("const_pos0x0ffffffffLL", const_pos0x0ffffffffLL, LOGAND(op_RSHIFT_17, VARLP("const_pos0x0ffffffffLL")));
+	RzILOpPure *op_AND_18 = LET("const_pos0x0ffffffffLL", DUP(const_pos0x0ffffffffLL), LOGAND(op_RSHIFT_17, VARLP("const_pos0x0ffffffffLL")));
 	RzILOpPure *cast_st32_19 = CAST(32, MSB(op_AND_18), op_AND_18);
 	RzILOpPure *cast_st64_20 = CAST(64, MSB(cast_st32_19), cast_st32_19);
 	RzILOpPure *op_ADD_23 = LET("const_pos8", const_pos8, ADD(VARL("EA"), VARLP("const_pos8")));
@@ -290,9 +296,9 @@ RzILOpEffect *hex_il_op_sl2_return(HexInsnPktBundle *bundle) {
 	RzILOpPure *framekey = VARG(framekey_assoc);
 	RzILOpPure *const_pos32 = UN(64, 0x20);
 	const char *lr_assoc_tmp = ALIAS2REG(HEX_REG_ALIAS_LR, true);
-	RzILOpPure *const_pos1 = UN(32, 0x1);
+	RzILOpPure *const_pos1 = UN(64, 0x1);
 	RzILOpPure *const_pos0x0ffffffffLL = UN(64, 0xffffffff);
-	RzILOpPure *const_pos0 = UN(32, 0x0);
+	RzILOpPure *const_pos0 = UN(64, 0x0);
 	const char *sp_assoc_tmp = ALIAS2REG(HEX_REG_ALIAS_SP, true);
 	RzILOpPure *const_pos8 = UN(32, 0x8);
 
@@ -302,20 +308,20 @@ RzILOpEffect *hex_il_op_sl2_return(HexInsnPktBundle *bundle) {
 	RzILOpPure *cast_ut64_5 = CAST(64, IL_FALSE, framekey);
 	RzILOpPure *op_LSHIFT_6 = LET("const_pos32", const_pos32, SHIFTL0(cast_ut64_5, VARLP("const_pos32")));
 	RzILOpPure *op_XOR_7 = LOGXOR(VARL("tmp"), op_LSHIFT_6);
-	RzILOpPure *op_MUL_9 = LET("const_pos1", const_pos1, LET("const_pos32", const_pos32, MUL(VARLP("const_pos1"), VARLP("const_pos32"))));
+	RzILOpPure *op_MUL_9 = LET("const_pos1", const_pos1, LET("const_pos32", DUP(const_pos32), MUL(VARLP("const_pos1"), VARLP("const_pos32"))));
 	RzILOpPure *op_RSHIFT_10 = SHIFTR0(VARL("tmp"), op_MUL_9);
 	RzILOpPure *op_AND_11 = LET("const_pos0x0ffffffffLL", const_pos0x0ffffffffLL, LOGAND(op_RSHIFT_10, VARLP("const_pos0x0ffffffffLL")));
 	RzILOpPure *cast_st32_12 = CAST(32, MSB(op_AND_11), op_AND_11);
 	RzILOpPure *cast_st64_13 = CAST(64, MSB(cast_st32_12), cast_st32_12);
-	RzILOpPure *op_MUL_16 = LET("const_pos0", const_pos0, LET("const_pos32", const_pos32, MUL(VARLP("const_pos0"), VARLP("const_pos32"))));
+	RzILOpPure *op_MUL_16 = LET("const_pos0", const_pos0, LET("const_pos32", DUP(const_pos32), MUL(VARLP("const_pos0"), VARLP("const_pos32"))));
 	RzILOpPure *op_RSHIFT_17 = SHIFTR0(VARL("tmp"), op_MUL_16);
-	RzILOpPure *op_AND_18 = LET("const_pos0x0ffffffffLL", const_pos0x0ffffffffLL, LOGAND(op_RSHIFT_17, VARLP("const_pos0x0ffffffffLL")));
+	RzILOpPure *op_AND_18 = LET("const_pos0x0ffffffffLL", DUP(const_pos0x0ffffffffLL), LOGAND(op_RSHIFT_17, VARLP("const_pos0x0ffffffffLL")));
 	RzILOpPure *cast_st32_19 = CAST(32, MSB(op_AND_18), op_AND_18);
 	RzILOpPure *cast_st64_20 = CAST(64, MSB(cast_st32_19), cast_st32_19);
 	RzILOpPure *op_ADD_23 = LET("const_pos8", const_pos8, ADD(VARL("EA"), VARLP("const_pos8")));
-	RzILOpPure *op_MUL_26 = LET("const_pos1", const_pos1, LET("const_pos32", const_pos32, MUL(VARLP("const_pos1"), VARLP("const_pos32"))));
+	RzILOpPure *op_MUL_26 = LET("const_pos1", DUP(const_pos1), LET("const_pos32", DUP(const_pos32), MUL(VARLP("const_pos1"), VARLP("const_pos32"))));
 	RzILOpPure *op_RSHIFT_27 = SHIFTR0(VARL("tmp"), op_MUL_26);
-	RzILOpPure *op_AND_28 = LET("const_pos0x0ffffffffLL", const_pos0x0ffffffffLL, LOGAND(op_RSHIFT_27, VARLP("const_pos0x0ffffffffLL")));
+	RzILOpPure *op_AND_28 = LET("const_pos0x0ffffffffLL", DUP(const_pos0x0ffffffffLL), LOGAND(op_RSHIFT_27, VARLP("const_pos0x0ffffffffLL")));
 	RzILOpPure *cast_st32_29 = CAST(32, MSB(op_AND_28), op_AND_28);
 	RzILOpPure *cast_st64_30 = CAST(64, MSB(cast_st32_29), cast_st32_29);
 
@@ -343,13 +349,13 @@ RzILOpEffect *hex_il_op_sl2_return_f(HexInsnPktBundle *bundle) {
 	// Declare: ut32 EA;
 	const char *fp_assoc_tmp = ALIAS2REG(HEX_REG_ALIAS_FP, true);
 	RzILOpPure *P0 = VARG("P0");
-	RzILOpPure *const_pos1 = UN(32, 0x1);
+	RzILOpPure *const_pos1 = UN(64, 0x1);
 	const char *framekey_assoc = ALIAS2REG(HEX_REG_ALIAS_FRAMEKEY, false);
 	RzILOpPure *framekey = VARG(framekey_assoc);
 	RzILOpPure *const_pos32 = UN(64, 0x20);
 	const char *lr_assoc_tmp = ALIAS2REG(HEX_REG_ALIAS_LR, true);
 	RzILOpPure *const_pos0x0ffffffffLL = UN(64, 0xffffffff);
-	RzILOpPure *const_pos0 = UN(32, 0x0);
+	RzILOpPure *const_pos0 = UN(64, 0x0);
 	const char *sp_assoc_tmp = ALIAS2REG(HEX_REG_ALIAS_SP, true);
 	RzILOpPure *const_pos8 = UN(32, 0x8);
 
@@ -360,20 +366,20 @@ RzILOpEffect *hex_il_op_sl2_return_f(HexInsnPktBundle *bundle) {
 	RzILOpPure *cast_ut64_8 = CAST(64, IL_FALSE, framekey);
 	RzILOpPure *op_LSHIFT_9 = LET("const_pos32", const_pos32, SHIFTL0(cast_ut64_8, VARLP("const_pos32")));
 	RzILOpPure *op_XOR_10 = LOGXOR(VARL("tmp"), op_LSHIFT_9);
-	RzILOpPure *op_MUL_12 = LET("const_pos1", const_pos1, LET("const_pos32", const_pos32, MUL(VARLP("const_pos1"), VARLP("const_pos32"))));
+	RzILOpPure *op_MUL_12 = LET("const_pos1", DUP(const_pos1), LET("const_pos32", DUP(const_pos32), MUL(VARLP("const_pos1"), VARLP("const_pos32"))));
 	RzILOpPure *op_RSHIFT_13 = SHIFTR0(VARL("tmp"), op_MUL_12);
 	RzILOpPure *op_AND_14 = LET("const_pos0x0ffffffffLL", const_pos0x0ffffffffLL, LOGAND(op_RSHIFT_13, VARLP("const_pos0x0ffffffffLL")));
 	RzILOpPure *cast_st32_15 = CAST(32, MSB(op_AND_14), op_AND_14);
 	RzILOpPure *cast_st64_16 = CAST(64, MSB(cast_st32_15), cast_st32_15);
-	RzILOpPure *op_MUL_19 = LET("const_pos0", const_pos0, LET("const_pos32", const_pos32, MUL(VARLP("const_pos0"), VARLP("const_pos32"))));
+	RzILOpPure *op_MUL_19 = LET("const_pos0", const_pos0, LET("const_pos32", DUP(const_pos32), MUL(VARLP("const_pos0"), VARLP("const_pos32"))));
 	RzILOpPure *op_RSHIFT_20 = SHIFTR0(VARL("tmp"), op_MUL_19);
-	RzILOpPure *op_AND_21 = LET("const_pos0x0ffffffffLL", const_pos0x0ffffffffLL, LOGAND(op_RSHIFT_20, VARLP("const_pos0x0ffffffffLL")));
+	RzILOpPure *op_AND_21 = LET("const_pos0x0ffffffffLL", DUP(const_pos0x0ffffffffLL), LOGAND(op_RSHIFT_20, VARLP("const_pos0x0ffffffffLL")));
 	RzILOpPure *cast_st32_22 = CAST(32, MSB(op_AND_21), op_AND_21);
 	RzILOpPure *cast_st64_23 = CAST(64, MSB(cast_st32_22), cast_st32_22);
 	RzILOpPure *op_ADD_26 = LET("const_pos8", const_pos8, ADD(VARL("EA"), VARLP("const_pos8")));
-	RzILOpPure *op_MUL_29 = LET("const_pos1", const_pos1, LET("const_pos32", const_pos32, MUL(VARLP("const_pos1"), VARLP("const_pos32"))));
+	RzILOpPure *op_MUL_29 = LET("const_pos1", DUP(const_pos1), LET("const_pos32", DUP(const_pos32), MUL(VARLP("const_pos1"), VARLP("const_pos32"))));
 	RzILOpPure *op_RSHIFT_30 = SHIFTR0(VARL("tmp"), op_MUL_29);
-	RzILOpPure *op_AND_31 = LET("const_pos0x0ffffffffLL", const_pos0x0ffffffffLL, LOGAND(op_RSHIFT_30, VARLP("const_pos0x0ffffffffLL")));
+	RzILOpPure *op_AND_31 = LET("const_pos0x0ffffffffLL", DUP(const_pos0x0ffffffffLL), LOGAND(op_RSHIFT_30, VARLP("const_pos0x0ffffffffLL")));
 	RzILOpPure *cast_st32_32 = CAST(32, MSB(op_AND_31), op_AND_31);
 	RzILOpPure *cast_st64_33 = CAST(64, MSB(cast_st32_32), cast_st32_32);
 
@@ -408,13 +414,13 @@ RzILOpEffect *hex_il_op_sl2_return_fnew(HexInsnPktBundle *bundle) {
 	// Declare: ut32 EA;
 	const char *fp_assoc_tmp = ALIAS2REG(HEX_REG_ALIAS_FP, true);
 	RzILOpPure *P0 = VARG("P0");
-	RzILOpPure *const_pos1 = UN(32, 0x1);
+	RzILOpPure *const_pos1 = UN(64, 0x1);
 	const char *framekey_assoc = ALIAS2REG(HEX_REG_ALIAS_FRAMEKEY, false);
 	RzILOpPure *framekey = VARG(framekey_assoc);
 	RzILOpPure *const_pos32 = UN(64, 0x20);
 	const char *lr_assoc_tmp = ALIAS2REG(HEX_REG_ALIAS_LR, true);
 	RzILOpPure *const_pos0x0ffffffffLL = UN(64, 0xffffffff);
-	RzILOpPure *const_pos0 = UN(32, 0x0);
+	RzILOpPure *const_pos0 = UN(64, 0x0);
 	const char *sp_assoc_tmp = ALIAS2REG(HEX_REG_ALIAS_SP, true);
 	RzILOpPure *const_pos8 = UN(32, 0x8);
 
@@ -425,20 +431,20 @@ RzILOpEffect *hex_il_op_sl2_return_fnew(HexInsnPktBundle *bundle) {
 	RzILOpPure *cast_ut64_7 = CAST(64, IL_FALSE, framekey);
 	RzILOpPure *op_LSHIFT_8 = LET("const_pos32", const_pos32, SHIFTL0(cast_ut64_7, VARLP("const_pos32")));
 	RzILOpPure *op_XOR_9 = LOGXOR(VARL("tmp"), op_LSHIFT_8);
-	RzILOpPure *op_MUL_11 = LET("const_pos1", const_pos1, LET("const_pos32", const_pos32, MUL(VARLP("const_pos1"), VARLP("const_pos32"))));
+	RzILOpPure *op_MUL_11 = LET("const_pos1", DUP(const_pos1), LET("const_pos32", DUP(const_pos32), MUL(VARLP("const_pos1"), VARLP("const_pos32"))));
 	RzILOpPure *op_RSHIFT_12 = SHIFTR0(VARL("tmp"), op_MUL_11);
 	RzILOpPure *op_AND_13 = LET("const_pos0x0ffffffffLL", const_pos0x0ffffffffLL, LOGAND(op_RSHIFT_12, VARLP("const_pos0x0ffffffffLL")));
 	RzILOpPure *cast_st32_14 = CAST(32, MSB(op_AND_13), op_AND_13);
 	RzILOpPure *cast_st64_15 = CAST(64, MSB(cast_st32_14), cast_st32_14);
-	RzILOpPure *op_MUL_18 = LET("const_pos0", const_pos0, LET("const_pos32", const_pos32, MUL(VARLP("const_pos0"), VARLP("const_pos32"))));
+	RzILOpPure *op_MUL_18 = LET("const_pos0", const_pos0, LET("const_pos32", DUP(const_pos32), MUL(VARLP("const_pos0"), VARLP("const_pos32"))));
 	RzILOpPure *op_RSHIFT_19 = SHIFTR0(VARL("tmp"), op_MUL_18);
-	RzILOpPure *op_AND_20 = LET("const_pos0x0ffffffffLL", const_pos0x0ffffffffLL, LOGAND(op_RSHIFT_19, VARLP("const_pos0x0ffffffffLL")));
+	RzILOpPure *op_AND_20 = LET("const_pos0x0ffffffffLL", DUP(const_pos0x0ffffffffLL), LOGAND(op_RSHIFT_19, VARLP("const_pos0x0ffffffffLL")));
 	RzILOpPure *cast_st32_21 = CAST(32, MSB(op_AND_20), op_AND_20);
 	RzILOpPure *cast_st64_22 = CAST(64, MSB(cast_st32_21), cast_st32_21);
 	RzILOpPure *op_ADD_25 = LET("const_pos8", const_pos8, ADD(VARL("EA"), VARLP("const_pos8")));
-	RzILOpPure *op_MUL_28 = LET("const_pos1", const_pos1, LET("const_pos32", const_pos32, MUL(VARLP("const_pos1"), VARLP("const_pos32"))));
+	RzILOpPure *op_MUL_28 = LET("const_pos1", DUP(const_pos1), LET("const_pos32", DUP(const_pos32), MUL(VARLP("const_pos1"), VARLP("const_pos32"))));
 	RzILOpPure *op_RSHIFT_29 = SHIFTR0(VARL("tmp"), op_MUL_28);
-	RzILOpPure *op_AND_30 = LET("const_pos0x0ffffffffLL", const_pos0x0ffffffffLL, LOGAND(op_RSHIFT_29, VARLP("const_pos0x0ffffffffLL")));
+	RzILOpPure *op_AND_30 = LET("const_pos0x0ffffffffLL", DUP(const_pos0x0ffffffffLL), LOGAND(op_RSHIFT_29, VARLP("const_pos0x0ffffffffLL")));
 	RzILOpPure *cast_st32_31 = CAST(32, MSB(op_AND_30), op_AND_30);
 	RzILOpPure *cast_st64_32 = CAST(64, MSB(cast_st32_31), cast_st32_31);
 
@@ -472,13 +478,13 @@ RzILOpEffect *hex_il_op_sl2_return_t(HexInsnPktBundle *bundle) {
 	// Declare: ut32 EA;
 	const char *fp_assoc_tmp = ALIAS2REG(HEX_REG_ALIAS_FP, true);
 	RzILOpPure *P0 = VARG("P0");
-	RzILOpPure *const_pos1 = UN(32, 0x1);
+	RzILOpPure *const_pos1 = UN(64, 0x1);
 	const char *framekey_assoc = ALIAS2REG(HEX_REG_ALIAS_FRAMEKEY, false);
 	RzILOpPure *framekey = VARG(framekey_assoc);
 	RzILOpPure *const_pos32 = UN(64, 0x20);
 	const char *lr_assoc_tmp = ALIAS2REG(HEX_REG_ALIAS_LR, true);
 	RzILOpPure *const_pos0x0ffffffffLL = UN(64, 0xffffffff);
-	RzILOpPure *const_pos0 = UN(32, 0x0);
+	RzILOpPure *const_pos0 = UN(64, 0x0);
 	const char *sp_assoc_tmp = ALIAS2REG(HEX_REG_ALIAS_SP, true);
 	RzILOpPure *const_pos8 = UN(32, 0x8);
 
@@ -489,20 +495,20 @@ RzILOpEffect *hex_il_op_sl2_return_t(HexInsnPktBundle *bundle) {
 	RzILOpPure *cast_ut64_8 = CAST(64, IL_FALSE, framekey);
 	RzILOpPure *op_LSHIFT_9 = LET("const_pos32", const_pos32, SHIFTL0(cast_ut64_8, VARLP("const_pos32")));
 	RzILOpPure *op_XOR_10 = LOGXOR(VARL("tmp"), op_LSHIFT_9);
-	RzILOpPure *op_MUL_12 = LET("const_pos1", const_pos1, LET("const_pos32", const_pos32, MUL(VARLP("const_pos1"), VARLP("const_pos32"))));
+	RzILOpPure *op_MUL_12 = LET("const_pos1", DUP(const_pos1), LET("const_pos32", DUP(const_pos32), MUL(VARLP("const_pos1"), VARLP("const_pos32"))));
 	RzILOpPure *op_RSHIFT_13 = SHIFTR0(VARL("tmp"), op_MUL_12);
 	RzILOpPure *op_AND_14 = LET("const_pos0x0ffffffffLL", const_pos0x0ffffffffLL, LOGAND(op_RSHIFT_13, VARLP("const_pos0x0ffffffffLL")));
 	RzILOpPure *cast_st32_15 = CAST(32, MSB(op_AND_14), op_AND_14);
 	RzILOpPure *cast_st64_16 = CAST(64, MSB(cast_st32_15), cast_st32_15);
-	RzILOpPure *op_MUL_19 = LET("const_pos0", const_pos0, LET("const_pos32", const_pos32, MUL(VARLP("const_pos0"), VARLP("const_pos32"))));
+	RzILOpPure *op_MUL_19 = LET("const_pos0", const_pos0, LET("const_pos32", DUP(const_pos32), MUL(VARLP("const_pos0"), VARLP("const_pos32"))));
 	RzILOpPure *op_RSHIFT_20 = SHIFTR0(VARL("tmp"), op_MUL_19);
-	RzILOpPure *op_AND_21 = LET("const_pos0x0ffffffffLL", const_pos0x0ffffffffLL, LOGAND(op_RSHIFT_20, VARLP("const_pos0x0ffffffffLL")));
+	RzILOpPure *op_AND_21 = LET("const_pos0x0ffffffffLL", DUP(const_pos0x0ffffffffLL), LOGAND(op_RSHIFT_20, VARLP("const_pos0x0ffffffffLL")));
 	RzILOpPure *cast_st32_22 = CAST(32, MSB(op_AND_21), op_AND_21);
 	RzILOpPure *cast_st64_23 = CAST(64, MSB(cast_st32_22), cast_st32_22);
 	RzILOpPure *op_ADD_26 = LET("const_pos8", const_pos8, ADD(VARL("EA"), VARLP("const_pos8")));
-	RzILOpPure *op_MUL_29 = LET("const_pos1", const_pos1, LET("const_pos32", const_pos32, MUL(VARLP("const_pos1"), VARLP("const_pos32"))));
+	RzILOpPure *op_MUL_29 = LET("const_pos1", DUP(const_pos1), LET("const_pos32", DUP(const_pos32), MUL(VARLP("const_pos1"), VARLP("const_pos32"))));
 	RzILOpPure *op_RSHIFT_30 = SHIFTR0(VARL("tmp"), op_MUL_29);
-	RzILOpPure *op_AND_31 = LET("const_pos0x0ffffffffLL", const_pos0x0ffffffffLL, LOGAND(op_RSHIFT_30, VARLP("const_pos0x0ffffffffLL")));
+	RzILOpPure *op_AND_31 = LET("const_pos0x0ffffffffLL", DUP(const_pos0x0ffffffffLL), LOGAND(op_RSHIFT_30, VARLP("const_pos0x0ffffffffLL")));
 	RzILOpPure *cast_st32_32 = CAST(32, MSB(op_AND_31), op_AND_31);
 	RzILOpPure *cast_st64_33 = CAST(64, MSB(cast_st32_32), cast_st32_32);
 
@@ -537,13 +543,13 @@ RzILOpEffect *hex_il_op_sl2_return_tnew(HexInsnPktBundle *bundle) {
 	// Declare: ut32 EA;
 	const char *fp_assoc_tmp = ALIAS2REG(HEX_REG_ALIAS_FP, true);
 	RzILOpPure *P0 = VARG("P0");
-	RzILOpPure *const_pos1 = UN(32, 0x1);
+	RzILOpPure *const_pos1 = UN(64, 0x1);
 	const char *framekey_assoc = ALIAS2REG(HEX_REG_ALIAS_FRAMEKEY, false);
 	RzILOpPure *framekey = VARG(framekey_assoc);
 	RzILOpPure *const_pos32 = UN(64, 0x20);
 	const char *lr_assoc_tmp = ALIAS2REG(HEX_REG_ALIAS_LR, true);
 	RzILOpPure *const_pos0x0ffffffffLL = UN(64, 0xffffffff);
-	RzILOpPure *const_pos0 = UN(32, 0x0);
+	RzILOpPure *const_pos0 = UN(64, 0x0);
 	const char *sp_assoc_tmp = ALIAS2REG(HEX_REG_ALIAS_SP, true);
 	RzILOpPure *const_pos8 = UN(32, 0x8);
 
@@ -554,20 +560,20 @@ RzILOpEffect *hex_il_op_sl2_return_tnew(HexInsnPktBundle *bundle) {
 	RzILOpPure *cast_ut64_7 = CAST(64, IL_FALSE, framekey);
 	RzILOpPure *op_LSHIFT_8 = LET("const_pos32", const_pos32, SHIFTL0(cast_ut64_7, VARLP("const_pos32")));
 	RzILOpPure *op_XOR_9 = LOGXOR(VARL("tmp"), op_LSHIFT_8);
-	RzILOpPure *op_MUL_11 = LET("const_pos1", const_pos1, LET("const_pos32", const_pos32, MUL(VARLP("const_pos1"), VARLP("const_pos32"))));
+	RzILOpPure *op_MUL_11 = LET("const_pos1", DUP(const_pos1), LET("const_pos32", DUP(const_pos32), MUL(VARLP("const_pos1"), VARLP("const_pos32"))));
 	RzILOpPure *op_RSHIFT_12 = SHIFTR0(VARL("tmp"), op_MUL_11);
 	RzILOpPure *op_AND_13 = LET("const_pos0x0ffffffffLL", const_pos0x0ffffffffLL, LOGAND(op_RSHIFT_12, VARLP("const_pos0x0ffffffffLL")));
 	RzILOpPure *cast_st32_14 = CAST(32, MSB(op_AND_13), op_AND_13);
 	RzILOpPure *cast_st64_15 = CAST(64, MSB(cast_st32_14), cast_st32_14);
-	RzILOpPure *op_MUL_18 = LET("const_pos0", const_pos0, LET("const_pos32", const_pos32, MUL(VARLP("const_pos0"), VARLP("const_pos32"))));
+	RzILOpPure *op_MUL_18 = LET("const_pos0", const_pos0, LET("const_pos32", DUP(const_pos32), MUL(VARLP("const_pos0"), VARLP("const_pos32"))));
 	RzILOpPure *op_RSHIFT_19 = SHIFTR0(VARL("tmp"), op_MUL_18);
-	RzILOpPure *op_AND_20 = LET("const_pos0x0ffffffffLL", const_pos0x0ffffffffLL, LOGAND(op_RSHIFT_19, VARLP("const_pos0x0ffffffffLL")));
+	RzILOpPure *op_AND_20 = LET("const_pos0x0ffffffffLL", DUP(const_pos0x0ffffffffLL), LOGAND(op_RSHIFT_19, VARLP("const_pos0x0ffffffffLL")));
 	RzILOpPure *cast_st32_21 = CAST(32, MSB(op_AND_20), op_AND_20);
 	RzILOpPure *cast_st64_22 = CAST(64, MSB(cast_st32_21), cast_st32_21);
 	RzILOpPure *op_ADD_25 = LET("const_pos8", const_pos8, ADD(VARL("EA"), VARLP("const_pos8")));
-	RzILOpPure *op_MUL_28 = LET("const_pos1", const_pos1, LET("const_pos32", const_pos32, MUL(VARLP("const_pos1"), VARLP("const_pos32"))));
+	RzILOpPure *op_MUL_28 = LET("const_pos1", DUP(const_pos1), LET("const_pos32", DUP(const_pos32), MUL(VARLP("const_pos1"), VARLP("const_pos32"))));
 	RzILOpPure *op_RSHIFT_29 = SHIFTR0(VARL("tmp"), op_MUL_28);
-	RzILOpPure *op_AND_30 = LET("const_pos0x0ffffffffLL", const_pos0x0ffffffffLL, LOGAND(op_RSHIFT_29, VARLP("const_pos0x0ffffffffLL")));
+	RzILOpPure *op_AND_30 = LET("const_pos0x0ffffffffLL", DUP(const_pos0x0ffffffffLL), LOGAND(op_RSHIFT_29, VARLP("const_pos0x0ffffffffLL")));
 	RzILOpPure *cast_st32_31 = CAST(32, MSB(op_AND_30), op_AND_30);
 	RzILOpPure *cast_st64_32 = CAST(64, MSB(cast_st32_31), cast_st32_31);
 

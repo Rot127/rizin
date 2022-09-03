@@ -3,7 +3,13 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-08-21 16:48:53-04:00
+// Date of code generation: 2022-09-03 08:20:53-04:00
+// SPDX-FileCopyrightText: 2021 Rot127 <unisono@quyllur.org>
+// SPDX-License-Identifier: LGPL-3.0-only
+
+// LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
+// LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
+// Date of code generation: 2022-09-02 14:24:46-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -35,7 +41,7 @@ RzILOpEffect *hex_il_op_ss2_allocframe(HexInsnPktBundle *bundle) {
 	RzILOpPure *cast_ut32_5 = CAST(32, IL_FALSE, VARG(fp_assoc_tmp));
 	RzILOpPure *op_OR_6 = LOGOR(op_LSHIFT_4, cast_ut32_5);
 	RzILOpPure *cast_ut64_7 = CAST(64, IL_FALSE, framekey);
-	RzILOpPure *op_LSHIFT_8 = LET("const_pos32", const_pos32, SHIFTL0(cast_ut64_7, VARLP("const_pos32")));
+	RzILOpPure *op_LSHIFT_8 = LET("const_pos32", DUP(const_pos32), SHIFTL0(cast_ut64_7, VARLP("const_pos32")));
 	RzILOpPure *op_XOR_9 = LOGXOR(op_OR_6, op_LSHIFT_8);
 	RzILOpPure *op_SUB_14 = LET("u", u, SUB(VARL("EA"), VARLP("u")));
 
