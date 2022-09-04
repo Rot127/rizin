@@ -468,5 +468,8 @@ RZ_API const char *hex_alias_to_reg(HexRegAlias alias, bool tmp_reg) {
 	}
 	HexRegClass reg_class = hex_alias_reg_lt_v69[alias].cls;
 	int reg_enum = hex_alias_reg_lt_v69[alias].reg_enum;
+	if (alias == HEX_REG_ALIAS_PC) {
+		return "PC";
+	}
 	return hex_get_reg_in_class(reg_class, reg_enum, false, tmp_reg, true);
 }

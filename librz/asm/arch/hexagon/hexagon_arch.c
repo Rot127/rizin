@@ -127,7 +127,11 @@ RZ_API const char *hex_isa_to_reg(const HexInsn *hi, const char isa_id, bool new
 		RZ_LOG_WARN("Could not find equivalent register for ISA variable \'%c\'\n", isa_id);
 		return NULL;
 	}
-	return hex_get_reg_in_class(op->class, op->op.reg, false, new_reg, false);
+	const char *reg = hex_get_reg_in_class(op->class, op->op.reg, false, new_reg, false);
+	if (strcmp(reg, "C9") == 0) {
+		return "PC";
+	}
+	return reg;
 }
 
 /**
