@@ -58,7 +58,7 @@ static void hex_fill_pkt_il_ops(HexPkt *p) {
 static void hex_send_insn_to_i(RzVector /* HexILOp* */ *ops, ut8 start, ut8 newloc) {
 	rz_return_if_fail(ops);
 
-	HexILOp *tmp_op;
+	HexILOp tmp_op;
 	st32 direction;
 	st32 i;
 	if (start == newloc) {
@@ -72,9 +72,9 @@ static void hex_send_insn_to_i(RzVector /* HexILOp* */ *ops, ut8 start, ut8 newl
 		direction = -1;
 	}
 	for (i = start; i != newloc; i += direction) {
-		tmp_op = rz_vector_index_ptr(ops, i);
-		rz_vector_insert(ops, i, rz_vector_index_ptr(ops, i + direction));
-		rz_vector_insert(ops, i + direction, tmp_op);
+		memcpy(&tmp_op, rz_vector_index_ptr(ops, i), sizeof(HexILOp));
+		rz_vector_assign_at(ops, i, rz_vector_index_ptr(ops, i + direction));
+		rz_vector_assign_at(ops, i + direction, &tmp_op);
 	}
 }
 
