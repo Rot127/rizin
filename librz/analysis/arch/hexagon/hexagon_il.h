@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-09-16 01:37:15-04:00
+// Date of code generation: 2022-09-16 15:29:15-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -27,6 +27,7 @@
 #define HEX_CLO32(val)                           hex_clo32(val)
 #define HEX_CLZ32(val)                           hex_clz32(val)
 #define HEX_WRITE_PRED(pred, cond)               hex_write_pred(pred, cond)
+#define HEX_WRITE_GLOBAL(name, val)              hex_write_global(name, val)
 #define INC(val, size)                           ADD(val, UN(size, 1))
 #define DEC(val, size)                           SUB(val, UN(size, 1))
 
@@ -42,7 +43,8 @@ RZ_IPI RZ_OWN RzILOpEffect *hex_get_rf_property_val(const HexRegFieldProperty pr
 RZ_IPI RZ_OWN RzILOpEffect *hex_get_npc(const HexPkt *pkt);
 RZ_IPI RZ_OWN RzILOpEffect *hex_clz32(RZ_BORROW RzILOpPure *val);
 RZ_IPI RZ_OWN RzILOpEffect *hex_clo32(RZ_BORROW RzILOpPure *val);
-RZ_IPI RZ_OWN RzILOpEffect *hex_write_pred(const char *pred, RZ_BORROW RzILOpPure *cond);
+RZ_IPI RZ_OWN RzILOpEffect *hex_write_pred(const char *pred, RZ_OWN RzILOpPure *cond);
+RZ_IPI RZ_OWN RzILOpEffect *hex_write_global(const char *name, RZ_OWN RzILOpPure *val);
 RZ_IPI RZ_OWN RzILOpEffect *hex_sync_regs(HexInsnPktBundle *bundle);
 RzILOpEffect *hex_il_op_a2_abs(HexInsnPktBundle *bundle);
 RzILOpEffect *hex_il_op_a2_absp(HexInsnPktBundle *bundle);

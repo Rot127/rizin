@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-09-16 12:19:10-04:00
+// Date of code generation: 2022-09-16 17:23:53-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -21,7 +21,7 @@ RzILOpEffect *hex_il_op_sl1_loadri_io(HexInsnPktBundle *bundle) {
 	const char *Rs_assoc = ISA2REG(hi, 's', false);
 	RzILOpPure *Rs = VARG(Rs_assoc);
 	RzILOpPure *u = UN(32, (ut32)ISA2IMM(hi, 'u'));
-	const char *Rd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Rd_assoc_tmp = ISA2REG(hi, 'd', true);
 
 	// EXEC
 	RzILOpPure *op_ADD_1 = ADD(Rs, VARL("u"));
@@ -33,7 +33,7 @@ RzILOpEffect *hex_il_op_sl1_loadri_io(HexInsnPktBundle *bundle) {
 	RzILOpEffect *imm_assign_0 = SETL("u", u);
 	RzILOpEffect *op_ASSIGN_2 = SETL("EA", op_ADD_1);
 	RzILOpEffect *empty_3 = EMPTY();
-	RzILOpEffect *op_ASSIGN_6 = SETG(Rd_assoc_tmp, cast_7);
+	RzILOpEffect *op_ASSIGN_6 = HEX_WRITE_GLOBAL(Rd_assoc_tmp, cast_7);
 	RzILOpEffect *instruction_sequence = SEQN(4, imm_assign_0, op_ASSIGN_2, empty_3, op_ASSIGN_6);
 
 	return instruction_sequence;
@@ -46,7 +46,7 @@ RzILOpEffect *hex_il_op_sl1_loadrub_io(HexInsnPktBundle *bundle) {
 	const char *Rs_assoc = ISA2REG(hi, 's', false);
 	RzILOpPure *Rs = VARG(Rs_assoc);
 	RzILOpPure *u = UN(32, (ut32)ISA2IMM(hi, 'u'));
-	const char *Rd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Rd_assoc_tmp = ISA2REG(hi, 'd', true);
 
 	// EXEC
 	RzILOpPure *op_ADD_1 = ADD(Rs, VARL("u"));
@@ -58,7 +58,7 @@ RzILOpEffect *hex_il_op_sl1_loadrub_io(HexInsnPktBundle *bundle) {
 	RzILOpEffect *imm_assign_0 = SETL("u", u);
 	RzILOpEffect *op_ASSIGN_2 = SETL("EA", op_ADD_1);
 	RzILOpEffect *empty_3 = EMPTY();
-	RzILOpEffect *op_ASSIGN_6 = SETG(Rd_assoc_tmp, cast_7);
+	RzILOpEffect *op_ASSIGN_6 = HEX_WRITE_GLOBAL(Rd_assoc_tmp, cast_7);
 	RzILOpEffect *instruction_sequence = SEQN(4, imm_assign_0, op_ASSIGN_2, empty_3, op_ASSIGN_6);
 
 	return instruction_sequence;

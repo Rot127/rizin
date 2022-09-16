@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-09-16 12:19:10-04:00
+// Date of code generation: 2022-09-16 17:23:53-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -21,7 +21,7 @@ RzILOpEffect *hex_il_op_m6_vabsdiffb(HexInsnPktBundle *bundle) {
 	RzILOpPure *const_pos0 = UN(32, 0x0);
 	RzILOpPure *const_pos8 = UN(32, 0x8);
 	// Declare: st32 h_tmp1966;
-	const char *Rdd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Rdd_assoc_tmp = ISA2REG(hi, 'd', true);
 	RzILOpPure *const_pos0x0ffLL = SN(64, 0xff);
 	const char *Rtt_assoc = ISA2REG(hi, 't', false);
 	RzILOpPure *Rtt = VARG(Rtt_assoc);
@@ -95,7 +95,7 @@ RzILOpEffect *hex_il_op_m6_vabsdiffb(HexInsnPktBundle *bundle) {
 	RzILOpEffect *op_INC_4 = SETL("i", INC(VARL("i"), 32));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_5 = SETL("h_tmp1966", VARL("i"));
 	RzILOpEffect *seq_6 = SEQN(2, op_ASSIGN_hybrid_tmp_5, op_INC_4);
-	RzILOpEffect *op_ASSIGN_63 = SETG(Rdd_assoc_tmp, op_OR_62);
+	RzILOpEffect *op_ASSIGN_63 = HEX_WRITE_GLOBAL(Rdd_assoc_tmp, op_OR_62);
 	RzILOpEffect *empty_64 = EMPTY();
 	RzILOpEffect *seq_65 = SEQN(2, op_ASSIGN_63, empty_64);
 	RzILOpEffect *seq_66 = SEQN(2, seq_6, seq_65);
@@ -113,7 +113,7 @@ RzILOpEffect *hex_il_op_m6_vabsdiffub(HexInsnPktBundle *bundle) {
 	RzILOpPure *const_pos0 = UN(32, 0x0);
 	RzILOpPure *const_pos8 = UN(32, 0x8);
 	// Declare: st32 h_tmp1967;
-	const char *Rdd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Rdd_assoc_tmp = ISA2REG(hi, 'd', true);
 	RzILOpPure *const_pos0x0ffLL = SN(64, 0xff);
 	const char *Rtt_assoc = ISA2REG(hi, 't', false);
 	RzILOpPure *Rtt = VARG(Rtt_assoc);
@@ -187,7 +187,7 @@ RzILOpEffect *hex_il_op_m6_vabsdiffub(HexInsnPktBundle *bundle) {
 	RzILOpEffect *op_INC_4 = SETL("i", INC(VARL("i"), 32));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_5 = SETL("h_tmp1967", VARL("i"));
 	RzILOpEffect *seq_6 = SEQN(2, op_ASSIGN_hybrid_tmp_5, op_INC_4);
-	RzILOpEffect *op_ASSIGN_63 = SETG(Rdd_assoc_tmp, op_OR_62);
+	RzILOpEffect *op_ASSIGN_63 = HEX_WRITE_GLOBAL(Rdd_assoc_tmp, op_OR_62);
 	RzILOpEffect *empty_64 = EMPTY();
 	RzILOpEffect *seq_65 = SEQN(2, op_ASSIGN_63, empty_64);
 	RzILOpEffect *seq_66 = SEQN(2, seq_6, seq_65);

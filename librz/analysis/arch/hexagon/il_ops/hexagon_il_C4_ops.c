@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-09-16 12:19:10-04:00
+// Date of code generation: 2022-09-16 17:23:53-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -18,7 +18,7 @@ RzILOpEffect *hex_il_op_c4_addipc(HexInsnPktBundle *bundle) {
 	const HexInsn *hi = bundle->insn;
 	const HexPkt *pkt = bundle->pkt;
 	// READ
-	const char *Rd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Rd_assoc_tmp = ISA2REG(hi, 'd', true);
 	RzILOpPure *pc = U32(pkt->pkt_addr);
 	RzILOpPure *u = UN(32, (ut32)ISA2IMM(hi, 'u'));
 
@@ -27,7 +27,7 @@ RzILOpEffect *hex_il_op_c4_addipc(HexInsnPktBundle *bundle) {
 
 	// WRITE
 	RzILOpEffect *imm_assign_0 = SETL("u", u);
-	RzILOpEffect *op_ASSIGN_2 = SETG(Rd_assoc_tmp, op_ADD_1);
+	RzILOpEffect *op_ASSIGN_2 = HEX_WRITE_GLOBAL(Rd_assoc_tmp, op_ADD_1);
 	RzILOpEffect *instruction_sequence = SEQN(2, imm_assign_0, op_ASSIGN_2);
 
 	return instruction_sequence;
@@ -36,7 +36,7 @@ RzILOpEffect *hex_il_op_c4_addipc(HexInsnPktBundle *bundle) {
 RzILOpEffect *hex_il_op_c4_and_and(HexInsnPktBundle *bundle) {
 	const HexInsn *hi = bundle->insn;
 	// READ
-	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', true);
 	const char *Ps_assoc = ISA2REG(hi, 's', false);
 	RzILOpPure *Ps = VARG(Ps_assoc);
 	const char *Pt_assoc = ISA2REG(hi, 't', false);
@@ -49,7 +49,7 @@ RzILOpEffect *hex_il_op_c4_and_and(HexInsnPktBundle *bundle) {
 	RzILOpPure *op_AND_1 = LOGAND(op_AND_0, Pu);
 
 	// WRITE
-	RzILOpEffect *op_ASSIGN_2 = SETG(Pd_assoc_tmp, op_AND_1);
+	RzILOpEffect *op_ASSIGN_2 = HEX_WRITE_GLOBAL(Pd_assoc_tmp, op_AND_1);
 	RzILOpEffect *instruction_sequence = SEQN(1, op_ASSIGN_2);
 
 	return instruction_sequence;
@@ -58,7 +58,7 @@ RzILOpEffect *hex_il_op_c4_and_and(HexInsnPktBundle *bundle) {
 RzILOpEffect *hex_il_op_c4_and_andn(HexInsnPktBundle *bundle) {
 	const HexInsn *hi = bundle->insn;
 	// READ
-	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', true);
 	const char *Ps_assoc = ISA2REG(hi, 's', false);
 	RzILOpPure *Ps = VARG(Ps_assoc);
 	const char *Pt_assoc = ISA2REG(hi, 't', false);
@@ -72,7 +72,7 @@ RzILOpEffect *hex_il_op_c4_and_andn(HexInsnPktBundle *bundle) {
 	RzILOpPure *op_AND_2 = LOGAND(op_AND_0, op_NOT_1);
 
 	// WRITE
-	RzILOpEffect *op_ASSIGN_3 = SETG(Pd_assoc_tmp, op_AND_2);
+	RzILOpEffect *op_ASSIGN_3 = HEX_WRITE_GLOBAL(Pd_assoc_tmp, op_AND_2);
 	RzILOpEffect *instruction_sequence = SEQN(1, op_ASSIGN_3);
 
 	return instruction_sequence;
@@ -81,7 +81,7 @@ RzILOpEffect *hex_il_op_c4_and_andn(HexInsnPktBundle *bundle) {
 RzILOpEffect *hex_il_op_c4_and_or(HexInsnPktBundle *bundle) {
 	const HexInsn *hi = bundle->insn;
 	// READ
-	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', true);
 	const char *Ps_assoc = ISA2REG(hi, 's', false);
 	RzILOpPure *Ps = VARG(Ps_assoc);
 	const char *Pt_assoc = ISA2REG(hi, 't', false);
@@ -94,7 +94,7 @@ RzILOpEffect *hex_il_op_c4_and_or(HexInsnPktBundle *bundle) {
 	RzILOpPure *op_AND_1 = LOGAND(Ps, op_OR_0);
 
 	// WRITE
-	RzILOpEffect *op_ASSIGN_2 = SETG(Pd_assoc_tmp, op_AND_1);
+	RzILOpEffect *op_ASSIGN_2 = HEX_WRITE_GLOBAL(Pd_assoc_tmp, op_AND_1);
 	RzILOpEffect *instruction_sequence = SEQN(1, op_ASSIGN_2);
 
 	return instruction_sequence;
@@ -103,7 +103,7 @@ RzILOpEffect *hex_il_op_c4_and_or(HexInsnPktBundle *bundle) {
 RzILOpEffect *hex_il_op_c4_and_orn(HexInsnPktBundle *bundle) {
 	const HexInsn *hi = bundle->insn;
 	// READ
-	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', true);
 	const char *Ps_assoc = ISA2REG(hi, 's', false);
 	RzILOpPure *Ps = VARG(Ps_assoc);
 	const char *Pt_assoc = ISA2REG(hi, 't', false);
@@ -117,7 +117,7 @@ RzILOpEffect *hex_il_op_c4_and_orn(HexInsnPktBundle *bundle) {
 	RzILOpPure *op_AND_2 = LOGAND(Ps, op_OR_1);
 
 	// WRITE
-	RzILOpEffect *op_ASSIGN_3 = SETG(Pd_assoc_tmp, op_AND_2);
+	RzILOpEffect *op_ASSIGN_3 = HEX_WRITE_GLOBAL(Pd_assoc_tmp, op_AND_2);
 	RzILOpEffect *instruction_sequence = SEQN(1, op_ASSIGN_3);
 
 	return instruction_sequence;
@@ -126,7 +126,7 @@ RzILOpEffect *hex_il_op_c4_and_orn(HexInsnPktBundle *bundle) {
 RzILOpEffect *hex_il_op_c4_cmplte(HexInsnPktBundle *bundle) {
 	const HexInsn *hi = bundle->insn;
 	// READ
-	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', true);
 	const char *Rs_assoc = ISA2REG(hi, 's', false);
 	RzILOpPure *Rs = VARG(Rs_assoc);
 	const char *Rt_assoc = ISA2REG(hi, 't', false);
@@ -140,7 +140,7 @@ RzILOpEffect *hex_il_op_c4_cmplte(HexInsnPktBundle *bundle) {
 	RzILOpPure *cast_3 = CAST(8, IL_FALSE, cond_1);
 
 	// WRITE
-	RzILOpEffect *op_ASSIGN_2 = SETG(Pd_assoc_tmp, cast_3);
+	RzILOpEffect *op_ASSIGN_2 = HEX_WRITE_GLOBAL(Pd_assoc_tmp, cast_3);
 	RzILOpEffect *instruction_sequence = SEQN(1, op_ASSIGN_2);
 
 	return instruction_sequence;
@@ -150,7 +150,7 @@ RzILOpEffect *hex_il_op_c4_cmpltei(HexInsnPktBundle *bundle) {
 	const HexInsn *hi = bundle->insn;
 	// READ
 	RzILOpPure *s = SN(32, (st32)ISA2IMM(hi, 's'));
-	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', true);
 	const char *Rs_assoc = ISA2REG(hi, 's', false);
 	RzILOpPure *Rs = VARG(Rs_assoc);
 	RzILOpPure *const_pos0xff = UN(32, 0xff);
@@ -164,7 +164,7 @@ RzILOpEffect *hex_il_op_c4_cmpltei(HexInsnPktBundle *bundle) {
 
 	// WRITE
 	RzILOpEffect *imm_assign_0 = SETL("s", s);
-	RzILOpEffect *op_ASSIGN_4 = SETG(Pd_assoc_tmp, cast_5);
+	RzILOpEffect *op_ASSIGN_4 = HEX_WRITE_GLOBAL(Pd_assoc_tmp, cast_5);
 	RzILOpEffect *instruction_sequence = SEQN(2, imm_assign_0, op_ASSIGN_4);
 
 	return instruction_sequence;
@@ -173,7 +173,7 @@ RzILOpEffect *hex_il_op_c4_cmpltei(HexInsnPktBundle *bundle) {
 RzILOpEffect *hex_il_op_c4_cmplteu(HexInsnPktBundle *bundle) {
 	const HexInsn *hi = bundle->insn;
 	// READ
-	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', true);
 	const char *Rs_assoc = ISA2REG(hi, 's', false);
 	RzILOpPure *Rs = VARG(Rs_assoc);
 	const char *Rt_assoc = ISA2REG(hi, 't', false);
@@ -189,7 +189,7 @@ RzILOpEffect *hex_il_op_c4_cmplteu(HexInsnPktBundle *bundle) {
 	RzILOpPure *cast_5 = CAST(8, IL_FALSE, cond_3);
 
 	// WRITE
-	RzILOpEffect *op_ASSIGN_4 = SETG(Pd_assoc_tmp, cast_5);
+	RzILOpEffect *op_ASSIGN_4 = HEX_WRITE_GLOBAL(Pd_assoc_tmp, cast_5);
 	RzILOpEffect *instruction_sequence = SEQN(1, op_ASSIGN_4);
 
 	return instruction_sequence;
@@ -199,7 +199,7 @@ RzILOpEffect *hex_il_op_c4_cmplteui(HexInsnPktBundle *bundle) {
 	const HexInsn *hi = bundle->insn;
 	// READ
 	RzILOpPure *u = UN(32, (ut32)ISA2IMM(hi, 'u'));
-	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', true);
 	const char *Rs_assoc = ISA2REG(hi, 's', false);
 	RzILOpPure *Rs = VARG(Rs_assoc);
 	RzILOpPure *const_pos0xff = UN(32, 0xff);
@@ -214,7 +214,7 @@ RzILOpEffect *hex_il_op_c4_cmplteui(HexInsnPktBundle *bundle) {
 
 	// WRITE
 	RzILOpEffect *imm_assign_0 = SETL("u", u);
-	RzILOpEffect *op_ASSIGN_5 = SETG(Pd_assoc_tmp, cast_6);
+	RzILOpEffect *op_ASSIGN_5 = HEX_WRITE_GLOBAL(Pd_assoc_tmp, cast_6);
 	RzILOpEffect *instruction_sequence = SEQN(2, imm_assign_0, op_ASSIGN_5);
 
 	return instruction_sequence;
@@ -223,7 +223,7 @@ RzILOpEffect *hex_il_op_c4_cmplteui(HexInsnPktBundle *bundle) {
 RzILOpEffect *hex_il_op_c4_cmpneq(HexInsnPktBundle *bundle) {
 	const HexInsn *hi = bundle->insn;
 	// READ
-	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', true);
 	const char *Rs_assoc = ISA2REG(hi, 's', false);
 	RzILOpPure *Rs = VARG(Rs_assoc);
 	const char *Rt_assoc = ISA2REG(hi, 't', false);
@@ -237,7 +237,7 @@ RzILOpEffect *hex_il_op_c4_cmpneq(HexInsnPktBundle *bundle) {
 	RzILOpPure *cast_3 = CAST(8, IL_FALSE, cond_1);
 
 	// WRITE
-	RzILOpEffect *op_ASSIGN_2 = SETG(Pd_assoc_tmp, cast_3);
+	RzILOpEffect *op_ASSIGN_2 = HEX_WRITE_GLOBAL(Pd_assoc_tmp, cast_3);
 	RzILOpEffect *instruction_sequence = SEQN(1, op_ASSIGN_2);
 
 	return instruction_sequence;
@@ -247,7 +247,7 @@ RzILOpEffect *hex_il_op_c4_cmpneqi(HexInsnPktBundle *bundle) {
 	const HexInsn *hi = bundle->insn;
 	// READ
 	RzILOpPure *s = SN(32, (st32)ISA2IMM(hi, 's'));
-	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', true);
 	const char *Rs_assoc = ISA2REG(hi, 's', false);
 	RzILOpPure *Rs = VARG(Rs_assoc);
 	RzILOpPure *const_pos0xff = UN(32, 0xff);
@@ -261,7 +261,7 @@ RzILOpEffect *hex_il_op_c4_cmpneqi(HexInsnPktBundle *bundle) {
 
 	// WRITE
 	RzILOpEffect *imm_assign_0 = SETL("s", s);
-	RzILOpEffect *op_ASSIGN_4 = SETG(Pd_assoc_tmp, cast_5);
+	RzILOpEffect *op_ASSIGN_4 = HEX_WRITE_GLOBAL(Pd_assoc_tmp, cast_5);
 	RzILOpEffect *instruction_sequence = SEQN(2, imm_assign_0, op_ASSIGN_4);
 
 	return instruction_sequence;
@@ -284,7 +284,7 @@ RzILOpEffect *hex_il_op_c4_fastcorner9(HexInsnPktBundle *bundle) {
 	RzILOpPure *const_pos1 = UN(32, 0x1);
 	RzILOpPure *const_pos9 = UN(32, 0x9);
 	// Declare: ut4 h_tmp436;
-	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', true);
 	RzILOpPure *const_pos0xff = UN(32, 0xff);
 	RzILOpPure *const_pos0x00 = UN(32, 0x0);
 
@@ -345,7 +345,7 @@ RzILOpEffect *hex_il_op_c4_fastcorner9(HexInsnPktBundle *bundle) {
 	RzILOpEffect *seq_46 = SEQN(2, seq_42, seq_45);
 	RzILOpEffect *for_48 = REPEAT(op_LT_38, seq_46);
 	RzILOpEffect *seq_47 = SEQN(2, op_ASSIGN_36, for_48);
-	RzILOpEffect *op_ASSIGN_52 = SETG(Pd_assoc_tmp, cast_53);
+	RzILOpEffect *op_ASSIGN_52 = HEX_WRITE_GLOBAL(Pd_assoc_tmp, cast_53);
 	RzILOpEffect *instruction_sequence = SEQN(7, op_ASSIGN_0, op_ASSIGN_16, empty_18, op_ASSIGN_33, empty_35, seq_47, op_ASSIGN_52);
 
 	return instruction_sequence;
@@ -368,7 +368,7 @@ RzILOpEffect *hex_il_op_c4_fastcorner9_not(HexInsnPktBundle *bundle) {
 	RzILOpPure *const_pos1 = UN(32, 0x1);
 	RzILOpPure *const_pos9 = UN(32, 0x9);
 	// Declare: ut4 h_tmp437;
-	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', true);
 	RzILOpPure *const_pos0xff = UN(32, 0xff);
 	RzILOpPure *const_pos0x00 = UN(32, 0x0);
 
@@ -429,7 +429,7 @@ RzILOpEffect *hex_il_op_c4_fastcorner9_not(HexInsnPktBundle *bundle) {
 	RzILOpEffect *seq_46 = SEQN(2, seq_42, seq_45);
 	RzILOpEffect *for_48 = REPEAT(op_LT_38, seq_46);
 	RzILOpEffect *seq_47 = SEQN(2, op_ASSIGN_36, for_48);
-	RzILOpEffect *op_ASSIGN_52 = SETG(Pd_assoc_tmp, cast_53);
+	RzILOpEffect *op_ASSIGN_52 = HEX_WRITE_GLOBAL(Pd_assoc_tmp, cast_53);
 	RzILOpEffect *instruction_sequence = SEQN(7, op_ASSIGN_0, op_ASSIGN_16, empty_18, op_ASSIGN_33, empty_35, seq_47, op_ASSIGN_52);
 
 	return instruction_sequence;
@@ -438,7 +438,7 @@ RzILOpEffect *hex_il_op_c4_fastcorner9_not(HexInsnPktBundle *bundle) {
 RzILOpEffect *hex_il_op_c4_nbitsclr(HexInsnPktBundle *bundle) {
 	const HexInsn *hi = bundle->insn;
 	// READ
-	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', true);
 	const char *Rs_assoc = ISA2REG(hi, 's', false);
 	RzILOpPure *Rs = VARG(Rs_assoc);
 	const char *Rt_assoc = ISA2REG(hi, 't', false);
@@ -454,7 +454,7 @@ RzILOpEffect *hex_il_op_c4_nbitsclr(HexInsnPktBundle *bundle) {
 	RzILOpPure *cast_4 = CAST(8, IL_FALSE, cond_2);
 
 	// WRITE
-	RzILOpEffect *op_ASSIGN_3 = SETG(Pd_assoc_tmp, cast_4);
+	RzILOpEffect *op_ASSIGN_3 = HEX_WRITE_GLOBAL(Pd_assoc_tmp, cast_4);
 	RzILOpEffect *instruction_sequence = SEQN(1, op_ASSIGN_3);
 
 	return instruction_sequence;
@@ -463,7 +463,7 @@ RzILOpEffect *hex_il_op_c4_nbitsclr(HexInsnPktBundle *bundle) {
 RzILOpEffect *hex_il_op_c4_nbitsclri(HexInsnPktBundle *bundle) {
 	const HexInsn *hi = bundle->insn;
 	// READ
-	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', true);
 	const char *Rs_assoc = ISA2REG(hi, 's', false);
 	RzILOpPure *Rs = VARG(Rs_assoc);
 	RzILOpPure *u = UN(32, (ut32)ISA2IMM(hi, 'u'));
@@ -479,7 +479,7 @@ RzILOpEffect *hex_il_op_c4_nbitsclri(HexInsnPktBundle *bundle) {
 
 	// WRITE
 	RzILOpEffect *imm_assign_0 = SETL("u", u);
-	RzILOpEffect *op_ASSIGN_4 = SETG(Pd_assoc_tmp, cast_5);
+	RzILOpEffect *op_ASSIGN_4 = HEX_WRITE_GLOBAL(Pd_assoc_tmp, cast_5);
 	RzILOpEffect *instruction_sequence = SEQN(2, imm_assign_0, op_ASSIGN_4);
 
 	return instruction_sequence;
@@ -488,7 +488,7 @@ RzILOpEffect *hex_il_op_c4_nbitsclri(HexInsnPktBundle *bundle) {
 RzILOpEffect *hex_il_op_c4_nbitsset(HexInsnPktBundle *bundle) {
 	const HexInsn *hi = bundle->insn;
 	// READ
-	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', true);
 	const char *Rs_assoc = ISA2REG(hi, 's', false);
 	RzILOpPure *Rs = VARG(Rs_assoc);
 	const char *Rt_assoc = ISA2REG(hi, 't', false);
@@ -503,7 +503,7 @@ RzILOpEffect *hex_il_op_c4_nbitsset(HexInsnPktBundle *bundle) {
 	RzILOpPure *cast_4 = CAST(8, IL_FALSE, cond_2);
 
 	// WRITE
-	RzILOpEffect *op_ASSIGN_3 = SETG(Pd_assoc_tmp, cast_4);
+	RzILOpEffect *op_ASSIGN_3 = HEX_WRITE_GLOBAL(Pd_assoc_tmp, cast_4);
 	RzILOpEffect *instruction_sequence = SEQN(1, op_ASSIGN_3);
 
 	return instruction_sequence;
@@ -512,7 +512,7 @@ RzILOpEffect *hex_il_op_c4_nbitsset(HexInsnPktBundle *bundle) {
 RzILOpEffect *hex_il_op_c4_or_and(HexInsnPktBundle *bundle) {
 	const HexInsn *hi = bundle->insn;
 	// READ
-	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', true);
 	const char *Ps_assoc = ISA2REG(hi, 's', false);
 	RzILOpPure *Ps = VARG(Ps_assoc);
 	const char *Pt_assoc = ISA2REG(hi, 't', false);
@@ -525,7 +525,7 @@ RzILOpEffect *hex_il_op_c4_or_and(HexInsnPktBundle *bundle) {
 	RzILOpPure *op_OR_1 = LOGOR(Ps, op_AND_0);
 
 	// WRITE
-	RzILOpEffect *op_ASSIGN_2 = SETG(Pd_assoc_tmp, op_OR_1);
+	RzILOpEffect *op_ASSIGN_2 = HEX_WRITE_GLOBAL(Pd_assoc_tmp, op_OR_1);
 	RzILOpEffect *instruction_sequence = SEQN(1, op_ASSIGN_2);
 
 	return instruction_sequence;
@@ -534,7 +534,7 @@ RzILOpEffect *hex_il_op_c4_or_and(HexInsnPktBundle *bundle) {
 RzILOpEffect *hex_il_op_c4_or_andn(HexInsnPktBundle *bundle) {
 	const HexInsn *hi = bundle->insn;
 	// READ
-	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', true);
 	const char *Ps_assoc = ISA2REG(hi, 's', false);
 	RzILOpPure *Ps = VARG(Ps_assoc);
 	const char *Pt_assoc = ISA2REG(hi, 't', false);
@@ -548,7 +548,7 @@ RzILOpEffect *hex_il_op_c4_or_andn(HexInsnPktBundle *bundle) {
 	RzILOpPure *op_OR_2 = LOGOR(Ps, op_AND_1);
 
 	// WRITE
-	RzILOpEffect *op_ASSIGN_3 = SETG(Pd_assoc_tmp, op_OR_2);
+	RzILOpEffect *op_ASSIGN_3 = HEX_WRITE_GLOBAL(Pd_assoc_tmp, op_OR_2);
 	RzILOpEffect *instruction_sequence = SEQN(1, op_ASSIGN_3);
 
 	return instruction_sequence;
@@ -557,7 +557,7 @@ RzILOpEffect *hex_il_op_c4_or_andn(HexInsnPktBundle *bundle) {
 RzILOpEffect *hex_il_op_c4_or_or(HexInsnPktBundle *bundle) {
 	const HexInsn *hi = bundle->insn;
 	// READ
-	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', true);
 	const char *Ps_assoc = ISA2REG(hi, 's', false);
 	RzILOpPure *Ps = VARG(Ps_assoc);
 	const char *Pt_assoc = ISA2REG(hi, 't', false);
@@ -570,7 +570,7 @@ RzILOpEffect *hex_il_op_c4_or_or(HexInsnPktBundle *bundle) {
 	RzILOpPure *op_OR_1 = LOGOR(op_OR_0, Pu);
 
 	// WRITE
-	RzILOpEffect *op_ASSIGN_2 = SETG(Pd_assoc_tmp, op_OR_1);
+	RzILOpEffect *op_ASSIGN_2 = HEX_WRITE_GLOBAL(Pd_assoc_tmp, op_OR_1);
 	RzILOpEffect *instruction_sequence = SEQN(1, op_ASSIGN_2);
 
 	return instruction_sequence;
@@ -579,7 +579,7 @@ RzILOpEffect *hex_il_op_c4_or_or(HexInsnPktBundle *bundle) {
 RzILOpEffect *hex_il_op_c4_or_orn(HexInsnPktBundle *bundle) {
 	const HexInsn *hi = bundle->insn;
 	// READ
-	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Pd_assoc_tmp = ISA2REG(hi, 'd', true);
 	const char *Ps_assoc = ISA2REG(hi, 's', false);
 	RzILOpPure *Ps = VARG(Ps_assoc);
 	const char *Pt_assoc = ISA2REG(hi, 't', false);
@@ -593,7 +593,7 @@ RzILOpEffect *hex_il_op_c4_or_orn(HexInsnPktBundle *bundle) {
 	RzILOpPure *op_OR_2 = LOGOR(op_OR_0, op_NOT_1);
 
 	// WRITE
-	RzILOpEffect *op_ASSIGN_3 = SETG(Pd_assoc_tmp, op_OR_2);
+	RzILOpEffect *op_ASSIGN_3 = HEX_WRITE_GLOBAL(Pd_assoc_tmp, op_OR_2);
 	RzILOpEffect *instruction_sequence = SEQN(1, op_ASSIGN_3);
 
 	return instruction_sequence;

@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-09-16 12:19:10-04:00
+// Date of code generation: 2022-09-16 17:23:53-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -5442,7 +5442,7 @@ RzILOpEffect *hex_il_op_j4_jumpseti(HexInsnPktBundle *bundle) {
 	RzILOpPure *r = SN(32, (st32)ISA2IMM(hi, 'r'));
 	RzILOpPure *const_pos4 = UN(32, 0x4);
 	RzILOpPure *const_pos1 = UN(32, 0x1);
-	const char *Rd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Rd_assoc_tmp = ISA2REG(hi, 'd', true);
 	RzILOpPure *U = UN(32, (ut32)ISA2IMM(hi, 'U'));
 	RzILOpPure *pc = U32(pkt->pkt_addr);
 
@@ -5459,7 +5459,7 @@ RzILOpEffect *hex_il_op_j4_jumpseti(HexInsnPktBundle *bundle) {
 	RzILOpEffect *imm_assign_0 = SETL("r", r);
 	RzILOpEffect *op_ASSIGN_5 = SETL("r", cast_6);
 	RzILOpEffect *imm_assign_7 = SETL("U", U);
-	RzILOpEffect *op_ASSIGN_8 = SETG(Rd_assoc_tmp, VARL("U"));
+	RzILOpEffect *op_ASSIGN_8 = HEX_WRITE_GLOBAL(Rd_assoc_tmp, VARL("U"));
 	RzILOpEffect *jump_op_ADD_9 = JMP(op_ADD_9);
 	RzILOpEffect *empty_11 = EMPTY();
 	RzILOpEffect *instruction_sequence = SEQN(6, imm_assign_0, imm_assign_7, op_ASSIGN_5, op_ASSIGN_8, jump_op_ADD_9, empty_11);
@@ -5474,7 +5474,7 @@ RzILOpEffect *hex_il_op_j4_jumpsetr(HexInsnPktBundle *bundle) {
 	RzILOpPure *r = SN(32, (st32)ISA2IMM(hi, 'r'));
 	RzILOpPure *const_pos4 = UN(32, 0x4);
 	RzILOpPure *const_pos1 = UN(32, 0x1);
-	const char *Rd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Rd_assoc_tmp = ISA2REG(hi, 'd', true);
 	const char *Rs_assoc = ISA2REG(hi, 's', false);
 	RzILOpPure *Rs = VARG(Rs_assoc);
 	RzILOpPure *pc = U32(pkt->pkt_addr);
@@ -5491,7 +5491,7 @@ RzILOpEffect *hex_il_op_j4_jumpsetr(HexInsnPktBundle *bundle) {
 	// WRITE
 	RzILOpEffect *imm_assign_0 = SETL("r", r);
 	RzILOpEffect *op_ASSIGN_5 = SETL("r", cast_6);
-	RzILOpEffect *op_ASSIGN_7 = SETG(Rd_assoc_tmp, Rs);
+	RzILOpEffect *op_ASSIGN_7 = HEX_WRITE_GLOBAL(Rd_assoc_tmp, Rs);
 	RzILOpEffect *jump_op_ADD_8 = JMP(op_ADD_8);
 	RzILOpEffect *empty_10 = EMPTY();
 	RzILOpEffect *instruction_sequence = SEQN(5, imm_assign_0, op_ASSIGN_5, op_ASSIGN_7, jump_op_ADD_8, empty_10);

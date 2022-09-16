@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-09-16 12:19:10-04:00
+// Date of code generation: 2022-09-16 17:23:53-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -69,7 +69,7 @@ RzILOpEffect *hex_il_op_s6_vsplatrbp(HexInsnPktBundle *bundle) {
 	RzILOpPure *const_pos0 = UN(32, 0x0);
 	RzILOpPure *const_pos8 = UN(32, 0x8);
 	// Declare: st32 h_tmp2319;
-	const char *Rdd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Rdd_assoc_tmp = ISA2REG(hi, 'd', true);
 	RzILOpPure *const_pos0x0ffLL = SN(64, 0xff);
 	const char *Rs_assoc = ISA2REG(hi, 's', false);
 	RzILOpPure *Rs = VARG(Rs_assoc);
@@ -102,7 +102,7 @@ RzILOpEffect *hex_il_op_s6_vsplatrbp(HexInsnPktBundle *bundle) {
 	RzILOpEffect *op_INC_4 = SETL("i", INC(VARL("i"), 32));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_5 = SETL("h_tmp2319", VARL("i"));
 	RzILOpEffect *seq_6 = SEQN(2, op_ASSIGN_hybrid_tmp_5, op_INC_4);
-	RzILOpEffect *op_ASSIGN_24 = SETG(Rdd_assoc_tmp, op_OR_23);
+	RzILOpEffect *op_ASSIGN_24 = HEX_WRITE_GLOBAL(Rdd_assoc_tmp, op_OR_23);
 	RzILOpEffect *empty_25 = EMPTY();
 	RzILOpEffect *seq_26 = SEQN(2, op_ASSIGN_24, empty_25);
 	RzILOpEffect *seq_27 = SEQN(2, seq_6, seq_26);
@@ -120,7 +120,7 @@ RzILOpEffect *hex_il_op_s6_vtrunehb_ppp(HexInsnPktBundle *bundle) {
 	RzILOpPure *const_pos0 = UN(32, 0x0);
 	RzILOpPure *const_pos4 = UN(32, 0x4);
 	// Declare: st32 h_tmp2320;
-	const char *Rdd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Rdd_assoc_tmp = ISA2REG(hi, 'd', true);
 	RzILOpPure *const_pos0x0ffLL = SN(64, 0xff);
 	RzILOpPure *const_pos8 = UN(32, 0x8);
 	const char *Rtt_assoc = ISA2REG(hi, 't', false);
@@ -182,9 +182,9 @@ RzILOpEffect *hex_il_op_s6_vtrunehb_ppp(HexInsnPktBundle *bundle) {
 	RzILOpEffect *op_INC_4 = SETL("i", INC(VARL("i"), 32));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_5 = SETL("h_tmp2320", VARL("i"));
 	RzILOpEffect *seq_6 = SEQN(2, op_ASSIGN_hybrid_tmp_5, op_INC_4);
-	RzILOpEffect *op_ASSIGN_27 = SETG(Rdd_assoc_tmp, op_OR_26);
+	RzILOpEffect *op_ASSIGN_27 = HEX_WRITE_GLOBAL(Rdd_assoc_tmp, op_OR_26);
 	RzILOpEffect *empty_28 = EMPTY();
-	RzILOpEffect *op_ASSIGN_51 = SETG(Rdd_assoc_tmp, op_OR_50);
+	RzILOpEffect *op_ASSIGN_51 = HEX_WRITE_GLOBAL(Rdd_assoc_tmp, op_OR_50);
 	RzILOpEffect *empty_52 = EMPTY();
 	RzILOpEffect *seq_53 = SEQN(4, op_ASSIGN_27, empty_28, op_ASSIGN_51, empty_52);
 	RzILOpEffect *seq_54 = SEQN(2, seq_6, seq_53);
@@ -202,7 +202,7 @@ RzILOpEffect *hex_il_op_s6_vtrunohb_ppp(HexInsnPktBundle *bundle) {
 	RzILOpPure *const_pos0 = UN(32, 0x0);
 	RzILOpPure *const_pos4 = UN(32, 0x4);
 	// Declare: st32 h_tmp2321;
-	const char *Rdd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Rdd_assoc_tmp = ISA2REG(hi, 'd', true);
 	RzILOpPure *const_pos0x0ffLL = SN(64, 0xff);
 	RzILOpPure *const_pos8 = UN(32, 0x8);
 	const char *Rtt_assoc = ISA2REG(hi, 't', false);
@@ -267,9 +267,9 @@ RzILOpEffect *hex_il_op_s6_vtrunohb_ppp(HexInsnPktBundle *bundle) {
 	RzILOpEffect *op_INC_4 = SETL("i", INC(VARL("i"), 32));
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_5 = SETL("h_tmp2321", VARL("i"));
 	RzILOpEffect *seq_6 = SEQN(2, op_ASSIGN_hybrid_tmp_5, op_INC_4);
-	RzILOpEffect *op_ASSIGN_28 = SETG(Rdd_assoc_tmp, op_OR_27);
+	RzILOpEffect *op_ASSIGN_28 = HEX_WRITE_GLOBAL(Rdd_assoc_tmp, op_OR_27);
 	RzILOpEffect *empty_29 = EMPTY();
-	RzILOpEffect *op_ASSIGN_53 = SETG(Rdd_assoc_tmp, op_OR_52);
+	RzILOpEffect *op_ASSIGN_53 = HEX_WRITE_GLOBAL(Rdd_assoc_tmp, op_OR_52);
 	RzILOpEffect *empty_54 = EMPTY();
 	RzILOpEffect *seq_55 = SEQN(4, op_ASSIGN_28, empty_29, op_ASSIGN_53, empty_54);
 	RzILOpEffect *seq_56 = SEQN(2, seq_6, seq_55);

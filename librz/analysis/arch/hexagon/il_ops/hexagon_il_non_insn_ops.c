@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-09-16 12:19:10-04:00
+// Date of code generation: 2022-09-16 17:23:53-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -526,24 +526,119 @@ RZ_IPI RZ_OWN RzILOpEffect *hex_clo32(RZ_BORROW RzILOpPure *val) {
 	return hex_clz32(LOGNOT(DUP(val)));
 }
 
-RZ_IPI RZ_OWN RzILOpEffect *hex_write_pred(const char *pred, RZ_BORROW RzILOpPure *cond) {
-	if (strlen(pred) != 2) {
-		RZ_LOG_ERROR("Predicate name %s is not of Px form.\n", pred);
+RZ_IPI RZ_OWN RzILOpEffect *hex_write_pred(const char *pred, RZ_OWN RzILOpPure *cond) {
+	char *col = strstr(pred, ":");
+	if (strlen(pred) != 6 && !col) {
+		RZ_LOG_ERROR("Predicate name %s is not of Px_tmp or Px:x form.\n", pred);
+		return NULL;
+	}
+	if (col) {
+		RZ_LOG_WARN("Write of double predicate registers (%s) not implemented.\n", pred);
 		return NULL;
 	}
 	ut8 pn = strtol(pred + 1, NULL, 10);
-	char *pw = malloc(16);
+	char *pw = RZ_NEWS0(char, 16);
 	snprintf(pw, 16, "p%d_written", pn);
+	char *pname = RZ_NEWS0(char, 8);
+	snprintf(pname, 8, "P%d_tmp", pn);
+
 	// Value is ANDed if predicate was written before in this packet.
 	RzILOpPure *val = ITE(VARG(pw), LOGAND(VARG(pred), cond), DUP(cond));
 	// Also write P3_0 reg (reg C4)
 	return SEQ4(SETL("ret_val", U64(0)),
-		SETG(pred, val), SETG("C4", LOGAND(VARG("C4"), SHIFTL(IL_TRUE, UNSIGNED(32, DUP(val)), U8(pn * 4)))),
+		SETG(pname, val), SETG("C4", LOGOR(LOGAND(LOGNOT(LOGAND(VARG("C4"), SHIFTL0(U32(0xff), U32(pn * 4)))), VARG("C4")), SHIFTL(IL_TRUE, UNSIGNED(32, DUP(val)), U8(pn * 4)))),
 		SETG(pw, IL_TRUE));
 }
 
+static RZ_OWN RzILOpEffect *write_single_update_double(const char *name, RZ_OWN RzILOpPure *val) {
+	rz_return_val_if_fail(name && val, NULL);
+	const char *col = strstr(name, ":");
+	if (col) {
+		RZ_LOG_WARN("Register name %s should not contain a colon.\n", name);
+		rz_warn_if_reached();
+		return NULL;
+	}
+	char reg = name[0];
+	ut8 num = strtol(name + 1, NULL, 10);
+	char *dreg = RZ_NEWS0(char, 16);
+	bool is_odd_reg = (num % 2) == 1;
+	ut8 high_num = is_odd_reg ? num : num + 1;
+	ut8 low_num = is_odd_reg ? num - 1 : num;
+	snprintf(dreg, 16, "%c%d:%d_tmp", reg, high_num, low_num);
+
+	switch (reg) {
+	case 'R':
+	case 'C':
+	case 'G':
+	case 'S':
+		return SEQ2((is_odd_reg ? SETG(dreg, APPEND(val, UNSIGNED(32, VARG(dreg)))) : SETG(dreg, APPEND(UNSIGNED(32, SHIFTR0(VARG(dreg), U32(32))), DUP(val)))),
+			SETG(name, DUP(val)));
+	case 'V':
+		return SEQ2((is_odd_reg ? SETG(dreg, APPEND(val, UNSIGNED(1024, VARG(dreg)))) : SETG(dreg, APPEND(UNSIGNED(1024, SHIFTR0(VARG(dreg), U32(1024))), DUP(val)))),
+			SETG(name, DUP(val)));
+	case 'Q':
+		return SEQ2((is_odd_reg ? SETG(dreg, APPEND(val, UNSIGNED(128, VARG(dreg)))) : SETG(dreg, APPEND(UNSIGNED(128, SHIFTR0(VARG(dreg), U32(128))), DUP(val)))),
+			SETG(name, DUP(val)));
+	case 'P':
+		return hex_write_pred(name, val);
+	}
+	RZ_LOG_WARN("Register case '%c' not handled (reg name \"%s\").\n", reg, name);
+	rz_warn_if_reached();
+	return NULL;
+}
+
+static RZ_OWN RzILOpEffect *write_double_update_single(const char *name, RZ_OWN RzILOpPure *val) {
+	rz_return_val_if_fail(name && val, NULL);
+	const char *col = strstr(name, ":");
+	if (!col) {
+		RZ_LOG_WARN("Register name %s should contain a colon.\n", name);
+		rz_warn_if_reached();
+		return NULL;
+	}
+	char reg = name[0];
+	char *high = RZ_NEWS0(char, 8);
+	char *low = RZ_NEWS0(char, 8);
+	snprintf(high, 8, "%c%d_tmp", name[0], (ut32)strtol(name + 1, NULL, 10));
+	snprintf(low, 8, "%c%d_tmp", name[0], (ut32)strtol(col + 1, NULL, 10));
+
+	switch (reg) {
+	case 'R':
+	case 'C':
+	case 'G':
+	case 'S':
+		return SEQ3(SETG(high, UNSIGNED(32, SHIFTR0(val, U8(32)))),
+			SETG(low, UNSIGNED(32, DUP(val))),
+			SETG(name, DUP(val)));
+	case 'V':
+		return SEQ3(SETG(high, UNSIGNED(1024, SHIFTR0(val, U8(1024)))),
+			SETG(low, UNSIGNED(1024, DUP(val))),
+			SETG(name, DUP(val)));
+	case 'Q':
+		return SEQ3(SETG(high, UNSIGNED(128, SHIFTR0(val, U8(128)))),
+			SETG(low, UNSIGNED(128, DUP(val))),
+			SETG(name, DUP(val)));
+	}
+	RZ_LOG_WARN("Register case '%c' not handled (reg name \"%s\").\n", reg, name);
+	rz_warn_if_reached();
+	return NULL;
+}
+
+RZ_IPI RZ_OWN RzILOpEffect *hex_write_global(const char *name, RZ_OWN RzILOpPure *val) {
+	// Is double register?
+	const char *col = strstr(name, ":");
+	if (!col) {
+		return write_single_update_double(name, val);
+	}
+
+	return write_double_update_single(name, val);
+}
+
 RZ_IPI RZ_OWN RzILOpEffect *hex_sync_regs(HexInsnPktBundle *bundle) {
-	return SEQN(84,
+	return SEQN(88,
+		SETG("p0_written", IL_FALSE),
+		SETG("p1_written", IL_FALSE),
+		SETG("p2_written", IL_FALSE),
+		SETG("p3_written", IL_FALSE),
 		SETG("C0", VARG("C0_tmp")),
 		SETG("C1", VARG("C1_tmp")),
 		SETG("C2", VARG("C2_tmp")),
@@ -553,7 +648,7 @@ RZ_IPI RZ_OWN RzILOpEffect *hex_sync_regs(HexInsnPktBundle *bundle) {
 		SETG("C6", VARG("C6_tmp")),
 		SETG("C7", VARG("C7_tmp")),
 		SETG("C8", VARG("C8_tmp")),
-		// SETG("C9", VARG("C9_tmp")),
+		// SETG("C9", VARG("C9_tmp")), // Program Counter. Handled by VM.
 		SETG("C10", VARG("C10_tmp")),
 		SETG("C11", VARG("C11_tmp")),
 		SETG("C12", VARG("C12_tmp")),

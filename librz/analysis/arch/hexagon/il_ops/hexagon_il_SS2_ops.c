@@ -3,7 +3,13 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-09-16 12:19:10-04:00
+// Date of code generation: 2022-09-16 17:23:53-04:00
+// SPDX-FileCopyrightText: 2021 Rot127 <unisono@quyllur.org>
+// SPDX-License-Identifier: LGPL-3.0-only
+
+// LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
+// LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
+// Date of code generation: 2022-09-16 15:29:15-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -46,11 +52,11 @@ RzILOpEffect *hex_il_op_ss2_allocframe(HexInsnPktBundle *bundle) {
 	RzILOpEffect *op_ASSIGN_2 = SETL("EA", op_ADD_0);
 	RzILOpEffect *empty_3 = EMPTY();
 	RzILOpEffect *ms_op_12_13 = STOREW(VARL("EA"), op_12);
-	RzILOpEffect *op_ASSIGN_14 = SETG(fp_assoc_tmp, VARL("EA"));
+	RzILOpEffect *op_ASSIGN_14 = HEX_WRITE_GLOBAL(fp_assoc_tmp, VARL("EA"));
 	RzILOpEffect *empty_15 = EMPTY();
 	RzILOpEffect *empty_16 = EMPTY();
 	RzILOpEffect *imm_assign_17 = SETL("u", u);
-	RzILOpEffect *op_ASSIGN_19 = SETG(sp_assoc_tmp, op_SUB_18);
+	RzILOpEffect *op_ASSIGN_19 = HEX_WRITE_GLOBAL(sp_assoc_tmp, op_SUB_18);
 	RzILOpEffect *empty_20 = EMPTY();
 	RzILOpEffect *instruction_sequence = SEQN(9, imm_assign_17, op_ASSIGN_2, empty_3, ms_op_12_13, op_ASSIGN_14, empty_15, empty_16, op_ASSIGN_19, empty_20);
 

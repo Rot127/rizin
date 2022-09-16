@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-09-16 12:19:10-04:00
+// Date of code generation: 2022-09-16 17:23:53-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -21,7 +21,7 @@ RzILOpEffect *hex_il_op_a7_clip(HexInsnPktBundle *bundle) {
 	RzILOpPure *u = UN(32, (ut32)ISA2IMM(hi, 'u'));
 	// Declare: st32 maxv;
 	// Declare: st32 minv;
-	const char *Rd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Rd_assoc_tmp = ISA2REG(hi, 'd', true);
 	const char *Rs_assoc = ISA2REG(hi, 's', false);
 	RzILOpPure *Rs = VARG(Rs_assoc);
 
@@ -49,7 +49,7 @@ RzILOpEffect *hex_il_op_a7_clip(HexInsnPktBundle *bundle) {
 	RzILOpEffect *imm_assign_0 = SETL("u", u);
 	RzILOpEffect *op_ASSIGN_3 = SETL("maxv", cast_4);
 	RzILOpEffect *op_ASSIGN_7 = SETL("minv", cast_8);
-	RzILOpEffect *op_ASSIGN_21 = SETG(Rd_assoc_tmp, cond_19);
+	RzILOpEffect *op_ASSIGN_21 = HEX_WRITE_GLOBAL(Rd_assoc_tmp, cond_19);
 	RzILOpEffect *empty_22 = EMPTY();
 	RzILOpEffect *instruction_sequence = SEQN(5, imm_assign_0, op_ASSIGN_3, op_ASSIGN_7, op_ASSIGN_21, empty_22);
 
@@ -77,7 +77,7 @@ RzILOpEffect *hex_il_op_a7_vclip(HexInsnPktBundle *bundle) {
 	RzILOpPure *const_pos0 = UN(32, 0x0);
 	RzILOpPure *const_pos32 = UN(32, 0x20);
 	RzILOpPure *const_pos0x0ffffffffLL = SN(64, 0xffffffff);
-	const char *Rdd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Rdd_assoc_tmp = ISA2REG(hi, 'd', true);
 
 	// EXEC
 	RzILOpPure *op_LSHIFT_1 = LET("const_pos1", const_pos1, SHIFTL0(VARLP("const_pos1"), VARL("u")));
@@ -195,13 +195,13 @@ RzILOpEffect *hex_il_op_a7_vclip(HexInsnPktBundle *bundle) {
 	RzILOpEffect *op_ASSIGN_7 = SETL("minv", cast_8);
 	RzILOpEffect *op_ASSIGN_45 = SETL("tmp", cast_46);
 	RzILOpEffect *empty_47 = EMPTY();
-	RzILOpEffect *op_ASSIGN_59 = SETG(Rdd_assoc_tmp, op_OR_57);
+	RzILOpEffect *op_ASSIGN_59 = HEX_WRITE_GLOBAL(Rdd_assoc_tmp, op_OR_57);
 	RzILOpEffect *empty_60 = EMPTY();
 	RzILOpEffect *op_ASSIGN_63 = SETL("maxv", cast_64);
 	RzILOpEffect *op_ASSIGN_67 = SETL("minv", cast_68);
 	RzILOpEffect *op_ASSIGN_105 = SETL("tmp", cast_106);
 	RzILOpEffect *empty_107 = EMPTY();
-	RzILOpEffect *op_ASSIGN_119 = SETG(Rdd_assoc_tmp, op_OR_117);
+	RzILOpEffect *op_ASSIGN_119 = HEX_WRITE_GLOBAL(Rdd_assoc_tmp, op_OR_117);
 	RzILOpEffect *empty_120 = EMPTY();
 	RzILOpEffect *instruction_sequence = SEQN(13, imm_assign_0, op_ASSIGN_3, op_ASSIGN_7, op_ASSIGN_45, empty_47, op_ASSIGN_59, empty_60, op_ASSIGN_63, op_ASSIGN_67, op_ASSIGN_105, empty_107, op_ASSIGN_119, empty_120);
 

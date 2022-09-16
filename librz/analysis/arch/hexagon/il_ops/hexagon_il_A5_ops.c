@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-09-16 12:19:10-04:00
+// Date of code generation: 2022-09-16 17:23:53-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -24,7 +24,7 @@ RzILOpEffect *hex_il_op_a5_acs(HexInsnPktBundle *bundle) {
 	RzILOpPure *const_pos0 = UN(32, 0x0);
 	RzILOpPure *const_pos4 = UN(32, 0x4);
 	// Declare: st32 h_tmp417;
-	const char *Rxx_assoc_tmp = ISA2REG(hi, 'x', false);
+	const char *Rxx_assoc_tmp = ISA2REG(hi, 'x', true);
 	const char *Rxx_assoc = ISA2REG(hi, 'x', false);
 	RzILOpPure *Rxx = VARG(Rxx_assoc);
 	RzILOpPure *const_pos16 = UN(32, 0x10);
@@ -33,7 +33,7 @@ RzILOpEffect *hex_il_op_a5_acs(HexInsnPktBundle *bundle) {
 	RzILOpPure *Rss = VARG(Rss_assoc);
 	const char *Rtt_assoc = ISA2REG(hi, 't', false);
 	RzILOpPure *Rtt = VARG(Rtt_assoc);
-	const char *Pe_assoc_tmp = ISA2REG(hi, 'e', false);
+	const char *Pe_assoc_tmp = ISA2REG(hi, 'e', true);
 	RzILOpPure *const_pos1ULL = UN(64, 0x1);
 	RzILOpPure *const_pos2 = UN(32, 0x2);
 	RzILOpPure *const_pos1 = UN(32, 0x1);
@@ -161,9 +161,9 @@ RzILOpEffect *hex_il_op_a5_acs(HexInsnPktBundle *bundle) {
 	RzILOpEffect *op_ASSIGN_30 = SETL("tv", cast_st32_29);
 	RzILOpEffect *op_ASSIGN_32 = SETL("xv", op_ADD_31);
 	RzILOpEffect *op_ASSIGN_34 = SETL("sv", op_SUB_33);
-	RzILOpEffect *op_ASSIGN_47 = SETG(Pe_assoc_tmp, cast_48);
+	RzILOpEffect *op_ASSIGN_47 = HEX_WRITE_GLOBAL(Pe_assoc_tmp, cast_48);
 	RzILOpEffect *empty_49 = EMPTY();
-	RzILOpEffect *op_ASSIGN_64 = SETG(Pe_assoc_tmp, cast_65);
+	RzILOpEffect *op_ASSIGN_64 = HEX_WRITE_GLOBAL(Pe_assoc_tmp, cast_65);
 	RzILOpEffect *empty_66 = EMPTY();
 	RzILOpEffect *c_call_76 = HEX_SEXTRACT64(arg_cast_77, arg_cast_78, arg_cast_79);
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_80 = SETL("h_tmp418", SIGNED(64, VARL("ret_val")));
@@ -181,9 +181,9 @@ RzILOpEffect *hex_il_op_a5_acs(HexInsnPktBundle *bundle) {
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_103 = SETL("h_tmp422", UNSIGNED(64, VARL("ret_val")));
 	RzILOpEffect *seq_104 = SEQN(2, c_call_98, op_ASSIGN_hybrid_tmp_103);
 	RzILOpEffect *seq_105 = SEQN(3, seq_94, seq_97, seq_104);
-	RzILOpEffect *op_ASSIGN_108 = SETG(usr_assoc_tmp, cast_109);
+	RzILOpEffect *op_ASSIGN_108 = HEX_WRITE_GLOBAL(usr_assoc_tmp, cast_109);
 	RzILOpEffect *seq_110 = SEQN(3, seq_91, seq_105, op_ASSIGN_108);
-	RzILOpEffect *op_ASSIGN_132 = SETG(Rxx_assoc_tmp, op_OR_131);
+	RzILOpEffect *op_ASSIGN_132 = HEX_WRITE_GLOBAL(Rxx_assoc_tmp, op_OR_131);
 	RzILOpEffect *seq_133 = SEQN(2, seq_81, op_ASSIGN_132);
 	RzILOpEffect *empty_134 = EMPTY();
 	RzILOpEffect *seq_135 = SEQN(11, op_ASSIGN_14, op_ASSIGN_22, op_ASSIGN_30, op_ASSIGN_32, op_ASSIGN_34, op_ASSIGN_47, empty_49, op_ASSIGN_64, empty_66, seq_133, empty_134);
@@ -202,7 +202,7 @@ RzILOpEffect *hex_il_op_a5_vaddhubs(HexInsnPktBundle *bundle) {
 	RzILOpPure *const_pos0 = UN(32, 0x0);
 	RzILOpPure *const_pos4 = UN(32, 0x4);
 	// Declare: st32 h_tmp423;
-	const char *Rd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Rd_assoc_tmp = ISA2REG(hi, 'd', true);
 	RzILOpPure *const_pos0x0ffLL = SN(64, 0xff);
 	RzILOpPure *const_pos8 = UN(32, 0x8);
 	const char *Rss_assoc = ISA2REG(hi, 's', false);
@@ -337,9 +337,9 @@ RzILOpEffect *hex_il_op_a5_vaddhubs(HexInsnPktBundle *bundle) {
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_77 = SETL("h_tmp428", UNSIGNED(64, VARL("ret_val")));
 	RzILOpEffect *seq_78 = SEQN(2, c_call_72, op_ASSIGN_hybrid_tmp_77);
 	RzILOpEffect *seq_79 = SEQN(3, seq_68, seq_71, seq_78);
-	RzILOpEffect *op_ASSIGN_82 = SETG(usr_assoc_tmp, cast_83);
+	RzILOpEffect *op_ASSIGN_82 = HEX_WRITE_GLOBAL(usr_assoc_tmp, cast_83);
 	RzILOpEffect *seq_84 = SEQN(3, seq_65, seq_79, op_ASSIGN_82);
-	RzILOpEffect *op_ASSIGN_114 = SETG(Rd_assoc_tmp, cast_115);
+	RzILOpEffect *op_ASSIGN_114 = HEX_WRITE_GLOBAL(Rd_assoc_tmp, cast_115);
 	RzILOpEffect *seq_116 = SEQN(2, seq_32, op_ASSIGN_114);
 	RzILOpEffect *empty_117 = EMPTY();
 	RzILOpEffect *seq_118 = SEQN(2, seq_116, empty_117);

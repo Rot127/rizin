@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-09-16 12:19:10-04:00
+// Date of code generation: 2022-09-16 17:23:53-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -17,7 +17,7 @@
 RzILOpEffect *hex_il_op_dep_a2_addsat(HexInsnPktBundle *bundle) {
 	const HexInsn *hi = bundle->insn;
 	// READ
-	const char *Rd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Rd_assoc_tmp = ISA2REG(hi, 'd', true);
 	RzILOpPure *const_pos32 = UN(32, 0x20);
 	RzILOpPure *const_pos0 = UN(32, 0x0);
 	const char *Rs_assoc = ISA2REG(hi, 's', false);
@@ -98,9 +98,9 @@ RzILOpEffect *hex_il_op_dep_a2_addsat(HexInsnPktBundle *bundle) {
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_38 = SETL("h_tmp2331", UNSIGNED(64, VARL("ret_val")));
 	RzILOpEffect *seq_39 = SEQN(2, c_call_33, op_ASSIGN_hybrid_tmp_38);
 	RzILOpEffect *seq_40 = SEQN(3, seq_29, seq_32, seq_39);
-	RzILOpEffect *op_ASSIGN_43 = SETG(usr_assoc_tmp, cast_44);
+	RzILOpEffect *op_ASSIGN_43 = HEX_WRITE_GLOBAL(usr_assoc_tmp, cast_44);
 	RzILOpEffect *seq_45 = SEQN(3, seq_26, seq_40, op_ASSIGN_43);
-	RzILOpEffect *op_ASSIGN_62 = SETG(Rd_assoc_tmp, cast_63);
+	RzILOpEffect *op_ASSIGN_62 = HEX_WRITE_GLOBAL(Rd_assoc_tmp, cast_63);
 	RzILOpEffect *seq_64 = SEQN(2, seq_11, op_ASSIGN_62);
 	RzILOpEffect *instruction_sequence = SEQN(2, seq_64, seq_45);
 
@@ -110,7 +110,7 @@ RzILOpEffect *hex_il_op_dep_a2_addsat(HexInsnPktBundle *bundle) {
 RzILOpEffect *hex_il_op_dep_a2_subsat(HexInsnPktBundle *bundle) {
 	const HexInsn *hi = bundle->insn;
 	// READ
-	const char *Rd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Rd_assoc_tmp = ISA2REG(hi, 'd', true);
 	RzILOpPure *const_pos32 = UN(32, 0x20);
 	RzILOpPure *const_pos0 = UN(32, 0x0);
 	const char *Rt_assoc = ISA2REG(hi, 't', false);
@@ -191,9 +191,9 @@ RzILOpEffect *hex_il_op_dep_a2_subsat(HexInsnPktBundle *bundle) {
 	RzILOpEffect *op_ASSIGN_hybrid_tmp_38 = SETL("h_tmp2336", UNSIGNED(64, VARL("ret_val")));
 	RzILOpEffect *seq_39 = SEQN(2, c_call_33, op_ASSIGN_hybrid_tmp_38);
 	RzILOpEffect *seq_40 = SEQN(3, seq_29, seq_32, seq_39);
-	RzILOpEffect *op_ASSIGN_43 = SETG(usr_assoc_tmp, cast_44);
+	RzILOpEffect *op_ASSIGN_43 = HEX_WRITE_GLOBAL(usr_assoc_tmp, cast_44);
 	RzILOpEffect *seq_45 = SEQN(3, seq_26, seq_40, op_ASSIGN_43);
-	RzILOpEffect *op_ASSIGN_62 = SETG(Rd_assoc_tmp, cast_63);
+	RzILOpEffect *op_ASSIGN_62 = HEX_WRITE_GLOBAL(Rd_assoc_tmp, cast_63);
 	RzILOpEffect *seq_64 = SEQN(2, seq_11, op_ASSIGN_62);
 	RzILOpEffect *instruction_sequence = SEQN(2, seq_64, seq_45);
 
@@ -203,7 +203,7 @@ RzILOpEffect *hex_il_op_dep_a2_subsat(HexInsnPktBundle *bundle) {
 RzILOpEffect *hex_il_op_dep_s2_packhl(HexInsnPktBundle *bundle) {
 	const HexInsn *hi = bundle->insn;
 	// READ
-	const char *Rdd_assoc_tmp = ISA2REG(hi, 'd', false);
+	const char *Rdd_assoc_tmp = ISA2REG(hi, 'd', true);
 	RzILOpPure *const_pos0x0ffffLL = SN(64, 0xffff);
 	RzILOpPure *const_pos0 = UN(32, 0x0);
 	RzILOpPure *const_pos16 = UN(32, 0x10);
@@ -280,13 +280,13 @@ RzILOpEffect *hex_il_op_dep_s2_packhl(HexInsnPktBundle *bundle) {
 	RzILOpPure *op_OR_65 = LOGOR(op_AND_54, op_LSHIFT_64);
 
 	// WRITE
-	RzILOpEffect *op_ASSIGN_15 = SETG(Rdd_assoc_tmp, op_OR_14);
+	RzILOpEffect *op_ASSIGN_15 = HEX_WRITE_GLOBAL(Rdd_assoc_tmp, op_OR_14);
 	RzILOpEffect *empty_16 = EMPTY();
-	RzILOpEffect *op_ASSIGN_32 = SETG(Rdd_assoc_tmp, op_OR_31);
+	RzILOpEffect *op_ASSIGN_32 = HEX_WRITE_GLOBAL(Rdd_assoc_tmp, op_OR_31);
 	RzILOpEffect *empty_33 = EMPTY();
-	RzILOpEffect *op_ASSIGN_49 = SETG(Rdd_assoc_tmp, op_OR_48);
+	RzILOpEffect *op_ASSIGN_49 = HEX_WRITE_GLOBAL(Rdd_assoc_tmp, op_OR_48);
 	RzILOpEffect *empty_50 = EMPTY();
-	RzILOpEffect *op_ASSIGN_66 = SETG(Rdd_assoc_tmp, op_OR_65);
+	RzILOpEffect *op_ASSIGN_66 = HEX_WRITE_GLOBAL(Rdd_assoc_tmp, op_OR_65);
 	RzILOpEffect *empty_67 = EMPTY();
 	RzILOpEffect *instruction_sequence = SEQN(8, op_ASSIGN_15, empty_16, op_ASSIGN_32, empty_33, op_ASSIGN_49, empty_50, op_ASSIGN_66, empty_67);
 

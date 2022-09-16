@@ -348,7 +348,7 @@ RZ_IPI RzILOpEffect *hex_get_il_op(const ut32 addr) {
 		// Only at the last instruciton we execute all il ops of the packet.
 		return NOP();
 	}
-	printf("addr: 0x%x\n", addr);
+
 	if (!rz_vector_empty(p->il_ops)) {
 		return hex_pkt_to_il_seq(p);
 	}
