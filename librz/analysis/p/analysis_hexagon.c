@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-09-04 09:29:31-04:00
+// Date of code generation: 2022-09-16 01:37:15-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -698,7 +698,12 @@ RZ_API char *get_reg_profile(RzAnalysis *analysis) {
 		"sys	S77:76	.64	218752	0\n"
 		"sys	S77:76_tmp	.64	218816	0\n"
 		"sys	S79:78	.64	218880	0\n"
-		"sys	S79:78_tmp	.64	218944	0\n";
+		"sys	S79:78_tmp	.64	218944	0\n"
+
+		"ctr	p0_written	.1	219008	0\n"
+		"ctr	p1_written	.1	219009	0\n"
+		"ctr	p2_written	.1	219010	0\n"
+		"ctr	p3_written	.1	219011	0\n";
 	return strdup(p);
 }
 

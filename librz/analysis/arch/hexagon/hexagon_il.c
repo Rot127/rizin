@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-09-02 14:24:46-04:00
+// Date of code generation: 2022-09-15 21:50:08-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -58,7 +58,6 @@ static void hex_fill_pkt_il_ops(HexPkt *p) {
 static void hex_send_insn_to_i(RzVector /* HexILOp* */ *ops, ut8 start, ut8 newloc) {
 	rz_return_if_fail(ops);
 
-	HexILOp tmp_op;
 	st32 direction;
 	st32 i;
 	if (start == newloc) {
@@ -71,6 +70,7 @@ static void hex_send_insn_to_i(RzVector /* HexILOp* */ *ops, ut8 start, ut8 newl
 		/* move towards beginning */
 		direction = -1;
 	}
+	HexILOp tmp_op;
 	for (i = start; i != newloc; i += direction) {
 		memcpy(&tmp_op, rz_vector_index_ptr(ops, i), sizeof(HexILOp));
 		rz_vector_assign_at(ops, i, rz_vector_index_ptr(ops, i + direction));
@@ -317,6 +317,7 @@ not_impl:
 }
 
 RZ_IPI RzILOpEffect *hex_get_il_op(const ut32 addr) {
+	static bool might_has_jumped = false;
 	HexState *state = hexagon_get_state();
 	if (!state) {
 		RZ_LOG_WARN("Could not get hexagon state!\n");
@@ -328,20 +329,26 @@ RZ_IPI RzILOpEffect *hex_get_il_op(const ut32 addr) {
 		return NULL;
 	}
 	HexInsnContainer *hic = hex_get_hic_at_addr(state, addr);
-	if (state->just_init) {
+	if (state->just_init || might_has_jumped) {
 		// Assume that the instruction at the address the VM was initialized is the first instruction.
+		// Also make it valid if a jump let to this packet.
 		p->is_valid = true;
 		hic->pkt_info.first_insn = true;
 		state->just_init = false;
+		if (might_has_jumped) {
+			might_has_jumped = false;
+		}
 	}
-	if (!p->is_valid) {
+
+	if (!p->is_valid && !might_has_jumped) {
 		return NULL;
 	}
+
 	if (!hic->pkt_info.last_insn) {
 		// Only at the last instruciton we execute all il ops of the packet.
 		return NOP();
 	}
-
+	printf("addr: 0x%x\n", addr);
 	if (!rz_vector_empty(p->il_ops)) {
 		return hex_pkt_to_il_seq(p);
 	}
@@ -356,15 +363,15 @@ RZ_IPI RzILOpEffect *hex_get_il_op(const ut32 addr) {
 	}
 
 	HexILOp *op = RZ_NEW0(HexILOp);
-	if (p->hw_loop == HEX_LOOP_0) {
+	if (hex_get_loop_flag(p) == HEX_LOOP_0) {
 		op->attr = HEX_IL_INSN_ATTR_BRANCH | HEX_IL_INSN_ATTR_COND;
 		op->get_il_op = (HexILOpGetter)hex_il_op_j2_endloop0;
 		rz_vector_push(p->il_ops, op);
-	} else if (p->hw_loop == HEX_LOOP_1) {
+	} else if (hex_get_loop_flag(p) == HEX_LOOP_1) {
 		op->attr = HEX_IL_INSN_ATTR_BRANCH | HEX_IL_INSN_ATTR_COND;
 		op->get_il_op = (HexILOpGetter)hex_il_op_j2_endloop1;
 		rz_vector_push(p->il_ops, op);
-	} else if (p->hw_loop == HEX_LOOP_01) {
+	} else if (hex_get_loop_flag(p) == HEX_LOOP_01) {
 		op->attr = HEX_IL_INSN_ATTR_BRANCH | HEX_IL_INSN_ATTR_COND;
 		op->get_il_op = (HexILOpGetter)hex_il_op_j2_endloop01;
 		rz_vector_push(p->il_ops, op);
@@ -374,6 +381,12 @@ RZ_IPI RzILOpEffect *hex_get_il_op(const ut32 addr) {
 	op->attr = HEX_IL_INSN_ATTR_NONE;
 	op->get_il_op = (HexILOpGetter)hex_sync_regs;
 	rz_vector_push(p->il_ops, op);
+
+	rz_vector_foreach(p->il_ops, op) {
+		if (op->attr & HEX_IL_INSN_ATTR_BRANCH) {
+			might_has_jumped = true;
+		}
+	}
 
 	return hex_pkt_to_il_seq(p);
 }

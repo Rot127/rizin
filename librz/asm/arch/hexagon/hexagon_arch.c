@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-09-02 14:24:46-04:00
+// Date of code generation: 2022-09-14 18:32:19-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -118,7 +118,7 @@ RZ_API const char *hex_isa_to_reg(const HexInsn *hi, const char isa_id, bool new
 	rz_return_val_if_fail(hi && isa_id, NULL);
 	const HexOp *op = NULL;
 	for (ut32 i = 0; i < hi->op_count; ++i) {
-		if (hi->ops[i].isa_id == isa_id) {
+		if ((hi->ops[i].isa_id == isa_id) && (hi->ops[i].type == HEX_OP_TYPE_REG)) {
 			op = &hi->ops[i];
 			break;
 		}
@@ -128,7 +128,7 @@ RZ_API const char *hex_isa_to_reg(const HexInsn *hi, const char isa_id, bool new
 		return NULL;
 	}
 	const char *reg = hex_get_reg_in_class(op->class, op->op.reg, false, new_reg, false);
-	if (strcmp(reg, "C9") == 0) {
+	if (reg && strcmp(reg, "C9") == 0) {
 		return "PC";
 	}
 	return reg;
@@ -144,7 +144,7 @@ RZ_API const char *hex_isa_to_reg(const HexInsn *hi, const char isa_id, bool new
 RZ_API ut64 hex_isa_to_imm(const HexInsn *hi, const char isa_id) {
 	rz_return_val_if_fail(hi && isa_id, 0);
 	for (ut32 i = 0; i < hi->op_count; ++i) {
-		if (hi->ops[i].isa_id == isa_id) {
+		if (hi->ops[i].isa_id == isa_id && (hi->ops[i].type == HEX_OP_TYPE_IMM)) {
 			return hi->ops[i].op.imm;
 		}
 	}
@@ -835,7 +835,7 @@ static inline bool imm_is_scaled(const HexOpAttr attr) {
  * \param addr The address of the instruction which gets the constant extender applied.
  * \return HexConstExt* A const. ext., if there is one which should be applied on the instruction at addr. Otherwise NULL.
  */
-static HexConstExt *get_const_ext_from_addr(const RzList *ce_list, const ut32 addr) {
+static HexConstExt *get_const_ext_from_addr(const RzList /*<HexConstExt *>*/ *ce_list, const ut32 addr) {
 	HexConstExt *ce = NULL;
 	RzListIter *iter = NULL;
 	rz_list_foreach (ce_list, iter, ce) {
