@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-09-14 18:32:19-04:00
+// Date of code generation: 2022-09-19 21:52:20-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -220,6 +220,7 @@ RZ_API HexPkt *hex_get_pkt(RZ_BORROW HexState *state, const ut32 addr) {
 		p = &state->pkts[i];
 		rz_list_foreach (p->bin, iter, hic) {
 			if (hic_at_addr(hic, addr)) {
+				p->last_access = rz_time_now();
 				return p;
 			}
 		}

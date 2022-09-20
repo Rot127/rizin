@@ -3,7 +3,7 @@
 
 // LLVM commit: 96e220e6886868d6663d966ecc396befffc355e7
 // LLVM commit date: 2022-01-05 11:01:52 +0000 (ISO 8601 format)
-// Date of code generation: 2022-09-15 21:50:08-04:00
+// Date of code generation: 2022-09-19 21:52:20-04:00
 //========================================
 // The following code is generated.
 // Do not edit. Repository of code generator:
@@ -316,6 +316,16 @@ not_impl:
 	return false;
 }
 
+static void check_for_jumps(const HexPkt *p, RZ_OUT bool *jump_flag) {
+	rz_return_if_fail(p && jump_flag);
+	HexILOp *op;
+	rz_vector_foreach(p->il_ops, op) {
+		if (op->attr & HEX_IL_INSN_ATTR_BRANCH) {
+			*jump_flag = true;
+		}
+	}
+}
+
 RZ_IPI RzILOpEffect *hex_get_il_op(const ut32 addr) {
 	static bool might_has_jumped = false;
 	HexState *state = hexagon_get_state();
@@ -335,30 +345,32 @@ RZ_IPI RzILOpEffect *hex_get_il_op(const ut32 addr) {
 		p->is_valid = true;
 		hic->pkt_info.first_insn = true;
 		state->just_init = false;
-		if (might_has_jumped) {
-			might_has_jumped = false;
-		}
+		might_has_jumped = false;
 	}
 
 	if (!p->is_valid && !might_has_jumped) {
+		RZ_LOG_WARN("Attempt to execute invalid packet at 0x%" PFMT32x "\n", addr);
 		return NULL;
 	}
 
 	if (!hic->pkt_info.last_insn) {
-		// Only at the last instruciton we execute all il ops of the packet.
+		// Only at the last instruction we execute all il ops of the packet.
 		return NOP();
 	}
+	printf("addr: 0x%x\n", addr);
 
 	if (!rz_vector_empty(p->il_ops)) {
+		check_for_jumps(p, &might_has_jumped);
 		return hex_pkt_to_il_seq(p);
 	}
 
 	if (!set_pkt_il_ops(p)) {
+		RZ_LOG_WARN("Setting IL ops of packet failed at at 0x%" PFMT32x "\n", addr);
 		return NULL;
 	}
 
 	if (!hex_shuffle_insns(p)) {
-		RZ_LOG_WARN("Instruction shuffle failed.\n");
+		RZ_LOG_WARN("Instruction shuffle failed at 0x%" PFMT32x "\n", addr);
 		return NULL;
 	}
 
@@ -382,11 +394,7 @@ RZ_IPI RzILOpEffect *hex_get_il_op(const ut32 addr) {
 	op->get_il_op = (HexILOpGetter)hex_sync_regs;
 	rz_vector_push(p->il_ops, op);
 
-	rz_vector_foreach(p->il_ops, op) {
-		if (op->attr & HEX_IL_INSN_ATTR_BRANCH) {
-			might_has_jumped = true;
-		}
-	}
+	check_for_jumps(p, &might_has_jumped);
 
 	return hex_pkt_to_il_seq(p);
 }
