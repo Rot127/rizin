@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2009-2021 nibble <nibble.ds@gmail.com>
 // SPDX-License-Identifier: LGPL-3.0-only
 
+#include <regex.h>
 #include "rz_util/rz_print.h"
 #include <rz_vector.h>
 #include <rz_util/rz_strbuf.h>
@@ -1353,7 +1354,7 @@ RZ_API void rz_asm_token_pattern_free(void *p) {
 	}
 	RzAsmTokenPattern *pat = (RzAsmTokenPattern *)p;
 	free(pat->pattern);
-	rz_regex_free(pat->regex);
+	free(pat->regex);
 	free(p);
 }
 
@@ -1526,7 +1527,9 @@ RZ_API void rz_asm_compile_token_patterns(RZ_INOUT RzPVector /*<RzAsmTokenPatter
 	rz_pvector_foreach (patterns, it) {
 		RzAsmTokenPattern *pat = *it;
 		if (!pat->regex) {
-			pat->regex = rz_regex_new(pat->pattern, "e");
+			pat->regex = RZ_NEW0(regex_t);
+			regcomp(pat->regex, pat->pattern, REG_EXTENDED);
+			// pat->regex = rz_regex_new(pat->pattern, "e");
 			if (!pat->regex) {
 				RZ_LOG_WARN("Did not compile regex pattern %s.\n", pat->pattern);
 				rz_warn_if_reached();
@@ -1569,8 +1572,9 @@ RZ_API RZ_OWN RzAsmTokenString *rz_asm_tokenize_asm_regex(RZ_BORROW RzStrBuf *as
 		size_t asm_str_off = 0;
 
 		// Search for token pattern.
-		RzRegexMatch match[1];
-		while (rz_regex_exec(pattern->regex, asm_str + asm_str_off, 1, match, 0) == 0) {
+		// RzRegexMatch match[1];
+		regmatch_t match[1];
+		while (regexec(pattern->regex, asm_str + asm_str_off, 1, match, 0) == 0) {
 			st64 match_start = match[0].rm_so; // Token start
 			st64 match_end = match[0].rm_eo; // Token end
 			st64 len = match_end - match_start; // Length of token

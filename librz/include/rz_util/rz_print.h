@@ -6,6 +6,7 @@
 #include "rz_bind.h"
 #include "rz_io.h"
 #include "rz_reg.h"
+#include <regex.h>
 #include <rz_util/rz_strbuf.h>
 
 #ifdef __cplusplus
@@ -86,7 +87,7 @@ typedef struct {
 typedef struct {
 	RzAsmTokenType type; ///< Asm token type.
 	char *pattern; ///< The regex pattern describing the tokens.
-	RzRegex *regex; ///< Compiled regex pattern.
+	regex_t *regex; ///< Compiled regex pattern.
 } RzAsmTokenPattern;
 
 /**
