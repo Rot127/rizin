@@ -956,6 +956,8 @@ static RzILOpEffect *csinc(cs_insn *insn) {
 	case CS_AARCH64(_INS_CNEG):
 		res = NEG(src1);
 		break;
+	case CS_AARCH64(_INS_CSINC):
+		invert_cond = true;
 #else
 	case CS_AARCH64(_INS_CSINV):
 		if (!insn->is_alias) {
@@ -969,11 +971,11 @@ static RzILOpEffect *csinc(cs_insn *insn) {
 		}
 		res = NEG(src1);
 		break;
-#endif
 	case CS_AARCH64(_INS_CSINC):
 		if (!insn->is_alias) {
 			invert_cond = true;
 		}
+#endif
 		// fallthrough
 	default: // CS_AARCH64(_INS_CINC), CS_AARCH64(_INS_CSINC)
 		res = ADD(src1, UN(bits, 1));
@@ -3032,12 +3034,14 @@ RZ_IPI RzILOpEffect *rz_arm_cs_64_il(csh *handle, cs_insn *insn) {
 	case CS_AARCH64(_INS_SMSUBL):
 	case CS_AARCH64(_INS_UMADDL):
 	case CS_AARCH64(_INS_UMSUBL):
+#if CS_NEXT_VERSION >= 6
 		if (insn->alias_id == AArch64_INS_ALIAS_SMULL ||
 			insn->alias_id == AArch64_INS_ALIAS_UMULL ||
 			insn->alias_id == AArch64_INS_ALIAS_SMNEGL ||
 			insn->alias_id == AArch64_INS_ALIAS_UMNEGL) {
 			return smull(insn);
 		}
+#endif
 		return smaddl(insn);
 	case CS_AARCH64(_INS_SMULL):
 	case CS_AARCH64(_INS_UMULL):
