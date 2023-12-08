@@ -1246,7 +1246,14 @@ jmp $$ + 4 + ( [delta] * 2 )
 		op->type = RZ_ANALYSIS_OP_TYPE_TRAP;
 		op->cycles = 4;
 		break;
+#if CS_NEXT_VERSION < 6
 	case ARM_INS_NOP:
+#else
+	case ARM_INS_HINT:
+		if (insn->alias_id != ARM_INS_ALIAS_NOP) {
+			break;
+		}
+#endif
 		op->type = RZ_ANALYSIS_OP_TYPE_NOP;
 		op->cycles = 1;
 		break;
@@ -1917,9 +1924,7 @@ static int analysis_op(RzAnalysis *a, RzAnalysisOp *op, ut64 addr, const ut8 *bu
 		cs_option(ctx->handle, CS_OPT_DETAIL, CS_OPT_ON);
 #if CS_NEXT_VERSION >= 6
 		cs_option(ctx->handle, CS_OPT_SYNTAX, CS_OPT_SYNTAX_CS_REG_ALIAS);
-		if (a->bits == 64) {
-			cs_option(ctx->handle, CS_OPT_DETAIL, CS_OPT_DETAIL_REAL);
-		}
+		cs_option(ctx->handle, CS_OPT_DETAIL, CS_OPT_DETAIL_REAL);
 #endif
 		if (ret != CS_ERR_OK) {
 			ctx->handle = 0;

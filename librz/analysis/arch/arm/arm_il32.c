@@ -1201,7 +1201,11 @@ static RzILOpEffect *stm(cs_insn *insn, bool is_thumb) {
 	size_t op_first;
 	arm_reg ptr_reg;
 	bool writeback;
+#if CS_NEXT_VERSION < 6
 	if (insn->id == ARM_INS_PUSH || insn->id == ARM_INS_VPUSH) {
+#else
+	if (insn->alias_id == ARM_INS_ALIAS_PUSH || insn->alias_id == ARM_INS_ALIAS_VPUSH) {
+#endif
 		op_first = 0;
 		ptr_reg = ARM_REG_SP;
 		writeback = true;
@@ -1221,10 +1225,18 @@ static RzILOpEffect *stm(cs_insn *insn, bool is_thumb) {
 	if (!ptr) {
 		return NULL;
 	}
-	bool decrement = insn->id == ARM_INS_STMDA || insn->id == ARM_INS_STMDB || insn->id == ARM_INS_PUSH ||
-		insn->id == ARM_INS_VSTMDB || insn->id == ARM_INS_VPUSH;
-	bool before = insn->id == ARM_INS_STMDB || insn->id == ARM_INS_PUSH || insn->id == ARM_INS_VSTMDB ||
-		insn->id == ARM_INS_STMIB || insn->id == ARM_INS_VPUSH;
+	bool decrement = insn->id == ARM_INS_STMDA || insn->id == ARM_INS_STMDB || insn->id == ARM_INS_VSTMDB ||
+#if CS_NEXT_VERSION < 6
+		insn->id == ARM_INS_PUSH || insn->id == ARM_INS_VPUSH;
+#else
+		insn->alias_id == ARM_INS_ALIAS_PUSH || insn->alias_id == ARM_INS_ALIAS_VPUSH;
+#endif
+	bool before = insn->id == ARM_INS_STMDB || insn->id == ARM_INS_VSTMDB || insn->id == ARM_INS_STMIB ||
+#if CS_NEXT_VERSION < 6
+		insn->id == ARM_INS_PUSH || insn->id == ARM_INS_VPUSH;
+#else
+		insn->alias_id == ARM_INS_ALIAS_PUSH || insn->alias_id == ARM_INS_ALIAS_VPUSH;
+#endif
 	ut32 regsize = reg_bits(REGID(op_first)) / 8;
 	RzILOpEffect *eff = NULL;
 	// build up in reverse order so the result recurses in the second arg of seq (for tail-call optimization)
@@ -1262,7 +1274,11 @@ static RzILOpEffect *ldm(cs_insn *insn, bool is_thumb) {
 	size_t op_first;
 	arm_reg ptr_reg;
 	bool writeback;
+#if CS_NEXT_VERSION < 6
 	if (insn->id == ARM_INS_POP || insn->id == ARM_INS_VPOP) {
+#else
+	if (insn->alias_id == ARM_INS_ALIAS_POP || insn->alias_id == ARM_INS_ALIAS_VPOP) {
+#endif
 		op_first = 0;
 		ptr_reg = ARM_REG_SP;
 		writeback = true;
@@ -4085,7 +4101,11 @@ static RzILOpEffect *il_unconditional(csh *handle, cs_insn *insn, bool is_thumb)
 	// --
 	// Base Instruction Set
 	case ARM_INS_DBG:
+#if CS_NEXT_VERSION < 6
 	case ARM_INS_NOP:
+#else
+	case ARM_INS_HINT:
+#endif
 	case ARM_INS_PLD:
 	case ARM_INS_PLDW:
 	case ARM_INS_PLI:
@@ -4199,12 +4219,16 @@ static RzILOpEffect *il_unconditional(csh *handle, cs_insn *insn, bool is_thumb)
 	case ARM_INS_STM:
 	case ARM_INS_STMDA:
 	case ARM_INS_STMDB:
+#if CS_NEXT_VERSION < 6
 	case ARM_INS_PUSH:
 	case ARM_INS_VPUSH:
+#endif
 	case ARM_INS_STMIB:
 		return stm(insn, is_thumb);
+#if CS_NEXT_VERSION < 6
 	case ARM_INS_POP:
 	case ARM_INS_VPOP:
+#endif
 	case ARM_INS_LDM:
 	case ARM_INS_LDMDA:
 	case ARM_INS_LDMDB:
