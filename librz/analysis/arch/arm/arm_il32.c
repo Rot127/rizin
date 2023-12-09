@@ -1203,10 +1203,11 @@ static RzILOpEffect *stm(cs_insn *insn, bool is_thumb) {
 	bool writeback;
 #if CS_NEXT_VERSION < 6
 	if (insn->id == ARM_INS_PUSH || insn->id == ARM_INS_VPUSH) {
+		op_first = 0;
 #else
 	if (insn->alias_id == ARM_INS_ALIAS_PUSH || insn->alias_id == ARM_INS_ALIAS_VPUSH) {
+		op_first = 1;
 #endif
-		op_first = 0;
 		ptr_reg = ARM_REG_SP;
 		writeback = true;
 	} else { // ARM_INS_STMDB.*
@@ -1225,17 +1226,13 @@ static RzILOpEffect *stm(cs_insn *insn, bool is_thumb) {
 	if (!ptr) {
 		return NULL;
 	}
-	bool decrement = insn->id == ARM_INS_STMDA || insn->id == ARM_INS_STMDB || insn->id == ARM_INS_VSTMDB ||
+	bool decrement = insn->id == ARM_INS_STMDA || insn->id == ARM_INS_STMDB || insn->id == ARM_INS_VSTMDB;
 #if CS_NEXT_VERSION < 6
-		insn->id == ARM_INS_PUSH || insn->id == ARM_INS_VPUSH;
-#else
-		insn->alias_id == ARM_INS_ALIAS_PUSH || insn->alias_id == ARM_INS_ALIAS_VPUSH;
+	decrement |= insn->id == ARM_INS_PUSH || insn->id == ARM_INS_VPUSH;
 #endif
-	bool before = insn->id == ARM_INS_STMDB || insn->id == ARM_INS_VSTMDB || insn->id == ARM_INS_STMIB ||
+	bool before = insn->id == ARM_INS_STMDB || insn->id == ARM_INS_VSTMDB || insn->id == ARM_INS_STMIB;
 #if CS_NEXT_VERSION < 6
-		insn->id == ARM_INS_PUSH || insn->id == ARM_INS_VPUSH;
-#else
-		insn->alias_id == ARM_INS_ALIAS_PUSH || insn->alias_id == ARM_INS_ALIAS_VPUSH;
+	before |= insn->id == ARM_INS_PUSH || insn->id == ARM_INS_VPUSH;
 #endif
 	ut32 regsize = reg_bits(REGID(op_first)) / 8;
 	RzILOpEffect *eff = NULL;
@@ -1276,10 +1273,11 @@ static RzILOpEffect *ldm(cs_insn *insn, bool is_thumb) {
 	bool writeback;
 #if CS_NEXT_VERSION < 6
 	if (insn->id == ARM_INS_POP || insn->id == ARM_INS_VPOP) {
+		op_first = 0;
 #else
 	if (insn->alias_id == ARM_INS_ALIAS_POP || insn->alias_id == ARM_INS_ALIAS_VPOP) {
+		op_first = 1;
 #endif
-		op_first = 0;
 		ptr_reg = ARM_REG_SP;
 		writeback = true;
 	} else { // ARM_INS_LDM.*
@@ -1309,6 +1307,9 @@ static RzILOpEffect *ldm(cs_insn *insn, bool is_thumb) {
 	}
 	bool decrement = insn->id == ARM_INS_LDMDA || insn->id == ARM_INS_LDMDB || insn->id == ARM_INS_VLDMDB;
 	bool before = insn->id == ARM_INS_LDMDB || insn->id == ARM_INS_LDMIB || insn->id == ARM_INS_VLDMIA;
+#if CS_NEXT_VERSION >= 6
+	before &= !(insn->alias_id == ARM_INS_ALIAS_POP || insn->alias_id == ARM_INS_ALIAS_VPOP);
+#endif
 	ut32 regsize = reg_bits(REGID(op_first)) / 8;
 	if (writeback) {
 		RzILOpEffect *wb = write_reg(ptr_reg,
