@@ -1267,6 +1267,12 @@ jmp $$ + 4 + ( [delta] * 2 )
 	case ARM_INS_LDMDB:
 	case ARM_INS_LDMIB:
 	case ARM_INS_LDM:
+#if CS_NEXT_VERSION >= 6
+		if (insn->alias_id == ARM_INS_ALIAS_POP || insn->alias_id == ARM_INS_ALIAS_VPOP) {
+			op->stackop = RZ_ANALYSIS_STACK_INC;
+			op->stackptr = -4LL * (insn->detail->arm.op_count - 1);
+		}
+#endif
 		op->type = RZ_ANALYSIS_OP_TYPE_POP;
 		op->cycles = 2;
 		for (i = 0; i < insn->detail->arm.op_count; i++) {
@@ -1443,6 +1449,13 @@ jmp $$ + 4 + ( [delta] * 2 )
 	case ARM_INS_STMDA:
 	case ARM_INS_STMDB:
 		op->type = RZ_ANALYSIS_OP_TYPE_PUSH;
+#if CS_NEXT_VERSION >= 6
+		if (insn->alias_id == ARM_INS_ALIAS_PUSH || insn->alias_id == ARM_INS_ALIAS_VPUSH) {
+			op->stackop = RZ_ANALYSIS_STACK_INC;
+			op->stackptr = 4LL * (insn->detail->arm.op_count - 1);
+			return;
+		}
+#endif
 		// 0x00008160    04202de5     str r2, [sp, -4]!
 		// 0x000082a0    28000be5     str r0, [fp, -0x28]
 		if (REGBASE(1) == ARM_REG_FP) {
@@ -1783,7 +1796,7 @@ static void set_src_dst(RzAnalysisValue *val, RzReg *reg, csh *handle, cs_insn *
 		case ARM_OP_MEM:
 			val->type = RZ_ANALYSIS_VAL_MEM;
 			val->mul = armop.mem.scale << armop.mem.lshift;
-#if CS_NEXT_VERSION == 6
+#if CS_NEXT_VERSION >= 6
 			val->delta = MEMDISP(x);
 #else
 			val->delta = armop.mem.disp;
