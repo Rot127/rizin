@@ -1268,7 +1268,7 @@ jmp $$ + 4 + ( [delta] * 2 )
 	case ARM_INS_LDMIB:
 	case ARM_INS_LDM:
 #if CS_NEXT_VERSION >= 6
-		if (insn->alias_id == ARM_INS_ALIAS_POP || insn->alias_id == ARM_INS_ALIAS_VPOP) {
+		if (insn->alias_id == ARM_INS_ALIAS_POP || insn->alias_id == ARM_INS_ALIAS_POPW  || insn->alias_id == ARM_INS_ALIAS_VPOP) {
 			op->stackop = RZ_ANALYSIS_STACK_INC;
 			op->stackptr = -4LL * (insn->detail->arm.op_count - 1);
 		}
@@ -1450,7 +1450,7 @@ jmp $$ + 4 + ( [delta] * 2 )
 	case ARM_INS_STMDB:
 		op->type = RZ_ANALYSIS_OP_TYPE_PUSH;
 #if CS_NEXT_VERSION >= 6
-		if (insn->alias_id == ARM_INS_ALIAS_PUSH || insn->alias_id == ARM_INS_ALIAS_VPUSH) {
+		if (insn->alias_id == ARM_INS_ALIAS_PUSH || insn->alias_id == ARM_INS_ALIAS_PUSHW || insn->alias_id == ARM_INS_ALIAS_VPUSH) {
 			op->stackop = RZ_ANALYSIS_STACK_INC;
 			op->stackptr = 4LL * (insn->detail->arm.op_count - 1);
 			return;
