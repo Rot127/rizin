@@ -1204,12 +1204,19 @@ static RzILOpEffect *stm(cs_insn *insn, bool is_thumb) {
 #if CS_NEXT_VERSION < 6
 	if (insn->id == ARM_INS_PUSH || insn->id == ARM_INS_VPUSH) {
 		op_first = 0;
+		ptr_reg = ARM_REG_SP;
+		writeback = true;
 #else
 	if (insn->alias_id == ARM_INS_ALIAS_PUSH || insn->alias_id == ARM_INS_ALIAS_VPUSH) {
 		op_first = 1;
-#endif
 		ptr_reg = ARM_REG_SP;
 		writeback = true;
+	} else if (insn->id == ARM_INS_PUSH) {
+		// Thumb1 PUSH instructions. Have no alias defined in the ISA.
+		op_first = 0;
+		ptr_reg = ARM_REG_SP;
+		writeback = true;
+#endif
 	} else { // ARM_INS_STMDB.*
 		if (!ISREG(0)) {
 			return NULL;
@@ -1226,13 +1233,13 @@ static RzILOpEffect *stm(cs_insn *insn, bool is_thumb) {
 	if (!ptr) {
 		return NULL;
 	}
-	bool decrement = insn->id == ARM_INS_STMDA || insn->id == ARM_INS_STMDB || insn->id == ARM_INS_VSTMDB;
+	bool decrement = insn->id == ARM_INS_PUSH || insn->id == ARM_INS_STMDA || insn->id == ARM_INS_STMDB || insn->id == ARM_INS_VSTMDB;
 #if CS_NEXT_VERSION < 6
-	decrement |= insn->id == ARM_INS_PUSH || insn->id == ARM_INS_VPUSH;
+	decrement |= insn->id == ARM_INS_VPUSH;
 #endif
-	bool before = insn->id == ARM_INS_STMDB || insn->id == ARM_INS_VSTMDB || insn->id == ARM_INS_STMIB;
+	bool before = insn->id == ARM_INS_PUSH || insn->id == ARM_INS_STMDB || insn->id == ARM_INS_VSTMDB || insn->id == ARM_INS_STMIB;
 #if CS_NEXT_VERSION < 6
-	before |= insn->id == ARM_INS_PUSH || insn->id == ARM_INS_VPUSH;
+	before |= insn->id == ARM_INS_VPUSH;
 #endif
 	ut32 regsize = reg_bits(REGID(op_first)) / 8;
 	RzILOpEffect *eff = NULL;
@@ -1274,12 +1281,19 @@ static RzILOpEffect *ldm(cs_insn *insn, bool is_thumb) {
 #if CS_NEXT_VERSION < 6
 	if (insn->id == ARM_INS_POP || insn->id == ARM_INS_VPOP) {
 		op_first = 0;
+		ptr_reg = ARM_REG_SP;
+		writeback = true;
 #else
 	if (insn->alias_id == ARM_INS_ALIAS_POP || insn->alias_id == ARM_INS_ALIAS_VPOP) {
 		op_first = 1;
-#endif
 		ptr_reg = ARM_REG_SP;
 		writeback = true;
+	} else if (insn->id == ARM_INS_POP) {
+		// Thumb1 POP instructions. Have no alias defined in the ISA.
+		op_first = 0;
+		ptr_reg = ARM_REG_SP;
+		writeback = true;
+#endif
 	} else { // ARM_INS_LDM.*
 		if (!ISREG(0)) {
 			return NULL;
@@ -4220,16 +4234,16 @@ static RzILOpEffect *il_unconditional(csh *handle, cs_insn *insn, bool is_thumb)
 	case ARM_INS_STM:
 	case ARM_INS_STMDA:
 	case ARM_INS_STMDB:
-#if CS_NEXT_VERSION < 6
 	case ARM_INS_PUSH:
+#if CS_NEXT_VERSION < 6
 	case ARM_INS_VPUSH:
 #endif
 	case ARM_INS_STMIB:
 		return stm(insn, is_thumb);
 #if CS_NEXT_VERSION < 6
-	case ARM_INS_POP:
 	case ARM_INS_VPOP:
 #endif
+	case ARM_INS_POP:
 	case ARM_INS_LDM:
 	case ARM_INS_LDMDA:
 	case ARM_INS_LDMDB:
