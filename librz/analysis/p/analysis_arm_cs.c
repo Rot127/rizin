@@ -1258,7 +1258,8 @@ jmp $$ + 4 + ( [delta] * 2 )
 		op->cycles = 1;
 		break;
 	case ARM_INS_POP:
-		op->stackop = RZ_ANALYSIS_STACK_INC;
+		op->type = RZ_ANALYSIS_OP_TYPE_POP;
+		op->stackop = RZ_ANALYSIS_STACK_DEC;
 		op->stackptr = -4LL * insn->detail->arm.op_count;
 		// fallthrough
 	case ARM_INS_FLDMDBX:
@@ -1268,12 +1269,16 @@ jmp $$ + 4 + ( [delta] * 2 )
 	case ARM_INS_LDMIB:
 	case ARM_INS_LDM:
 #if CS_NEXT_VERSION >= 6
-		if (insn->alias_id == ARM_INS_ALIAS_POP || insn->alias_id == ARM_INS_ALIAS_POPW  || insn->alias_id == ARM_INS_ALIAS_VPOP) {
-			op->stackop = RZ_ANALYSIS_STACK_INC;
+		if (insn->alias_id == ARM_INS_ALIAS_POP || insn->alias_id == ARM_INS_ALIAS_POPW || insn->alias_id == ARM_INS_ALIAS_VPOP) {
+			op->type = RZ_ANALYSIS_OP_TYPE_POP;
+			op->stackop = RZ_ANALYSIS_STACK_DEC;
 			op->stackptr = -4LL * (insn->detail->arm.op_count - 1);
+			break;
 		}
 #endif
-		op->type = RZ_ANALYSIS_OP_TYPE_POP;
+		if (insn->id != ARM_INS_POP) {
+			op->type = RZ_ANALYSIS_OP_TYPE_LOAD;
+		}
 		op->cycles = 2;
 		for (i = 0; i < insn->detail->arm.op_count; i++) {
 			if (insn->detail->arm.operands[i].type == ARM_OP_REG &&
@@ -1442,20 +1447,24 @@ jmp $$ + 4 + ( [delta] * 2 )
 		op->type = RZ_ANALYSIS_OP_TYPE_SAR;
 		break;
 	case ARM_INS_PUSH:
+		op->type = RZ_ANALYSIS_OP_TYPE_PUSH;
 		op->stackop = RZ_ANALYSIS_STACK_INC;
 		op->stackptr = 4LL * insn->detail->arm.op_count;
 		// fallthrough
 	case ARM_INS_STM:
 	case ARM_INS_STMDA:
 	case ARM_INS_STMDB:
-		op->type = RZ_ANALYSIS_OP_TYPE_PUSH;
 #if CS_NEXT_VERSION >= 6
 		if (insn->alias_id == ARM_INS_ALIAS_PUSH || insn->alias_id == ARM_INS_ALIAS_PUSHW || insn->alias_id == ARM_INS_ALIAS_VPUSH) {
+			op->type = RZ_ANALYSIS_OP_TYPE_PUSH;
 			op->stackop = RZ_ANALYSIS_STACK_INC;
 			op->stackptr = 4LL * (insn->detail->arm.op_count - 1);
-			return;
+			break;
 		}
 #endif
+		if (insn->id != ARM_INS_PUSH) {
+			op->type = RZ_ANALYSIS_OP_TYPE_STORE;
+		}
 		// 0x00008160    04202de5     str r2, [sp, -4]!
 		// 0x000082a0    28000be5     str r0, [fp, -0x28]
 		if (REGBASE(1) == ARM_REG_FP) {
@@ -1478,6 +1487,14 @@ jmp $$ + 4 + ( [delta] * 2 )
 	case ARM_INS_STRHT:
 	case ARM_INS_STRT:
 		op->cycles = 4;
+#if CS_NEXT_VERSION >= 6
+		if (insn->alias_id == ARM_INS_ALIAS_PUSH || insn->alias_id == ARM_INS_ALIAS_PUSHW) {
+			op->type = RZ_ANALYSIS_OP_TYPE_PUSH;
+			op->stackop = RZ_ANALYSIS_STACK_INC;
+			op->stackptr = 4LL * (insn->detail->arm.op_count - 1);
+			break;
+		}
+#endif
 		op->type = RZ_ANALYSIS_OP_TYPE_STORE;
 		if (REGBASE(1) == ARM_REG_FP) {
 			op->stackop = RZ_ANALYSIS_STACK_SET;
@@ -1508,6 +1525,14 @@ jmp $$ + 4 + ( [delta] * 2 )
 	case ARM_INS_LDRSHT:
 	case ARM_INS_LDRT:
 		op->cycles = 4;
+#if CS_NEXT_VERSION >= 6
+		if (insn->alias_id == ARM_INS_ALIAS_POP || insn->alias_id == ARM_INS_ALIAS_POPW) {
+			op->type = RZ_ANALYSIS_OP_TYPE_POP;
+			op->stackop = RZ_ANALYSIS_STACK_DEC;
+			op->stackptr = -4LL * (insn->detail->arm.op_count - 1);
+			break;
+		}
+#endif
 		// 0x000082a8    28301be5     ldr r3, [fp, -0x28]
 		if (INSOP(1).mem.scale != -1) {
 			op->scale = INSOP(1).mem.scale << LSHIFT(1);
@@ -1745,9 +1770,11 @@ static int parse_reg64_name(RzReg *reg, RzRegItem **reg_base, RzRegItem **reg_de
 static void set_opdir(RzAnalysisOp *op) {
 	switch (op->type & RZ_ANALYSIS_OP_TYPE_MASK) {
 	case RZ_ANALYSIS_OP_TYPE_LOAD:
+	case RZ_ANALYSIS_OP_TYPE_POP:
 		op->direction = RZ_ANALYSIS_OP_DIR_READ;
 		break;
 	case RZ_ANALYSIS_OP_TYPE_STORE:
+	case RZ_ANALYSIS_OP_TYPE_PUSH:
 		op->direction = RZ_ANALYSIS_OP_DIR_WRITE;
 		break;
 	case RZ_ANALYSIS_OP_TYPE_LEA:
