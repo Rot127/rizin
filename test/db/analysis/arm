@@ -906,20 +906,20 @@ EOF
 EXPECT=<<EOF
 address: 0x568
 opcode: push {r3, lr}
-esilcost: 16
+esilcost: 24
 disasm: push {r3, lr}
 pseudo: push (r3, lr)
 mnemonic: push
 mask: ffffffff
 prefix: 0
-id: 635
+id: 438
 bytes: 08402de9
 refptr: 0
 size: 4
 sign: false
 type: push
 cycles: 1
-esil: 8,sp,-=,lr,r3,2,sp,=[*]
+esil: r3,sp,-8,+,=[4],lr,sp,-4,+,=[4],-8,sp,+=,
 rzil: (seq (storew 0 (- (var sp) (bv 32 0x8)) (var r3)) (storew 0 (- (var sp) (bv 32 0x4)) (var lr)) (set sp (- (var sp) (bv 32 0x8))))
 family: cpu
 stackop: inc
