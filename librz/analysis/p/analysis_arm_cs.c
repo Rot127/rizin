@@ -1152,14 +1152,16 @@ static void anop64(ArmCSContext *ctx, RzAnalysisOp *op, cs_insn *insn) {
 }
 
 /**
- * \brief Checks if a given intruction is a POP instruction which returns (writes to PC)
+ * \brief Checks if a given intruction returns from a sub-routine
  * and sets the analysis op data accordingly.
  */
-inline static void set_pop_ret_info(const cs_insn *insn, RZ_BORROW RzAnalysisOp *op) {
+inline static void set_ret(const cs_insn *insn, RZ_BORROW RzAnalysisOp *op) {
+#if CS_NEXT_VERSION >= 6
 	if (rz_arm_cs_is_group_member(insn, ARM_GRP_RET)) {
 		op->eob = true;
 		op->type = RZ_ANALYSIS_OP_TYPE_RET;
 	}
+#endif
 }
 
 static void anop32(RzAnalysis *a, csh handle, RzAnalysisOp *op, cs_insn *insn, bool thumb, const ut8 *buf, int len) {
@@ -1272,7 +1274,7 @@ jmp $$ + 4 + ( [delta] * 2 )
 		op->type = RZ_ANALYSIS_OP_TYPE_POP;
 		op->stackop = RZ_ANALYSIS_STACK_DEC;
 		op->stackptr = -4LL * insn->detail->arm.op_count;
-		set_pop_ret_info(insn, op);
+		set_ret(insn, op);
 		// fallthrough
 	case ARM_INS_FLDMDBX:
 	case ARM_INS_FLDMIAX:
@@ -1285,7 +1287,7 @@ jmp $$ + 4 + ( [delta] * 2 )
 			op->type = RZ_ANALYSIS_OP_TYPE_POP;
 			op->stackop = RZ_ANALYSIS_STACK_DEC;
 			op->stackptr = -4LL * (insn->detail->arm.op_count - 1);
-			set_pop_ret_info(insn, op);
+			set_ret(insn, op);
 			break;
 		}
 #endif
@@ -1543,7 +1545,7 @@ jmp $$ + 4 + ( [delta] * 2 )
 			op->type = RZ_ANALYSIS_OP_TYPE_POP;
 			op->stackop = RZ_ANALYSIS_STACK_DEC;
 			op->stackptr = -4LL * (insn->detail->arm.op_count - 1);
-			set_pop_ret_info(insn, op);
+			set_ret(insn, op);
 			break;
 		}
 #endif
