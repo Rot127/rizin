@@ -1178,12 +1178,7 @@ static void extract_stack_var(RzAnalysis *analysis, RzAnalysisFunction *fcn, RzA
 
 	RzStackAddr stack_off;
 	if (is_sp) {
-		if (op->stackptr != RZ_ANALYSIS_OP_INVALID_STACKPTR) {
-			// If the stackptr is set we assume it is more correct and use it here.
-			stack_off = op->stackptr;
-		} else {
-			stack_off = addend - fcn->stack;
-		}
+		stack_off = addend - fcn->stack;
 	} else {
 		stack_off = addend - fcn->bp_off;
 	}
