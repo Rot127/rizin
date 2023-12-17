@@ -1482,7 +1482,7 @@ jmp $$ + 4 + ( [delta] * 2 )
 		}
 		// 0x00008160    04202de5     str r2, [sp, -4]!
 		// 0x000082a0    28000be5     str r0, [fp, -0x28]
-		if (REGBASE(1) == ARM_REG_FP) {
+		if (ISMEM(1) && REGBASE(1) == ARM_REG_FP) {
 			op->stackop = RZ_ANALYSIS_STACK_SET;
 			op->stackptr = 0;
 			op->ptr = MEMDISP(1);
