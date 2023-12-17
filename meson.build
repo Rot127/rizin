@@ -188,6 +188,11 @@ if not capstone_dep.found()
     error('Wrong capstone version selected. Please use one of the supported versions.')
   endif
   capstone_dep = capstone_proj.get_variable('capstone_dep')
+else
+  # Package managers CS version has no meta programming macros for AArch64 -> ARM64 renaming
+  # (because it is outdated).
+  # With this define we includeour copy of those macros.
+  add_project_arguments(['-DUSE_SYS_CAPSTONE'], language: 'c')
 endif
 
 # handle magic library
