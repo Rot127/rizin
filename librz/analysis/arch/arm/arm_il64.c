@@ -2087,14 +2087,17 @@ static RzILOpEffect *mvn(cs_insn *insn) {
 		return NULL;
 	}
 	if (insn->detail->CS_aarch64_.update_flags) {
+		// MSVC pre-processor can't parse "#if CS_NEXT... SETG(...) ..." if it is inlined.
+		// So we define a variable here. Otherwise we get "error C2121".
+#if CS_NEXT_VERSION < 6
+		RzILOpEffect *set_cf = SETG("cf", sub_carry(UN(bits, 0), VARL("b"), insn->id == CS_AARCH64(_INS_NGC), bits));
+#else
+		RzILOpEffect *set_cf = SETG("cf", sub_carry(UN(bits, 0), VARL("b"), insn->alias_id == AArch64_INS_ALIAS_NGC, bits));
+#endif
 		return SEQ5(
 			SETL("b", DUP(val)),
 			set,
-#if CS_NEXT_VERSION < 6
-			SETG("cf", sub_carry(UN(bits, 0), VARL("b"), insn->id == CS_AARCH64(_INS_NGC), bits)),
-#else
-			SETG("cf", sub_carry(UN(bits, 0), VARL("b"), insn->alias_id == AArch64_INS_ALIAS_NGC, bits)),
-#endif
+			set_cf,
 			SETG("vf", sub_overflow(UN(bits, 0), VARL("b"), REG(0))),
 			update_flags_zn(REG(0)));
 	}
