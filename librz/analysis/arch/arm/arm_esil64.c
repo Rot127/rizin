@@ -7,9 +7,9 @@
 #include "arm_cs.h"
 #include "arm_accessors64.h"
 
-#define REG64(x)      rz_str_get_null(cs_reg_name(*handle, insn->detail->CS_aarch64().operands[x].reg))
-#define MEMBASE64(x)  rz_str_get_null(cs_reg_name(*handle, insn->detail->CS_aarch64().operands[x].mem.base))
-#define MEMINDEX64(x) rz_str_get_null(cs_reg_name(*handle, insn->detail->CS_aarch64().operands[x].mem.index))
+#define REG64(x)      rz_str_get_null(cs_reg_name(*handle, insn->detail->CS_aarch64_.operands[x].reg))
+#define MEMBASE64(x)  rz_str_get_null(cs_reg_name(*handle, insn->detail->CS_aarch64_.operands[x].mem.base))
+#define MEMINDEX64(x) rz_str_get_null(cs_reg_name(*handle, insn->detail->CS_aarch64_.operands[x].mem.index))
 
 RZ_IPI const char *rz_arm64_cs_esil_prefix_cond(RzAnalysisOp *op, CS_aarch64_cc() cond_type) {
 	const char *close_cond[2];
@@ -147,7 +147,7 @@ static int decode_sign_ext(CS_aarch64_extender() extender) {
 	return 0;
 }
 
-#define EXT64(x) decode_sign_ext(insn->detail->CS_aarch64().operands[x].ext)
+#define EXT64(x) decode_sign_ext(insn->detail->CS_aarch64_.operands[x].ext)
 
 static const char *decode_shift_64(CS_aarch64_shifter() shift) {
 	const char *E_OP_SR = ">>";
@@ -173,10 +173,10 @@ static const char *decode_shift_64(CS_aarch64_shifter() shift) {
 	return E_OP_VOID;
 }
 
-#define DECODE_SHIFT64(x) decode_shift_64(insn->detail->CS_aarch64().operands[x].shift.type)
+#define DECODE_SHIFT64(x) decode_shift_64(insn->detail->CS_aarch64_.operands[x].shift.type)
 
 static int regsize64(cs_insn *insn, int n) {
-	unsigned int reg = insn->detail->CS_aarch64().operands[n].reg;
+	unsigned int reg = insn->detail->CS_aarch64_.operands[n].reg;
 	if ((reg >= CS_AARCH64(_REG_S0) && reg <= CS_AARCH64(_REG_S31)) ||
 		(reg >= CS_AARCH64(_REG_W0) && reg <= CS_AARCH64(_REG_W30)) ||
 		reg == CS_AARCH64(_REG_WZR)) {
@@ -210,7 +210,7 @@ static void shifted_reg64_append(RzStrBuf *sb, csh *handle, cs_insn *insn, int n
 	}
 
 	if (LSHIFT2_64(n)) {
-		if (insn->detail->CS_aarch64().operands[n].shift.type != CS_AARCH64(_SFT_ASR)) {
+		if (insn->detail->CS_aarch64_.operands[n].shift.type != CS_AARCH64(_SFT_ASR)) {
 			if (signext) {
 				rz_strbuf_appendf(sb, "%d,%d,%s,~,%s", LSHIFT2_64(n), signext, rn, DECODE_SHIFT64(n));
 			} else {
@@ -394,7 +394,7 @@ RZ_IPI int rz_arm_cs_analysis_op_64_esil(RzAnalysis *a, RzAnalysisOp *op, ut64 a
 	rz_strbuf_init(&op->esil);
 	rz_strbuf_set(&op->esil, "");
 
-	postfix = rz_arm64_cs_esil_prefix_cond(op, insn->detail->CS_aarch64().cc);
+	postfix = rz_arm64_cs_esil_prefix_cond(op, insn->detail->CS_aarch64_.cc);
 
 	switch (insn->id) {
 	case CS_AARCH64(_INS_REV):
@@ -925,13 +925,13 @@ RZ_IPI int rz_arm_cs_analysis_op_64_esil(RzAnalysis *a, RzAnalysisOp *op, ut64 a
 			break;
 		case AArch64_INS_ALIAS_CSET: // cset Wd --> Wd := (cond) ? 1 : 0
 			rz_strbuf_drain_nofree(&op->esil);
-			rz_arm64_cs_esil_prefix_cond(op, AArch64CC_getInvertedCondCode(insn->detail->CS_aarch64().cc));
+			rz_arm64_cs_esil_prefix_cond(op, AArch64CC_getInvertedCondCode(insn->detail->CS_aarch64_.cc));
 			rz_strbuf_appendf(&op->esil, "1,}{,0,},%s,=", REG64(0));
 			postfix = "";
 			break;
 		case AArch64_INS_ALIAS_CINC: // cinc Wd, Wn --> Wd := (cond) ? (Wn+1) : Wn
 			rz_strbuf_drain_nofree(&op->esil);
-			rz_arm64_cs_esil_prefix_cond(op, AArch64CC_getInvertedCondCode(insn->detail->CS_aarch64().cc));
+			rz_arm64_cs_esil_prefix_cond(op, AArch64CC_getInvertedCondCode(insn->detail->CS_aarch64_.cc));
 			rz_strbuf_appendf(&op->esil, "1,%s,+,}{,%s,},%s,=", REG64(1), REG64(1), REG64(0));
 			postfix = "";
 			break;

@@ -444,7 +444,7 @@ static void opex64(RzStrBuf *buf, csh handle, cs_insn *insn) {
 	}
 	pj_o(pj);
 	pj_ka(pj, "operands");
-	CS_cs_aarch64() *x = &insn->detail->CS_aarch64();
+	CS_cs_aarch64() *x = &insn->detail->CS_aarch64_;
 	for (i = 0; i < x->op_count; i++) {
 		CS_aarch64_op() *op = x->operands + i;
 		pj_o(pj);
@@ -711,13 +711,13 @@ static void anop64(ArmCSContext *ctx, RzAnalysisOp *op, cs_insn *insn) {
 	}
 #endif
 
-	op->cond = cond_cs2rz_64(insn->detail->CS_aarch64().cc);
+	op->cond = cond_cs2rz_64(insn->detail->CS_aarch64_.cc);
 	if (op->cond == RZ_TYPE_COND_NV) {
 		op->type = RZ_ANALYSIS_OP_TYPE_NOP;
 		return;
 	}
 
-	switch (insn->detail->CS_aarch64().cc) {
+	switch (insn->detail->CS_aarch64_.cc) {
 	case CS_AARCH64CC(_GE):
 	case CS_AARCH64CC(_GT):
 	case CS_AARCH64CC(_LE):
@@ -1134,9 +1134,9 @@ static void anop64(ArmCSContext *ctx, RzAnalysisOp *op, cs_insn *insn) {
 		break;
 	case CS_AARCH64(_INS_B):
 		// BX LR == RET
-		if (insn->detail->CS_aarch64().operands[0].reg == CS_AARCH64(_REG_LR)) {
+		if (insn->detail->CS_aarch64_.operands[0].reg == CS_AARCH64(_REG_LR)) {
 			op->type = RZ_ANALYSIS_OP_TYPE_RET;
-		} else if (cc_holds_cond(insn->detail->CS_aarch64().cc)) {
+		} else if (cc_holds_cond(insn->detail->CS_aarch64_.cc)) {
 			op->type = RZ_ANALYSIS_OP_TYPE_CJMP;
 			op->jump = IMM64(0);
 			op->fail = addr + op->size;
@@ -1865,7 +1865,7 @@ static void create_src_dst(RzAnalysisOp *op) {
 static void op_fillval(RzAnalysis *analysis, RzAnalysisOp *op, csh handle, cs_insn *insn, int bits) {
 	create_src_dst(op);
 	int i, j;
-	int count = bits == 64 ? insn->detail->CS_aarch64().op_count : insn->detail->arm.op_count;
+	int count = bits == 64 ? insn->detail->CS_aarch64_.op_count : insn->detail->arm.op_count;
 	switch (op->type & RZ_ANALYSIS_OP_TYPE_MASK) {
 	case RZ_ANALYSIS_OP_TYPE_MOV:
 	case RZ_ANALYSIS_OP_TYPE_CMP:

@@ -15,7 +15,7 @@
 #define ISMEM   ISMEM64
 #define OPCOUNT OPCOUNT64
 #undef MEMDISP64 // the original one casts to ut64 which we don't want here
-#define MEMDISP(x) insn->detail->CS_aarch64().operands[x].mem.disp
+#define MEMDISP(x) insn->detail->CS_aarch64_.operands[x].mem.disp
 
 #include <rz_il/rz_il_opbuilder_begin.h>
 
@@ -338,7 +338,7 @@ static RzILOpBitVector *apply_shift(CS_aarch64_shifter() sft, ut32 dist, RZ_OWN 
 
 #define REG(n)       read_reg(REGID(n))
 #define REGBITS(n)   reg_bits(REGID(n))
-#define MEMBASEID(x) insn->detail->CS_aarch64().operands[x].mem.base
+#define MEMBASEID(x) insn->detail->CS_aarch64_.operands[x].mem.base
 #define MEMBASE(x)   read_reg(MEMBASEID(x))
 
 /**
@@ -375,7 +375,7 @@ static RzILOpBitVector *arg_mem(RzILOpBitVector *base_plus_disp, CS_aarch64_op()
  */
 static RzILOpBitVector *arg(RZ_BORROW cs_insn *insn, size_t n, RZ_OUT ut32 *bits_inout) {
 	ut32 bits_requested = bits_inout ? *bits_inout : 0;
-	CS_aarch64_op() *op = &insn->detail->CS_aarch64().operands[n];
+	CS_aarch64_op() *op = &insn->detail->CS_aarch64_.operands[n];
 	switch (op->type) {
 	case CS_AARCH64(_OP_REG): {
 		if (!bits_requested) {
@@ -416,7 +416,7 @@ static RzILOpBitVector *arg(RZ_BORROW cs_insn *insn, size_t n, RZ_OUT ut32 *bits
 		} else if (disp < 0) {
 			addr = SUB(addr, U64(-disp));
 		}
-		return arg_mem(addr, &insn->detail->CS_aarch64().operands[n]);
+		return arg_mem(addr, &insn->detail->CS_aarch64_.operands[n]);
 	}
 	default:
 		break;
@@ -491,7 +491,7 @@ static RzILOpEffect *add_sub(cs_insn *insn) {
 		with_carry = true;
 	}
 	RzILOpEffect *set = write_reg(REGID(0), res);
-	bool update_flags = insn->detail->CS_aarch64().update_flags;
+	bool update_flags = insn->detail->CS_aarch64_.update_flags;
 	if (update_flags) {
 		return SEQ6(
 			SETL("a", DUP(a)),
@@ -556,7 +556,7 @@ static RzILOpEffect *bitwise(cs_insn *insn) {
 	if (!eff) {
 		return NULL;
 	}
-	if (insn->detail->CS_aarch64().update_flags) {
+	if (insn->detail->CS_aarch64_.update_flags) {
 		return SEQ2(eff, update_flags_zn00(REG(0)));
 	}
 	return eff;
@@ -627,7 +627,7 @@ static RzILOpEffect *branch(cs_insn *insn) {
 	if (!a) {
 		return NULL;
 	}
-	RzILOpBool *c = cond(insn->detail->CS_aarch64().cc);
+	RzILOpBool *c = cond(insn->detail->CS_aarch64_.cc);
 	if (c) {
 		return BRANCH(c, JMP(a), NOP());
 	}
@@ -727,7 +727,7 @@ static RzILOpEffect *bic(cs_insn *insn) {
 		}
 		res = NULL;
 	}
-	if (insn->detail->CS_aarch64().update_flags) {
+	if (insn->detail->CS_aarch64_.update_flags) {
 		RzILOpEffect *eff1 = update_flags_zn00(res ? res : REG(0));
 		return eff ? SEQ2(eff, eff1) : eff1;
 	}
@@ -880,7 +880,7 @@ static RzILOpEffect *cmp(cs_insn *insn) {
 		SETG("cf", (is_neg ? add_carry : sub_carry)(VARL("a"), VARL("b"), false, bits)),
 		SETG("vf", (is_neg ? add_overflow : sub_overflow)(VARL("a"), VARL("b"), VARL("r"))),
 		update_flags_zn(VARL("r")));
-	RzILOpBool *c = cond(insn->detail->CS_aarch64().cc);
+	RzILOpBool *c = cond(insn->detail->CS_aarch64_.cc);
 	if (c) {
 		ut64 imm = IMM(2);
 		return BRANCH(c,
@@ -914,15 +914,15 @@ static RzILOpEffect *csinc(cs_insn *insn) {
 		return NULL;
 	}
 #if CS_NEXT_VERSION < 6
-	RzILOpBool *c = cond(insn->detail->CS_aarch64().cc);
+	RzILOpBool *c = cond(insn->detail->CS_aarch64_.cc);
 #else
 	AArch64CC_CondCode cc;
 	if (insn->alias_id == AArch64_INS_ALIAS_CINV ||
 		insn->alias_id == AArch64_INS_ALIAS_CNEG ||
 		insn->alias_id == AArch64_INS_ALIAS_CINC) {
-		cc = AArch64CC_getInvertedCondCode(insn->detail->CS_aarch64().cc);
+		cc = AArch64CC_getInvertedCondCode(insn->detail->CS_aarch64_.cc);
 	} else {
-		cc = insn->detail->CS_aarch64().cc;
+		cc = insn->detail->CS_aarch64_.cc;
 	}
 	RzILOpBool *c = cond(cc);
 #endif
@@ -994,13 +994,13 @@ static RzILOpEffect *cset(cs_insn *insn) {
 	}
 	RzILOpBool *c = NULL;
 #if CS_NEXT_VERSION < 6
-	c = cond(insn->detail->CS_aarch64().cc);
+	c = cond(insn->detail->CS_aarch64_.cc);
 #else
 	if (insn->alias_id == AArch64_INS_ALIAS_CSET ||
 		insn->alias_id == AArch64_INS_ALIAS_CSETM) {
-		c = cond(AArch64CC_getInvertedCondCode(insn->detail->CS_aarch64().cc));
+		c = cond(AArch64CC_getInvertedCondCode(insn->detail->CS_aarch64_.cc));
 	} else {
-		c = cond(insn->detail->CS_aarch64().cc);
+		c = cond(insn->detail->CS_aarch64_.cc);
 	}
 #endif
 	if (!c) {
@@ -1129,7 +1129,7 @@ static RzILOpEffect *load_effect(ut32 bits, bool is_signed, CS_aarch64_reg() dst
 
 static RzILOpEffect *writeback(cs_insn *insn, size_t addr_op, RZ_BORROW RzILOpBitVector *addr) {
 #if CS_NEXT_VERSION < 6
-	if (!insn->detail->CS_aarch64().writeback || !is_xreg(MEMBASEID(addr_op))) {
+	if (!insn->detail->CS_aarch64_.writeback || !is_xreg(MEMBASEID(addr_op))) {
 #else
 	if (!insn->detail->writeback || !is_xreg(MEMBASEID(addr_op))) {
 #endif
@@ -1852,7 +1852,7 @@ static RzILOpEffect *movk(cs_insn *insn) {
 	if (!src) {
 		return NULL;
 	}
-	CS_aarch64_op() *op = &insn->detail->CS_aarch64().operands[1];
+	CS_aarch64_op() *op = &insn->detail->CS_aarch64_.operands[1];
 	ut32 shift = op->shift.type == CS_AARCH64(_SFT_LSL) ? op->shift.value : 0;
 	return write_reg(REGID(0), LOGOR(LOGAND(src, UN(bits, ~(0xffffull << shift))), UN(bits, ((ut64)op->imm) << shift)));
 }
@@ -1868,7 +1868,7 @@ static RzILOpEffect *movn(cs_insn *insn) {
 	// The only case where the movn encoding should be disassembled as "movn" is
 	// when (IsZero(imm16) && hw != '00'), according to the "alias conditions" in the reference manual.
 	// Unfortunately, capstone v4 seems to always disassemble as movn, so we still have to implement this.
-	CS_aarch64_op() *op = &insn->detail->CS_aarch64().operands[1];
+	CS_aarch64_op() *op = &insn->detail->CS_aarch64_.operands[1];
 	ut32 shift = op->shift.type == CS_AARCH64(_SFT_LSL) ? op->shift.value : 0;
 	ut32 bits = REGBITS(0);
 	if (!bits) {
@@ -1882,7 +1882,7 @@ static RzILOpEffect *movn(cs_insn *insn) {
  * ARM: msr
  */
 static RzILOpEffect *msr(cs_insn *insn) {
-	CS_aarch64_op() *op = &insn->detail->CS_aarch64().operands[0];
+	CS_aarch64_op() *op = &insn->detail->CS_aarch64_.operands[0];
 #if CS_NEXT_VERSION >= 6
 	if (op->type != CS_AARCH64(_OP_SYSREG) || (ut64)op->sysop.reg.sysreg != (ut64)CS_AARCH64(_SYSREG_NZCV)) {
 		return NULL;
@@ -2007,7 +2007,7 @@ static RzILOpEffect *mrs(cs_insn *insn) {
 	if (!ISREG(0)) {
 		return NULL;
 	}
-	CS_aarch64_op() *op = &insn->detail->CS_aarch64().operands[1];
+	CS_aarch64_op() *op = &insn->detail->CS_aarch64_.operands[1];
 #if CS_NEXT_VERSION >= 6
 	if (op->type != CS_AARCH64(_OP_SYSREG) || (ut64)op->sysop.reg.sysreg != (ut64)CS_AARCH64(_SYSREG_NZCV)) {
 		return NULL;
@@ -2086,7 +2086,7 @@ static RzILOpEffect *mvn(cs_insn *insn) {
 	if (!set) {
 		return NULL;
 	}
-	if (insn->detail->CS_aarch64().update_flags) {
+	if (insn->detail->CS_aarch64_.update_flags) {
 		return SEQ5(
 			SETL("b", DUP(val)),
 			set,
