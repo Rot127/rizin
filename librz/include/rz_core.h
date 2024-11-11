@@ -272,7 +272,7 @@ struct rz_core_t {
 	RzIO *io;
 	HtSP /*<RzCorePlugin *>*/ *plugins; ///< List of registered core plugins
 	HtSP /*<RZ_BORROW void *>*/ *plugins_data; ///< Core plugins private data.
-	HtSP /*<plugins.<plugin_name>: RzConfig>*/ *plugins_config; ///< Pointers to plugin configurations. Indexed by "plugins.<name>"
+	HtSP /*<<plugin_name>: RzConfig>*/ *plugins_config; ///< Pointers to plugin configurations. Indexed by plugin name.
 	RzConfig *config;
 	ut64 offset; // current seek
 	ut64 prompt_offset; // temporarily set to offset to have $$ in expressions always stay the same during temp seeks
