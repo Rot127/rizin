@@ -1035,12 +1035,12 @@ s 0xffffffffffffffff
 agF
 EOF
 EXPECT=<<EOF
-.-----------.
-|  0x0 (e)  |
-`-----------'
-.-----------.
-|  0x0 (e)  |
-`-----------'
+.--------------------.
+|  0x5000000000 (e)  |
+`--------------------'
+.--------------------------.
+|  0xffffffffffffffff (e)  |
+`--------------------------'
 EOF
 RUN
 
@@ -1065,8 +1065,8 @@ agFf
 EOF
 EXPECT=<<EOF
 / sym._Mbtowc();
-|           0x00008f04      ?       R17:16 = combine(R2,R3)
-|           0x00008f08      ?       memd(R29+#-0x10) = R17:16 ; allocframe(#0x10)
+|           0x00008f04      /       R17:16 = combine(R2,R3)
+|           0x00008f08      \       memd(R29+#-0x10) = R17:16 ; allocframe(#0x10)
 |           0x00008f0c      [   R4 = memw(GP+##0x18)
 |           0x00008f10      /       R19:18 = combine(R0,R1)
 |           0x00008f14      \       memd(SP+##0x0) = R19:18

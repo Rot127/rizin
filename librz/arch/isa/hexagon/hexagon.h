@@ -174,7 +174,6 @@ typedef struct {
 	ut32 bytes; ///< The instruction bytes.
 	HexPktInfo pkt_info; ///< Packet related information. First/last instr., prefix and postfix for text etc.
 	// Deprecated members will be removed on RzArch introduction.
-	RZ_DEPRECATE RzAsmOp asm_op; ///< Private copy of AsmOp. Currently only of interest because it holds the utf8 flag.
 	RZ_DEPRECATE RzAnalysisOp ana_op; ///< Private copy of AnalysisOp. Analysis info is written into it.
 	char text[296]; ///< Textual disassembly
 } HexInsnContainer;

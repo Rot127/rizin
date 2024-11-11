@@ -1321,14 +1321,14 @@ static RzGraphNode *add_iword_to_cfg(RzGraph /*<RzGraphNodeInfo *>*/ *cfg, const
 static bool add_iword_edge_to_cfg(RZ_NONNULL RzGraph /*<RzGraphNodeInfo *>*/ *graph,
 	RZ_NONNULL RzVector /*<ut64>*/ *to_visit,
 	RZ_NONNULL HtUU *nodes_visited,
-	const RzAnalysisInsnWord *irowrd_from,
+	const RzAnalysisInsnWord *iword_from,
 	const RzAnalysisInsnWord *iword_to,
 	bool to_node_in_fcn) {
 	if (!to_node_in_fcn) {
 		return true;
 	}
-	rz_return_val_if_fail(graph && to_visit && nodes_visited && irowrd_from && iword_to, -1);
-	ut64 from = irowrd_from->addr;
+	rz_return_val_if_fail(graph && to_visit && nodes_visited && iword_from && iword_to, -1);
+	ut64 from = iword_from->addr;
 	ut64 to = iword_to->addr;
 	bool visited = false;
 	ut64 from_idx = ht_uu_find(nodes_visited, from, &visited);

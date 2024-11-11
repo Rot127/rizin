@@ -23,6 +23,26 @@
 #include <hexagon/hexagon_arch.h>
 #include <hexagon/hexagon_il.h>
 
+static void cpy_ana_op(RzAnalysisOp *dest, const RzAnalysisOp *src) {
+	rz_return_if_fail(dest && src);
+	dest->eob = src->eob;
+	dest->val = src->val;
+	for (ut8 i = 0; i < 6; ++i) {
+		dest->analysis_vals[i].imm = src->analysis_vals[i].imm;
+	}
+	dest->jump = src->jump;
+	dest->fail = src->fail;
+	dest->ptr = src->ptr;
+	dest->size = src->size;
+	dest->type = src->type;
+	dest->type2 = src->type2;
+	dest->addr = src->addr;
+	dest->size = src->size;
+	dest->cond = src->cond;
+	dest->prefix = src->prefix;
+	dest->id = src->id;
+}
+
 RZ_IPI void hexagon_state_fini(RZ_NULLABLE HexState *state) {
 	if (!state) {
 		return;
@@ -979,12 +999,6 @@ static void setup_new_hic(HexInsnContainer *hic, const HexReversedOpcode *rz_rev
 	hic->bytes = data;
 	hic->addr = addr;
 	hic->parse_bits = parse_bits;
-	if (rz_reverse->asm_op) {
-		memcpy(&(hic->asm_op), rz_reverse->asm_op, sizeof(RzAsmOp));
-	}
-	if (rz_reverse->ana_op) {
-		memcpy(&(hic->ana_op), rz_reverse->ana_op, sizeof(RzAnalysisOp));
-	}
 
 	hic->ana_op.val = UT64_MAX;
 	for (ut8 i = 0; i < 6; ++i) {
@@ -993,8 +1007,6 @@ static void setup_new_hic(HexInsnContainer *hic, const HexReversedOpcode *rz_rev
 	hic->ana_op.jump = UT64_MAX;
 	hic->ana_op.fail = UT64_MAX;
 	hic->ana_op.ptr = UT64_MAX;
-
-	hic->asm_op.size = 4;
 	hic->ana_op.size = 4;
 
 	hic->bin.sub[0] = NULL;
@@ -1070,8 +1082,7 @@ static void copy_asm_ana_ops(HexState *state, RZ_BORROW HexReversedOpcode *rz_re
 	rz_reverse->state = state;
 	switch (rz_reverse->action) {
 	default:
-		memcpy(rz_reverse->asm_op, &hic->asm_op, sizeof(RzAsmOp));
-		memcpy(rz_reverse->ana_op, &hic->ana_op, sizeof(RzAnalysisOp));
+		cpy_ana_op(rz_reverse->ana_op, &hic->ana_op);
 		rz_strbuf_set(&rz_reverse->asm_op->buf_asm, hic->text);
 		rz_reverse->asm_op->asm_toks = rz_asm_tokenize_asm_regex(&rz_reverse->asm_op->buf_asm, state->token_patterns);
 		if (rz_reverse->asm_op->asm_toks) {
@@ -1079,7 +1090,6 @@ static void copy_asm_ana_ops(HexState *state, RZ_BORROW HexReversedOpcode *rz_re
 		}
 		break;
 	case HEXAGON_DISAS:
-		memcpy(rz_reverse->asm_op, &hic->asm_op, sizeof(RzAsmOp));
 		rz_strbuf_set(&rz_reverse->asm_op->buf_asm, hic->text);
 		rz_reverse->asm_op->asm_toks = rz_asm_tokenize_asm_regex(&rz_reverse->asm_op->buf_asm, state->token_patterns);
 		if (rz_reverse->asm_op->asm_toks) {
@@ -1087,7 +1097,7 @@ static void copy_asm_ana_ops(HexState *state, RZ_BORROW HexReversedOpcode *rz_re
 		}
 		break;
 	case HEXAGON_ANALYSIS:
-		memcpy(rz_reverse->ana_op, &hic->ana_op, sizeof(RzAnalysisOp));
+		cpy_ana_op(rz_reverse->ana_op, &hic->ana_op);
 		break;
 	}
 }
@@ -1159,6 +1169,9 @@ static RZ_BORROW HexInsnContainer *decode_hic(HexState *state, HexReversedOpcode
 
 	// Do disassembly and analysis
 	hexagon_disasm_instruction(state, data, hic, p);
+	if (rz_reverse->asm_op) {
+		rz_reverse->asm_op->size = 4;
+	}
 	return hic;
 }
 
@@ -1259,8 +1272,7 @@ static inline bool do_decoding_loop(ut64 current_addr, ut64 requested_addr, cons
  * \param addr The address of the current opcode.
  * \param copy_result If set, it copies the result. Otherwise it only buffers it in the internal state.
  *
- * \return true If the decoded instruction was the last instruction in a _valid_ packet.
- * \return false Otherwise.
+ * \return The decoded Instruction container or NULL in case of failure.
  */
 RZ_API RZ_OWN HexInsnContainer *hexagon_reverse_opcode(HexReversedOpcode *rz_reverse, const ut64 addr, RzAsm *rz_asm, RzAnalysis *rz_analysis) {
 	rz_return_val_if_fail(rz_reverse, NULL);
@@ -1366,10 +1378,16 @@ static void set_iword_properties(ut32 anaop_type, RzAnalysisInsnWord *iword) {
 
 RZ_API bool hexagon_decode_iword(RzAnalysis *analysis, HexReversedOpcode *rev, RZ_OUT RzAnalysisInsnWord *iword, ut64 addr) {
 	rz_return_val_if_fail(rev && iword, false);
+	ut64 iword_addr_offset = 0;
 	iword->addr = addr;
 	HexInsnContainer *hic = NULL;
 	do {
-		hic = hexagon_reverse_opcode(rev, addr, NULL, analysis);
+		rev->ana_op = RZ_NEW0(RzAnalysisOp);
+		hic = hexagon_reverse_opcode(rev, addr + iword_addr_offset, NULL, analysis);
+		if (!hic) {
+			return false;
+		}
+		// rev->ana_op should be owned
 		rz_pvector_push(iword->insns, rev->ana_op);
 		rz_strbuf_appendf(iword->asm_str, "%s\n", hic->text);
 		iword->size_bytes += 4;
@@ -1389,6 +1407,7 @@ RZ_API bool hexagon_decode_iword(RzAnalysis *analysis, HexReversedOpcode *rev, R
 			}
 			return true;
 		}
+		iword_addr_offset += 4;
 	} while (!hic->pkt_info.last_insn);
 	return true;
 }
