@@ -837,6 +837,11 @@ typedef struct rz_bin_options_t {
 	const char *filename;
 } RzBinOptions;
 
+typedef struct rz_core_bin_filter_t {
+	ut64 offset;
+	const char *name;
+} RzBinFilter;
+
 typedef struct rz_event_bin_file_del_t {
 	RzBinFile *bf;
 } RzEventBinFileDel;
@@ -866,6 +871,7 @@ RZ_API void rz_bin_arch_options_init(RzBinArchOptions *opt, const char *arch, in
 RZ_API RzBin *rz_bin_new(void);
 RZ_API void rz_bin_free(RZ_NULLABLE RzBin *bin);
 RZ_API RzBinFile *rz_bin_open(RzBin *bin, const char *file, RzBinOptions *opt);
+RZ_API RZ_OWN RzBinFile *rz_bin_open_independent(const char *file, RZ_BORROW RzBinOptions *bin_options);
 RZ_API RzBinFile *rz_bin_open_io(RzBin *bin, RzBinOptions *opt);
 RZ_API RzBinFile *rz_bin_open_buf(RzBin *bin, RzBuffer *buf, RzBinOptions *opt);
 RZ_API RzBinFile *rz_bin_reload(RzBin *bin, RzBinFile *bf, ut64 baseaddr);

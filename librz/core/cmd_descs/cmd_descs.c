@@ -21373,8 +21373,9 @@ RZ_IPI void rzshell_cmddescs_init(RzCore *core) {
 	RzCmdDesc *cmd_debug_dmL_cd = rz_cmd_desc_argv_new(core->rcmd, dm_cd, "dmL", rz_cmd_debug_dmL_handler, &cmd_debug_dmL_help);
 	rz_warn_if_fail(cmd_debug_dmL_cd);
 
-	RzCmdDesc *cmd_debug_dmS_cd = rz_cmd_desc_argv_new(core->rcmd, dm_cd, "dmS", rz_cmd_debug_dmS_handler, &cmd_debug_dmS_help);
+	RzCmdDesc *cmd_debug_dmS_cd = rz_cmd_desc_argv_state_new(core->rcmd, dm_cd, "dmS", RZ_OUTPUT_MODE_TABLE | RZ_OUTPUT_MODE_JSON | RZ_OUTPUT_MODE_QUIET, rz_cmd_debug_dmS_handler, &cmd_debug_dmS_help);
 	rz_warn_if_fail(cmd_debug_dmS_cd);
+	rz_cmd_desc_set_default_mode(cmd_debug_dmS_cd, RZ_OUTPUT_MODE_TABLE);
 
 	RzCmdDesc *dmw_cd = rz_cmd_desc_group_modes_new(core->rcmd, dm_cd, "dmw", RZ_OUTPUT_MODE_STANDARD | RZ_OUTPUT_MODE_JSON, rz_cmd_debug_process_heaps_handler, &cmd_debug_process_heaps_help, &dmw_help);
 	rz_warn_if_fail(dmw_cd);

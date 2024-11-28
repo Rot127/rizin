@@ -2465,6 +2465,10 @@ static void sections_headers_setup(RzCore *core, RzCmdStateOutput *state, RzList
 
 	rz_cmd_state_output_set_columnsf(state, "XxXxssssx", "paddr", "size", "vaddr", "vsize", "align", "perm", "name", "type", "flags");
 
+	if (!hashes) {
+		return;
+	}
+
 	rz_list_foreach (hashes, iter, hashname) {
 		const RzHashPlugin *msg_plugin = rz_hash_plugin_by_name(core->hash, hashname);
 		if (msg_plugin) {
@@ -2473,7 +2477,7 @@ static void sections_headers_setup(RzCore *core, RzCmdStateOutput *state, RzList
 	}
 }
 
-RZ_API bool rz_core_bin_sections_print(RZ_NONNULL RzCore *core, RZ_NONNULL RzBinFile *bf, RZ_NONNULL RzCmdStateOutput *state, RzCoreBinFilter *filter, RzList /*<char *>*/ *hashes) {
+RZ_API bool rz_core_bin_sections_print(RZ_NONNULL RzCore *core, RZ_NONNULL RzBinFile *bf, RZ_NONNULL RzCmdStateOutput *state, RZ_BORROW RzCoreBinFilter *filter, RZ_NULLABLE RzList /*<char *>*/ *hashes) {
 	rz_return_val_if_fail(core && bf && bf->o && state, false);
 
 	RzBinObject *o = bf->o;

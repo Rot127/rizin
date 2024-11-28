@@ -26,6 +26,10 @@ RZ_LIB_VERSION(rz_bin);
 
 #define ARCHS_KEY "archs"
 
+#define VA_FALSE    0
+#define VA_TRUE     1
+#define VA_NOREBASE 2
+
 static RzBinPlugin *bin_static_plugins[] = { RZ_BIN_STATIC_PLUGINS };
 static RzBinXtrPlugin *bin_xtr_static_plugins[] = { RZ_BIN_XTR_STATIC_PLUGINS };
 
@@ -76,6 +80,185 @@ RZ_API void rz_bin_xtrdata_free(RZ_NULLABLE void /*RzBinXtrData*/ *data_) {
 	free(data->file);
 	rz_buf_free(data->buf);
 	free(data);
+}
+
+static void sections_headers_setup(RZ_BORROW RzCmdStateOutput *state, RZ_NULLABLE RzHash *hash, RZ_NULLABLE const RzList /*<char *>*/ *hashes) {
+	RzListIter *iter;
+	char *hashname;
+
+	rz_cmd_state_output_set_columnsf(state, "XxXxssssx", "paddr", "size", "vaddr", "vsize", "align", "perm", "name", "type", "flags");
+
+	if (!hashes || !hash) {
+		return;
+	}
+
+	rz_list_foreach (hashes, iter, hashname) {
+		const RzHashPlugin *msg_plugin = rz_hash_plugin_by_name(hash, hashname);
+		if (msg_plugin) {
+			rz_cmd_state_output_set_columnsf(state, "s", msg_plugin->name);
+		}
+	}
+}
+
+static ut64 rva(RzBinObject *o, ut64 paddr, ut64 vaddr, int va) {
+	if (va == VA_TRUE) {
+		return rz_bin_object_get_vaddr(o, paddr, vaddr);
+	}
+	if (va == VA_NOREBASE) {
+		return vaddr;
+	}
+	return paddr;
+}
+
+static ut64 get_section_addr(RzIO *io, RzBin *bin, RzBinObject *o, RzBinSection *section) {
+	int va = (io->va || bin->is_debugger) ? VA_TRUE : VA_FALSE;
+	if (va && !(section->perm & RZ_PERM_R)) {
+		va = VA_NOREBASE;
+	}
+	return rva(o, section->paddr, section->vaddr, va);
+}
+
+/**
+ * \brief Write a section-specific permission string like srwx.
+ * \param dst must be at least 5 bytes large
+ */
+static void section_perms_str(char *dst, int perms) {
+	dst[0] = (perms & RZ_PERM_SHAR) ? 's' : '-';
+	dst[1] = (perms & RZ_PERM_R) ? 'r' : '-';
+	dst[2] = (perms & RZ_PERM_W) ? 'w' : '-';
+	dst[3] = (perms & RZ_PERM_X) ? 'x' : '-';
+	dst[4] = '\0';
+}
+
+static void sections_print_json(RzIO *io, RzBin *bin, PJ *pj, RzBinObject *o, RzBinSection *section, RzList /*<char *>*/ *hashes) {
+	ut64 addr = get_section_addr(io, bin, o, section);
+	char perms[5];
+	section_perms_str(perms, section->perm);
+
+	pj_o(pj);
+	pj_ks(pj, "name", section->name);
+	pj_kn(pj, "size", section->size);
+	pj_kn(pj, "vsize", section->vsize);
+	pj_ks(pj, "perm", perms);
+	if (!section->is_segment) {
+		char *section_type = rz_bin_section_type_to_string(bin, section->type);
+		if (section_type) {
+			pj_ks(pj, "type", section_type);
+		}
+		free(section_type);
+	}
+	if (!section->is_segment) {
+		RzList *flags = rz_bin_section_flag_to_list(bin, section->flags);
+		if (!rz_list_empty(flags)) {
+			RzListIter *it;
+			char *pos;
+			pj_ka(pj, "flags");
+			rz_list_foreach (flags, it, pos) {
+				pj_s(pj, pos);
+			}
+			pj_end(pj);
+		}
+		rz_list_free(flags);
+	}
+	pj_kn(pj, "paddr", section->paddr);
+	pj_kn(pj, "vaddr", addr);
+	if (section->align) {
+		pj_kn(pj, "align", section->align);
+	}
+	if (hashes && section->size > 0) {
+		HtSS *digests = rz_core_bin_create_digests(core, section->paddr, section->size, hashes);
+		if (!digests) {
+			pj_end(pj);
+			return;
+		}
+		ht_ss_foreach(digests, digests_pj_cb, pj);
+		ht_ss_free(digests);
+	}
+	pj_end(pj);
+}
+static bool is_in_symbol_range(ut64 sym_addr, ut64 sym_size, ut64 addr) {
+	if (addr == sym_addr && sym_size == 0) {
+		return true;
+	}
+	if (sym_size == 0) {
+		return false;
+	}
+	return RZ_BETWEEN(sym_addr, addr, sym_addr + sym_size - 1);
+}
+
+RZ_API bool rz_bin_sections_print(RZ_NONNULL RzBin *bin,
+                                  RZ_NONNULL RzBinFile *bf,
+                                  RZ_NONNULL RzCmdStateOutput *state,
+                                  RZ_BORROW RzBinFilter *filter,
+                                  RZ_NULLABLE RzHash *hash,
+                                  RZ_NULLABLE const RzList /*<char *>*/ *hashes) {
+	rz_return_val_if_fail(bin && bf && bf->o && state, false);
+
+	RzBinObject *o = bf->o;
+	RzPVector *sections = rz_bin_object_get_sections(o);
+	if (!sections) {
+		return false;
+	}
+
+	RzBinSection *section;
+	void **iter;
+	RzOutputMode mode = state->mode;
+	bool res = true;
+
+	if (state->mode == RZ_OUTPUT_MODE_QUIET) {
+		state->mode = RZ_OUTPUT_MODE_TABLE;
+		state->d.t = rz_table_new();
+		if (!state->d.t) {
+			res = false;
+			goto err;
+		}
+	}
+
+	rz_cmd_state_output_array_start(state);
+	sections_headers_setup(state, hash, hashes);
+
+	rz_pvector_foreach (sections, iter) {
+		section = *iter;
+		if (filter && filter->offset != UT64_MAX) {
+			if (!is_in_symbol_range(section->vaddr, section->vsize, filter->offset) &&
+				!is_in_symbol_range(section->paddr, section->size, filter->offset)) {
+				continue;
+			}
+		}
+		if (filter && filter->name && section->name && strcmp(section->name, filter->name)) {
+			continue;
+		}
+		switch (state->mode) {
+		case RZ_OUTPUT_MODE_JSON:
+			sections_print_json(core, state->d.pj, o, section, hashes);
+			break;
+		case RZ_OUTPUT_MODE_TABLE:
+			res &= sections_print_table(core, state->d.t, o, section, hashes);
+			break;
+		default:
+			rz_warn_if_reached();
+			break;
+		}
+	}
+
+	rz_cmd_state_output_array_end(state);
+
+err:
+	if (mode == RZ_OUTPUT_MODE_QUIET) {
+		if (state->d.t) {
+			rz_table_query(state->d.t, "vaddr/cols/vsize/perm/name");
+			char *s = rz_table_tostring(state->d.t);
+			if (s) {
+				rz_cons_printf("%s", s);
+				free(s);
+			}
+		}
+
+		state->mode = mode;
+		rz_table_free(state->d.t);
+	}
+	rz_pvector_free(sections);
+	return res;
 }
 
 RZ_API void rz_bin_options_init(RzBinOptions *opt, int fd, ut64 baseaddr, ut64 loadaddr, bool patch_relocs) {
@@ -231,6 +414,25 @@ RZ_API RzBinFile *rz_bin_open(RzBin *bin, const char *file, RzBinOptions *opt) {
 	}
 	opt->sz = 0;
 	return rz_bin_open_io(bin, opt);
+}
+
+/**
+ * \brief Open file with a newly initialized RzBin and RzIO.
+ */
+RZ_API RZ_OWN RzBinFile *rz_bin_open_independent(const char *file, RZ_BORROW RzBinOptions *bin_options) {
+	RzBin *bin = rz_bin_new();
+	RzIO *io = rz_io_new();
+	rz_io_bind(io, &bin->iob);
+	RzBinFile *bf = rz_bin_open(bin, bin_options->filename, bin_options);
+	if (!bf) {
+		RZ_LOG_ERROR("Failed to create RzBinFile.\n");
+		return NULL;
+	}
+	if (!bf->o) {
+		RZ_LOG_ERROR("RzBinObject is NULL.\n");
+		return NULL;
+	}
+	return bf;
 }
 
 RZ_API RzBinFile *rz_bin_reload(RzBin *bin, RzBinFile *bf, ut64 baseaddr) {

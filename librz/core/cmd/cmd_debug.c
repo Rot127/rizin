@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2009-2020 pancake <pancake@nopcode.org>
 // SPDX-License-Identifier: LGPL-3.0-only
 
+#include "rz_cmd.h"
+#include <rz_bin.h>
 #include <rz_util/rz_regex.h>
 #include <rz_core.h>
 #include <rz_debug.h>
@@ -1039,16 +1041,29 @@ RZ_IPI RzCmdStatus rz_debug_memory_permission_handler(RzCore *core, int argc, co
 	return RZ_CMD_STATUS_OK;
 }
 
-RZ_IPI RzCmdStatus rz_cmd_debug_dmS_handler(RzCore *core, int argc, const char **argv) {
+static RzBinFile *get_bin_file(RzCore *core, const char *file, ut64 baddr) {
+	char *basename = rz_str_escape(rz_file_basename(file));
+	char *filename = rz_str_escape(file);
+	RzBinOptions bin_options;
+	rz_bin_options_init(&bin_options, -1, baddr, 0, false);
+	bin_options.obj_opts.elf_load_sections = true;
+	bin_options.filename = file;
+	bin_options.obj_opts.big_endian = rz_config_get_b(core->config, "cfg.bigendian");
+	RzBinFile *bin_file = rz_bin_open_independent(filename, &bin_options);
+	free(filename);
+	free(basename);
+	return bin_file;
+}
+
+RZ_IPI RzCmdStatus rz_cmd_debug_dmS_handler(RzCore *core, int argc, const char **argv, RzCmdStateOutput *state) {
 	CMD_CHECK_DEBUG_DEAD(core);
 	RzListIter *iter;
 	RzDebugMap *map;
 	ut64 addr;
-	const char *libname = NULL, *sectname = NULL;
-	ut64 baddr = 0LL;
+	const char *libname = NULL, *section_name = NULL;
 	addr = UT64_MAX;
 	if (argc == 3) {
-		sectname = argv[2];
+		section_name = argv[2];
 	}
 	if (argc >= 2) {
 		if (IS_DIGIT(*argv[1])) {
@@ -1061,32 +1076,31 @@ RZ_IPI RzCmdStatus rz_cmd_debug_dmS_handler(RzCore *core, int argc, const char *
 			libname = argv[1];
 		}
 	}
+
 	rz_debug_map_sync(core->dbg); // update process memory maps
 	RzList *list = rz_debug_modules_list(core->dbg);
 	rz_list_foreach (list, iter, map) {
-		if ((!libname ||
-			    (addr != UT64_MAX && (addr >= map->addr && addr < map->addr_end)) ||
-			    (libname != NULL && (strstr(map->name, libname))))) {
-			baddr = map->addr;
-			char *res;
-			const char *file = map->file ? map->file : map->name;
-			char *name = rz_str_escape((char *)rz_file_basename(file));
-			char *filesc = rz_str_escape(file);
-			/* TODO: do not spawn. use RzBin API */
-			if (sectname) {
-				char *sect = rz_str_escape(sectname);
-				res = rz_sys_cmd_strf("env RZ_BIN_PREFIX=\"%s\" rz-bin -B 0x%08" PFMT64x " -S \"%s\" | grep \"%s\"", name, baddr, filesc, sect);
-				free(sect);
-			} else {
-				res = rz_sys_cmd_strf("env RZ_BIN_PREFIX=\"%s\" rz-bin -B 0x%08" PFMT64x " -S \"%s\"", name, baddr, filesc);
-			}
-			free(filesc);
-			rz_cons_println(res);
-			free(name);
-			free(res);
-			if (libname || addr != UT64_MAX) { // only single match requested
-				break;
-			}
+		if (libname && !RZ_STR_EQ(map->name, libname)) {
+			continue;
+		}
+
+		const char *file = map->file ? map->file : map->name;
+		RzBinFile *bin_file = get_bin_file(core, file, map->addr);
+		if (!bin_file) {
+			RZ_LOG_ERROR("Failed to open '%s' for reading sections.", file);
+			return RZ_CMD_STATUS_ERROR;
+		}
+
+		RzCoreBinFilter filter = { 0 };
+		if (addr != UT64_MAX) {
+			filter.offset = addr;
+		}
+		if (section_name) {
+			filter.name = section_name;
+		}
+		rz_core_bin_sections_print(core, bin_file, state, &filter, NULL);
+		if (libname || addr != UT64_MAX) { // only single match requested
+			break;
 		}
 	}
 	return RZ_CMD_STATUS_OK;

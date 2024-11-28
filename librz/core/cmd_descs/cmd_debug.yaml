@@ -888,6 +888,12 @@ commands:
           - name: sectname
             type: RZ_CMD_ARG_TYPE_STRING
             optional: true
+        type: RZ_CMD_DESC_TYPE_ARGV_STATE
+        default_mode: RZ_OUTPUT_MODE_TABLE
+        modes:
+          - RZ_OUTPUT_MODE_TABLE
+          - RZ_OUTPUT_MODE_JSON
+          - RZ_OUTPUT_MODE_QUIET
       - name: dmw
         summary: Windows heap commands
         subcommands:
