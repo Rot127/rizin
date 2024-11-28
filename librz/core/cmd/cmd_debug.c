@@ -1039,16 +1039,13 @@ RZ_IPI RzCmdStatus rz_debug_memory_permission_handler(RzCore *core, int argc, co
 	return RZ_CMD_STATUS_OK;
 }
 
-RZ_IPI RzCmdStatus rz_cmd_debug_dmS_handler(RzCore *core, int argc, const char **argv, RzOutputMode m) {
+RZ_IPI RzCmdStatus rz_cmd_debug_dmS_handler(RzCore *core, int argc, const char **argv) {
 	CMD_CHECK_DEBUG_DEAD(core);
 	RzListIter *iter;
 	RzDebugMap *map;
 	ut64 addr;
-	const char *libname = NULL, *sectname = NULL, *mode = "";
+	const char *libname = NULL, *sectname = NULL;
 	ut64 baddr = 0LL;
-	if (m == RZ_OUTPUT_MODE_RIZIN) {
-		mode = "-r ";
-	}
 	addr = UT64_MAX;
 	if (argc == 3) {
 		sectname = argv[2];
@@ -1078,10 +1075,10 @@ RZ_IPI RzCmdStatus rz_cmd_debug_dmS_handler(RzCore *core, int argc, const char *
 			/* TODO: do not spawn. use RzBin API */
 			if (sectname) {
 				char *sect = rz_str_escape(sectname);
-				res = rz_sys_cmd_strf("env RZ_BIN_PREFIX=\"%s\" rz-bin %s-B 0x%08" PFMT64x " -S \"%s\" | grep \"%s\"", name, mode, baddr, filesc, sect);
+				res = rz_sys_cmd_strf("env RZ_BIN_PREFIX=\"%s\" rz-bin -B 0x%08" PFMT64x " -S \"%s\" | grep \"%s\"", name, baddr, filesc, sect);
 				free(sect);
 			} else {
-				res = rz_sys_cmd_strf("env RZ_BIN_PREFIX=\"%s\" rz-bin %s-B 0x%08" PFMT64x " -S \"%s\"", name, mode, baddr, filesc);
+				res = rz_sys_cmd_strf("env RZ_BIN_PREFIX=\"%s\" rz-bin -B 0x%08" PFMT64x " -S \"%s\"", name, baddr, filesc);
 			}
 			free(filesc);
 			rz_cons_println(res);

@@ -90,63 +90,6 @@ Hello world!
 EOF
 RUN
 
-NAME=dbg.maps.sections.after.map.only_filtered
-FILE=bins/elf/analysis/x86-helloworld-gcc
-ARGS=-d
-BROKEN=1
-CMDS=<<EOF
-dm~?
-db @ sym.imp.puts
-dc~?
-dmS libc~?
-dmS libc~libc|wc -l
-dmS* libc~?
-dmS* libc~libc|wc -l
-EOF
-EXPECT=<<EOF
-7
-0
-80
-78
-314
-312
-Hello world!
-EOF
-RUN
-
-
-NAME=dbg.maps.sections.after.map.complete
-FILE=bins/elf/analysis/x86-helloworld-gcc
-ARGS=-d
-BROKEN=1
-CMDS=<<EOF
-dm~?
-db @ sym.imp.puts
-dc~?
-dmS libc~?
-dmS libc~libc|wc -l
-dmS* libc~?
-dmS* libc~libc|wc -l
-dmS~?
-dmS*~?
-dmS~libc|wc -l
-dmS*~libc|wc -l
-EOF
-EXPECT=<<EOF
-7
-0
-80
-78
-314
-312
-154
-598
-78
-312
-Hello world!
-EOF
-RUN
-
 NAME=db.maps.sections.are.singletons
 FILE=bins/elf/analysis/x86-helloworld-gcc
 ARGS=-d
@@ -170,31 +113,6 @@ EXPECT=<<EOF
 1
 1
 1
-1
-Hello world!
-EOF
-RUN
-
-NAME=db.maps.current.section.after.dmS
-FILE=bins/elf/analysis/x86-helloworld-gcc
-ARGS=-d
-BROKEN=1
-CMDS=<<EOF
-dmm~?
-db @ sym.imp.puts
-dc~?
-dmm~?
-s map._lib_i386_linux_gnu_ld_2.19.so._r_x
-S.~?
-.dmS*~?
-S.~libc-2.19.so..text|wc -l
-EOF
-EXPECT=<<EOF
-2
-0
-3
-0
-3
 1
 Hello world!
 EOF

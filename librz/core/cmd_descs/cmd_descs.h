@@ -1240,7 +1240,7 @@ RZ_IPI RzCmdStatus rz_debug_memory_permission_handler(RzCore *core, int argc, co
 // "dmL"
 RZ_IPI RzCmdStatus rz_cmd_debug_dmL_handler(RzCore *core, int argc, const char **argv);
 // "dmS"
-RZ_IPI RzCmdStatus rz_cmd_debug_dmS_handler(RzCore *core, int argc, const char **argv, RzOutputMode mode);
+RZ_IPI RzCmdStatus rz_cmd_debug_dmS_handler(RzCore *core, int argc, const char **argv);
 // "dmw"
 RZ_IPI RzCmdStatus rz_cmd_debug_process_heaps_handler(RzCore *core, int argc, const char **argv, RzOutputMode mode);
 // "dmwb"
