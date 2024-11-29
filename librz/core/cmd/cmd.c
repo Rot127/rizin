@@ -5013,20 +5013,6 @@ RZ_API int rz_core_cmd_file(RzCore *core, const char *file) {
 	return true;
 }
 
-RZ_API int rz_core_cmd_command(RzCore *core, const char *command) {
-	int ret, len;
-	char *buf, *rcmd;
-	rz_core_sysenv_begin(core);
-	rcmd = buf = rz_sys_cmd_str(command, 0, &len);
-	if (!buf) {
-		return -1;
-	}
-	ret = rz_core_cmd(core, rcmd, 0);
-	rz_core_sysenv_end(core);
-	free(buf);
-	return ret;
-}
-
 // TODO: Fix disasm loop is mandatory
 RZ_API char *rz_core_disassemble_instr(RzCore *core, ut64 addr, int l) {
 	char *cmd, *ret = NULL;
