@@ -71,7 +71,7 @@ RZ_API bool rz_search_collection_match_any(RZ_NULLABLE RzSearchCollection *sc, R
 RZ_API void rz_search_collection_free(RZ_NULLABLE RzSearchCollection *sc);
 RZ_API void rz_search_hit_free(RZ_NULLABLE RzSearchHit *hit);
 
-RZ_API RZ_OWN RzList /*<RzSearchHit *>*/ *rz_search_run(RZ_NONNULL RzSearchOpt *opt, RZ_NONNULL RzSearchCollection *col, RZ_NONNULL RzIO *io, RZ_NONNULL RzList /*<RzIOMap *>*/ *search_in);
+RZ_IPI RZ_OWN RzList /*<RzSearchHit *>*/ *rz_search_io(RZ_NONNULL RzSearchOpt *opt, RZ_NONNULL RzSearchCollection *col, RZ_NONNULL RzIO *io, RZ_NONNULL RzList /*<RzIOMap *>*/ *search_in);
 
 #ifdef __cplusplus
 }

@@ -46,7 +46,7 @@ RZ_API RZ_OWN RzSearchCollection *rz_search_collection_regex() {
 		RZ_LOG_ERROR("search: failed to initialize regex collection\n");
 		return NULL;
 	}
-	return rz_search_collection_new(regex_find, regex_is_empty, (RzSearchFreeCallback)rz_pvector_free, pvec);
+	return rz_search_collection_new_bytes(regex_find, regex_is_empty, (RzSearchFreeCallback)rz_pvector_free, pvec);
 }
 
 /**

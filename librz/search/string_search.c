@@ -102,7 +102,7 @@ RZ_API RZ_OWN RzSearchCollection *rz_search_collection_strings(RZ_NONNULL RzUtil
 	ss->expected = expected;
 	ss->caseless = caseless;
 
-	return rz_search_collection_new(string_find, string_is_empty, string_free, ss);
+	return rz_search_collection_new_bytes(string_find, string_is_empty, string_free, ss);
 }
 
 static RzDetectedString *string_copy(const char *string) {

@@ -75,7 +75,7 @@ RZ_API bool rz_core_search_preludes(RZ_NONNULL RzCore *core, bool log) {
 		goto fail;
 	}
 
-	hits = rz_search_run(core->search_opts, preludes, core->io, boundaries);
+	hits = rz_search_io(core->search_opts, preludes, core->io, boundaries);
 	if (!hits) {
 		ut64 from = rz_config_get_i(core->config, "search.from");
 		ut64 to = rz_config_get_i(core->config, "search.to");
@@ -121,7 +121,7 @@ static RZ_OWN RzList /*<RzSearchHit *>*/ *core_run_search(RzCore *core, RzSearch
 		goto fail;
 	}
 
-	hits = rz_search_run(search_opts, collection, core->io, boundaries);
+	hits = rz_search_io(search_opts, collection, core->io, boundaries);
 	if (!hits) {
 		ut64 from = rz_config_get_i(core->config, "search.from");
 		ut64 to = rz_config_get_i(core->config, "search.to");

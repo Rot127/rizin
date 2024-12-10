@@ -147,5 +147,5 @@ static bool pkeys_is_empty(void *user) {
  * \return     On success returns a valid pointer, otherwise NULL
  */
 RZ_API RZ_OWN RzSearchCollection *rz_search_collection_private_keys() {
-	return rz_search_collection_new(pkeys_find, pkeys_is_empty, NULL, NULL);
+	return rz_search_collection_new_bytes(pkeys_find, pkeys_is_empty, NULL, NULL);
 }

@@ -52,5 +52,5 @@ RZ_API RZ_OWN RzSearchCollection *rz_search_collection_magic(RZ_NONNULL const ch
 		return NULL;
 	}
 
-	return rz_search_collection_new(magic_find, magic_is_empty, (RzSearchFreeCallback)rz_magic_free, magic);
+	return rz_search_collection_new_bytes(magic_find, magic_is_empty, (RzSearchFreeCallback)rz_magic_free, magic);
 }

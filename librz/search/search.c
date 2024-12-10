@@ -31,7 +31,7 @@ static void *search_cancel_th(void *user) {
 	return NULL;
 }
 
-static bool search_iterator_cb(void *element, void *user) {
+static bool search_iterator_bytes_cb(void *element, void *user) {
 	search_ctx_t *ctx = (search_ctx_t *)user;
 	RzIOMap *map = (RzIOMap *)element;
 	if (!map) {
@@ -63,7 +63,9 @@ static bool search_iterator_cb(void *element, void *user) {
 		if (!rz_io_read_at(ctx->io, at, buffer, size)) {
 			RZ_LOG_ERROR("search: failed to read at 0x%08" PFMT64x " (%" PFMTSZu " bytes)\n", at, size);
 			break;
-		} else if (!col->find(col->user, at, buffer, size, ctx->hits)) {
+		}
+		RzSearchFindBytesCallback find = col->find;
+		if (!find(col->user, at, buffer, size, ctx->hits)) {
 			RZ_LOG_ERROR("search: failed search at 0x%08" PFMT64x "\n", at);
 			break;
 		}
@@ -83,12 +85,17 @@ static bool search_iterator_cb(void *element, void *user) {
  *
  * \return     On success returns all the hits.
  */
-RZ_API RZ_OWN RzList /*<RzSearchHit *>*/ *rz_search_run(RZ_NONNULL RzSearchOpt *opt, RZ_NONNULL RzSearchCollection *col, RZ_NONNULL RzIO *io, RZ_NONNULL RzList /*<RzIOMap *>*/ *search_in) {
+RZ_IPI RZ_OWN RzList /*<RzSearchHit *>*/ *rz_search_io(RZ_NONNULL RzSearchOpt *opt, RZ_NONNULL RzSearchCollection *col, RZ_NONNULL RzIO *io, RZ_NONNULL RzList /*<RzIOMap *>*/ *search_in) {
 	rz_return_val_if_fail(opt && col && io && search_in, NULL);
 	search_ctx_t ctx = { 0 };
 	RzList *results = NULL;
 	RzThreadQueue *hits = NULL;
 	RzThread *cancel_th = NULL;
+
+	if (!rz_search_collection_on_bytes_space(col)) {
+		RZ_LOG_ERROR("search: The search collection is not initialized for bytes.\n");
+		return NULL;
+	}
 
 	if (opt->buffer_size < RZ_SEARCH_MIN_BUFFER_SIZE) {
 		RZ_LOG_ERROR("search: cannot search when buffer size is less than %u bytes.\n", RZ_SEARCH_MIN_BUFFER_SIZE);
@@ -126,7 +133,7 @@ RZ_API RZ_OWN RzList /*<RzSearchHit *>*/ *rz_search_run(RZ_NONNULL RzSearchOpt *
 		}
 	}
 
-	if (!rz_th_iterate_list(search_in, search_iterator_cb, opt->max_threads, &ctx)) {
+	if (!rz_th_iterate_list(search_in, search_iterator_bytes_cb, opt->max_threads, &ctx)) {
 		RZ_LOG_ERROR("search: cannot iterate over list.\n");
 	} else {
 		results = rz_th_queue_pop_all(hits);

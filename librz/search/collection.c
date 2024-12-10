@@ -5,8 +5,23 @@
 #include <rz_search.h>
 #include "search_internal.h"
 
+static RZ_OWN RzSearchCollection *rz_search_collection_new(RzSearchSpace space, RZ_NONNULL void *find, RZ_NONNULL RzSearchIsEmptyCallback is_empty, RZ_NULLABLE RzSearchFreeCallback free, RZ_NULLABLE void *user) {
+	rz_return_val_if_fail(find && is_empty, NULL);
+	RzSearchCollection *sc = RZ_NEW0(RzSearchCollection);
+	if (!sc) {
+		RZ_LOG_ERROR("search: failed to allocate RzSearchCollection\n");
+		return NULL;
+	}
+	sc->space = space;
+	sc->find = find;
+	sc->is_empty = is_empty;
+	sc->free = free;
+	sc->user = user;
+	return sc;
+}
+
 /**
- * \brief      Initialize a new RzSearchCollection
+ * \brief      Initialize a new RzSearchCollection over a graph.
  *
  * \param[in]  find      The find callback to set
  * \param[in]  is_empty  The callback to use to check if collection is empty
@@ -15,18 +30,24 @@
  *
  * \return     On success returns a valid pointer, otherwise NULL.
  */
-RZ_IPI RZ_OWN RzSearchCollection *rz_search_collection_new(RZ_NONNULL RzSearchFindCallback find, RZ_NONNULL RzSearchIsEmptyCallback is_empty, RZ_NULLABLE RzSearchFreeCallback free, RZ_NULLABLE void *user) {
+RZ_IPI RZ_OWN RzSearchCollection *rz_search_collection_new_graph(RZ_NONNULL RzSearchFindGraphCallback find, RZ_NONNULL RzSearchIsEmptyCallback is_empty, RZ_NULLABLE RzSearchFreeCallback free, RZ_NULLABLE void *user) {
 	rz_return_val_if_fail(find && is_empty, NULL);
-	RzSearchCollection *sc = RZ_NEW0(RzSearchCollection);
-	if (!sc) {
-		RZ_LOG_ERROR("search: failed to allocate RzSearchCollection\n");
-		return NULL;
-	}
-	sc->find = find;
-	sc->is_empty = is_empty;
-	sc->free = free;
-	sc->user = user;
-	return sc;
+	return rz_search_collection_new(RZ_SEARCH_SPACE_GRAPH, find, is_empty, free, user);
+}
+
+/**
+ * \brief      Initialize a new RzSearchCollection over bytes.
+ *
+ * \param[in]  find      The find callback to set
+ * \param[in]  is_empty  The callback to use to check if collection is empty
+ * \param[in]  free      The callback to use to free the context
+ * \param      user      The additional context needed.
+ *
+ * \return     On success returns a valid pointer, otherwise NULL.
+ */
+RZ_IPI RZ_OWN RzSearchCollection *rz_search_collection_new_bytes(RZ_NONNULL RzSearchFindBytesCallback find, RZ_NONNULL RzSearchIsEmptyCallback is_empty, RZ_NULLABLE RzSearchFreeCallback free, RZ_NULLABLE void *user) {
+	rz_return_val_if_fail(find && is_empty, NULL);
+	return rz_search_collection_new(RZ_SEARCH_SPACE_BYTES, find, is_empty, free, user);
 }
 
 /**
@@ -52,7 +73,7 @@ RZ_API void rz_search_collection_free(RZ_NULLABLE RzSearchCollection *sc) {
  *
  * \return     Returns true when the RzSearchCollection callback matches the expected one.
  */
-RZ_IPI bool rz_search_collection_has_find_callback(RZ_NONNULL RzSearchCollection *col, RZ_NONNULL RzSearchFindCallback expected) {
+RZ_IPI bool rz_search_collection_has_find_callback(RZ_NONNULL RzSearchCollection *col, RZ_NONNULL void *expected) {
 	rz_return_val_if_fail(col && expected, false);
 	return col->find == expected;
 }
@@ -90,8 +111,13 @@ RZ_API bool rz_search_collection_match_any(RZ_NULLABLE RzSearchCollection *sc, R
 		RZ_LOG_ERROR("search: cannot allocate RzSearchHit queue.\n");
 		return false;
 	}
+	if (!rz_search_collection_on_bytes_space(sc)) {
+		RZ_LOG_ERROR("search: Search collection is not initialized for bytes.\n");
+		return false;
+	}
 
-	if (!sc->find(sc->user, 0, buffer, length, hits)) {
+	RzSearchFindBytesCallback find = sc->find;
+	if (!find(sc->user, 0, buffer, length, hits)) {
 		RZ_LOG_ERROR("search: failed to run search over collection\n");
 		return false;
 	}

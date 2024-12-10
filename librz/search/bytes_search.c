@@ -222,7 +222,7 @@ RZ_API RZ_OWN RzSearchCollection *rz_search_collection_bytes() {
 		RZ_LOG_ERROR("search: failed to initialize bytes collection\n");
 		return NULL;
 	}
-	return rz_search_collection_new(bytes_find, bytes_is_empty, (RzSearchFreeCallback)rz_pvector_free, patterns);
+	return rz_search_collection_new_bytes(bytes_find, bytes_is_empty, (RzSearchFreeCallback)rz_pvector_free, patterns);
 }
 
 /**
