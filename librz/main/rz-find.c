@@ -182,11 +182,11 @@ static void rz_find_output_hit(RzFindOptions *ro, RzSearchHit *hit, RzCore *core
 		pj_o(ro->pj);
 		pj_kn(ro->pj, "address", hit->address);
 		pj_kn(ro->pj, "size", hit->size);
-		pj_ks(ro->pj, "type", hit->metadata);
+		pj_ks(ro->pj, "type", hit->hit_desc);
 		pj_end(ro->pj);
 		break;
 	case RZ_FIND_OUTPUT_STANDARD:
-		printf("0x%" PFMT64x " %" PFMTSZu " %s\n", hit->address, hit->size, hit->metadata);
+		printf("0x%" PFMT64x " %" PFMTSZu " %s\n", hit->address, hit->size, hit->hit_desc);
 		break;
 	case RZ_FIND_OUTPUT_HEXDUMP:
 		rz_find_output_hit_as_hexdump(ro, hit, core);

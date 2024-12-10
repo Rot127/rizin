@@ -146,18 +146,18 @@ RZ_API RZ_OWN RzList /*<RzSearchHit *>*/ *rz_search_run(RZ_NONNULL RzSearchOpt *
 /**
  * \brief      Allocate and initialize a new RzSearchHit
  *
- * \param[in]  metadata  The metadata linked to the hit (can be NULL)
+ * \param[in]  hit_desc  The hit description linked to the hit (can be NULL)
  * \param[in]  address   The address where the hit happened
  * \param[in]  size      The size of the hit data (can be 0)
  *
  * \return     On success returns a valid pointer, otherwise NULL
  */
-RZ_IPI RZ_OWN RzSearchHit *rz_search_hit_new(const char *metadata, ut64 address, size_t size) {
+RZ_IPI RZ_OWN RzSearchHit *rz_search_hit_new(const char *hit_desc, ut64 address, size_t size) {
 	RzSearchHit *hit = RZ_NEW0(RzSearchHit);
 	if (!hit) {
 		return NULL;
 	}
-	hit->metadata = rz_str_dup(metadata);
+	hit->hit_desc = rz_str_dup(hit_desc);
 	hit->address = address;
 	hit->size = size;
 	return hit;
@@ -172,6 +172,6 @@ RZ_API void rz_search_hit_free(RZ_NULLABLE RzSearchHit *hit) {
 	if (!hit) {
 		return;
 	}
-	free(hit->metadata);
+	free(hit->hit_desc);
 	free(hit);
 }

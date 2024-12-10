@@ -21,7 +21,7 @@ typedef struct rz_search_opt_t RzSearchOpt;
 typedef struct rz_search_collection_t RzSearchCollection;
 
 typedef struct rz_search_hit_t {
-	char *metadata; ///< Metadata for extra details (can be NULL)
+	char *hit_desc; ///< Hit description (can be NULL)
 	ut64 address; ///< Address the matched data
 	size_t size; ///< Size of the matched data (can be 0)
 } RzSearchHit;

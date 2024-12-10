@@ -97,7 +97,7 @@ static RzCmdStatus cmd_core_handle_search_hits(RzCore *core, RzCmdStateOutput *s
 		}
 
 		// only output & add flag when cmd.hit is not set.
-		const char *meta = hit->metadata ? hit->metadata : "match";
+		const char *meta = hit->hit_desc ? hit->hit_desc : "match";
 		char *flag = rz_str_newf("%s.%s.%" PFMTSZu, search_prefix, meta, counter);
 		rz_flag_set(core->flags, flag, hit->address, hit->size);
 		cmd_search_output_to_state(state, hit, flag);
