@@ -260,7 +260,7 @@ static inline RzBinFile *core_get_file(RzCoreFile *cfile) {
 	return rz_pvector_at(&cfile->binfiles, 0);
 }
 
-static bool rz_find_search_progress_cancel(void *user, size_t n_hits) {
+static bool rz_find_search_progress_cancel(void *user, size_t n_hits, RzSearchCancelReason invoke_reason) {
 	return rz_cons_is_breaked();
 }
 

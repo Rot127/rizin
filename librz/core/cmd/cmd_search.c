@@ -25,7 +25,7 @@
 		rz_search_opt_set_cancel_cb(core->search_opts, NULL, NULL); \
 	} while (0)
 
-static bool cmd_search_progress_cancel(void *user, size_t n_hits) {
+static bool cmd_search_progress_cancel(void *user, size_t n_hits, RzSearchCancelReason invoke_reason) {
 	if (user) {
 		// we have RzCmdStateOutput state
 		rz_cons_printf("Searching... hits: %" PFMTSZu "\r", n_hits);

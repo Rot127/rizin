@@ -14,6 +14,7 @@ extern "C" {
 RZ_LIB_VERSION_HEADER(rz_search);
 
 #define RZ_SEARCH_MIN_BUFFER_SIZE 512u
+#define RZ_SEARCH_CANCEL_CHECK_INTERVAL_USEC 1000 * 1000
 
 typedef struct rz_search_opt_t RzSearchOpt;
 
@@ -25,7 +26,22 @@ typedef struct rz_search_hit_t {
 	size_t size; ///< Size of the matched data (can be 0)
 } RzSearchHit;
 
-typedef bool (*RzSearchCancelCallback)(void *user, size_t n_hits);
+typedef enum {
+	RZ_SEARCH_CANCEL_REGULAR_CHECK, ///< Regular cancel check. Repeated every RZ_SEARCH_CANCEL_CHECK_INTERVAL_USEC microseconds.
+	RZ_SEARCH_CANCEL_SIGINT, ///< Interrupt signal (likely ctrl + c).
+} RzSearchCancelReason;
+
+/**
+ * \brief The cancel callback. It is invoked to check, if the search should be stopped.
+ *
+ * \param user The private user data.
+ * \param n_hits Number of hits already found during the search.
+ * \param invoe_reason The reason it is called.
+ *
+ * \return True, if the search should be canceled.
+ * \return False, if the search should continue.
+ */
+typedef bool (*RzSearchCancelCallback)(void *user, size_t n_hits, RzSearchCancelReason invoke_reason);
 
 RZ_API RZ_OWN RzSearchOpt *rz_search_opt_new();
 RZ_API void rz_search_opt_free(RZ_NULLABLE RzSearchOpt *opt);

@@ -12,7 +12,7 @@ typedef struct search_ctx {
 	RzSearchCollection *col; ///< collection to use
 	RzSearchOpt *opt; ///< User options
 	RzThreadQueue *hits; ///< Hits list
-	RzAtomicBool *loop; ///< used to stop or not the execution
+	RzAtomicBool *loop; ///< If set, the execution will continue until it terminates. If unset, the execution cancels.
 } search_ctx_t;
 
 static void *search_cancel_th(void *user) {
@@ -21,11 +21,11 @@ static void *search_cancel_th(void *user) {
 
 	do {
 		size_t n_hits = rz_th_queue_size(ctx->hits);
-		if (!opt->cancel_cb(opt->cancel_usr, n_hits)) {
+		if (!opt->cancel_cb(opt->cancel_usr, n_hits, RZ_SEARCH_CANCEL_REGULAR_CHECK)) {
 			rz_atomic_bool_set(ctx->loop, false);
 			break;
 		}
-		rz_sys_usleep(100000);
+		rz_sys_usleep(RZ_SEARCH_CANCEL_CHECK_INTERVAL_USEC);
 	} while (rz_atomic_bool_get(ctx->loop));
 
 	return NULL;
