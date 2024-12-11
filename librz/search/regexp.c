@@ -34,7 +34,7 @@ RZ_API int rz_search_regexp_update(RzSearch *s, ut64 from, const ut8 *buf, int l
 		void **it;
 		rz_pvector_foreach (matches, it) {
 			RzRegexMatch *m = *it;
-			int t = rz_search_hit_new(s, kw, m->start);
+			int t = rz_search_legacy_hit_new(s, kw, m->start);
 			if (t == 0) {
 				ret = -1;
 				rz_pvector_free(matches);
