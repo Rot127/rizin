@@ -1130,6 +1130,16 @@ static bool cb_str_search_max_threads(void *user, void *data) {
 	return true;
 }
 
+static bool cb_search_max_threads(void *user, void *data) {
+	RzConfigNode *node = (RzConfigNode *)data;
+	RzThreadNCores max_threads = rz_th_max_threads(node->i_value);
+	if (node->value[0] == '?') {
+		rz_cons_printf("%d\n", max_threads);
+		return false;
+	}
+	return true;
+}
+
 static bool cb_str_search_min_length(void *user, void *data) {
 	RzCore *core = (RzCore *)user;
 	RzConfigNode *node = (RzConfigNode *)data;
@@ -3757,14 +3767,7 @@ RZ_API int rz_core_config_init(RzCore *core) {
 	SETOPTIONS(n, "auto", "rosections", "raw", NULL);
 
 	/* search */
-	SETCB("search.contiguous", "true", &cb_contiguous, "Accept contiguous/adjacent search hits");
-	SETICB("search.align", 0, &cb_searchalign, "Only catch aligned search hits");
-	SETI("search.chunk", 0, "Chunk size for /+ (default size is asm.bits/8");
-	SETI("search.esilcombo", 8, "Stop search after N consecutive hits");
-	SETI("search.distance", 0, "Search string distance");
-	SETBPREF("search.flags", "true", "All search results are flagged, otherwise only printed");
-	SETBPREF("search.overlap", "false", "Look for overlapped search hits");
-	SETI("search.maxhits", 0, "Maximum number of hits (0: no limit)");
+	SETICB("search.max_threads", RZ_THREAD_N_CORES_ALL_AVAILABLE, &cb_search_max_threads, "Maximum core number. '0' for all cores. '?' to show available.");
 	SETI("search.from", 0, "Search start address");
 	SETI("search.to", UT64_MAX, "Search end address");
 	n = NODECB("search.in", "io.maps", &cb_search_in);
@@ -3776,10 +3779,19 @@ RZ_API int rz_core_config_init(RzCore *core) {
 		"dbg.map", "dbg.maps", "dbg.maps.rwx", "dbg.maps.r", "dbg.maps.rw", "dbg.maps.rx", "dbg.maps.wx", "dbg.maps.x",
 		"analysis.fcn", "analysis.bb",
 		NULL);
-	SETICB("search.kwidx", 0, &cb_search_kwidx, "Store last search index count");
 	SETPREF("search.prefix", "hit", "Prefix name in search hits label");
+	SETI("search.maxhits", 0, "Maximum number of hits ('0' means no limit)");
+	SETBPREF("search.show_progress", "true", "Show the search process.");
+
+	SETCB("search.contiguous", "true", &cb_contiguous, "Accept contiguous/adjacent search hits");
+	SETICB("search.align", 0, &cb_searchalign, "Only catch aligned search hits");
+	SETI("search.chunk", 0, "Chunk size for /+ (default size is asm.bits/8");
+	SETI("search.esilcombo", 8, "Stop search after N consecutive hits");
+	SETI("search.distance", 0, "Search string distance");
+	SETBPREF("search.flags", "true", "All search results are flagged, otherwise only printed");
+	SETBPREF("search.overlap", "false", "Look for overlapped search hits");
+	SETICB("search.kwidx", 0, &cb_search_kwidx, "Store last search index count");
 	SETBPREF("search.show", "true", "Show search results");
-	SETI("search.to", -1, "Search end address");
 	n = NODECB("search.case_sensitive", "smart", &cb_search_case_sensitive);
 	SETDESC(n, "Set grep(~) as case smart/sensitive/insensitive");
 	SETOPTIONS(n, "smart", "sensitive", "insensitive", NULL);

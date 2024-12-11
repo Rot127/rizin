@@ -2,6 +2,7 @@
 // SPDX-FileCopyrightText: 2024 deroad <wargio@libero.it>
 // SPDX-License-Identifier: LGPL-3.0-only
 
+#include "rz_th.h"
 #include <rz_search.h>
 
 // Experimental search engine (fails, because stops at first hit of every block read
@@ -536,7 +537,6 @@ RZ_API void rz_search_kw_reset(RzSearch *s) {
 	RZ_FREE(s->data);
 }
 
-
 //
 // New search.
 // Everything above is only there to not break the build.
@@ -570,7 +570,7 @@ static void *search_cancel_th(void *user) {
 	return NULL;
 }
 
-static bool search_iterator_bytes_cb(void *element, void *user) {
+static bool search_iterator_io_map_cb(void *element, void *user) {
 	search_ctx_t *ctx = (search_ctx_t *)user;
 	RzIOMap *map = (RzIOMap *)element;
 	if (!map) {
@@ -624,7 +624,11 @@ static bool search_iterator_bytes_cb(void *element, void *user) {
  *
  * \return     On success returns all the hits.
  */
-RZ_IPI RZ_OWN RzList /*<RzSearchHit *>*/ *rz_search_io(RZ_NONNULL RzSearchOpt *opt, RZ_NONNULL RzSearchCollection *col, RZ_NONNULL RzIO *io, RZ_NONNULL RzList /*<RzIOMap *>*/ *search_in) {
+RZ_API RZ_OWN RzList /*<RzSearchHit *>*/ *rz_search_on_io(
+	RZ_BORROW RZ_NONNULL RzSearchOpt *opt,
+	RZ_BORROW RZ_NONNULL RzSearchCollection *col,
+	RZ_BORROW RZ_NONNULL RzIO *io,
+	RZ_BORROW RZ_NONNULL RzList /*<RzIOMap *>*/ *search_in) {
 	rz_return_val_if_fail(opt && col && io && search_in, NULL);
 	search_ctx_t ctx = { 0 };
 	RzList *results = NULL;
@@ -632,7 +636,7 @@ RZ_IPI RZ_OWN RzList /*<RzSearchHit *>*/ *rz_search_io(RZ_NONNULL RzSearchOpt *o
 	RzThread *cancel_th = NULL;
 
 	if (!rz_search_collection_on_bytes_space(col)) {
-		RZ_LOG_ERROR("search: The search collection is not initialized for bytes.\n");
+		RZ_LOG_ERROR("search: The search collection is not initialized for byte space.\n");
 		return NULL;
 	}
 
@@ -661,6 +665,7 @@ RZ_IPI RZ_OWN RzList /*<RzSearchHit *>*/ *rz_search_io(RZ_NONNULL RzSearchOpt *o
 	ctx.opt = opt;
 	ctx.io = io;
 	ctx.loop = rz_atomic_bool_new(true);
+	ctx.hits = hits;
 
 	if (opt->cancel_cb) {
 		// create cancel thread
@@ -668,11 +673,12 @@ RZ_IPI RZ_OWN RzList /*<RzSearchHit *>*/ *rz_search_io(RZ_NONNULL RzSearchOpt *o
 		if (!cancel_th) {
 			RZ_LOG_ERROR("search: cannot allocate cancel thread.\n");
 			rz_th_queue_free(hits);
+			rz_atomic_bool_free(ctx.loop);
 			return NULL;
 		}
 	}
 
-	if (!rz_th_iterate_list(search_in, search_iterator_bytes_cb, opt->max_threads, &ctx)) {
+	if (!rz_th_iterate_list(search_in, search_iterator_io_map_cb, opt->max_threads, &ctx)) {
 		RZ_LOG_ERROR("search: cannot iterate over list.\n");
 	} else {
 		results = rz_th_queue_pop_all(hits);
@@ -683,6 +689,7 @@ RZ_IPI RZ_OWN RzList /*<RzSearchHit *>*/ *rz_search_io(RZ_NONNULL RzSearchOpt *o
 		rz_atomic_bool_set(ctx.loop, false);
 		rz_th_wait(cancel_th);
 		rz_th_free(cancel_th);
+		rz_atomic_bool_free(ctx.loop);
 	}
 
 	rz_th_queue_free(hits);

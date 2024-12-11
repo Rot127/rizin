@@ -133,6 +133,9 @@ RZ_LIB_VERSION_HEADER(rz_search);
 #define RZ_SEARCH_MIN_BUFFER_SIZE 512u
 #define RZ_SEARCH_CANCEL_CHECK_INTERVAL_USEC 1000 * 1000
 
+/**
+ * \brief Private search options for the search module. Use the rz_search_opt_*() functions to edit it.
+ */
 typedef struct rz_search_opt_t RzSearchOpt;
 
 typedef struct rz_search_collection_t RzSearchCollection;
@@ -147,6 +150,18 @@ typedef enum {
 	RZ_SEARCH_CANCEL_REGULAR_CHECK, ///< Regular cancel check. Repeated every RZ_SEARCH_CANCEL_CHECK_INTERVAL_USEC microseconds.
 	RZ_SEARCH_CANCEL_SIGINT, ///< Interrupt signal (likely ctrl + c).
 } RzSearchCancelReason;
+
+typedef struct bytes_pattern {
+	const char *pattern_desc; ///< Pattern metadata
+	ut8 *bytes; ///< Pattern bytes.
+	ut8 *mask; ///< Pattern mask (when NULL full match)
+	size_t length; ///< Pattern & mask length
+} RzSearchBytesPattern;
+
+RZ_API void rz_search_bytes_pattern_free(RZ_NULLABLE RZ_OWN RzSearchBytesPattern *hp);
+RZ_API RZ_OWN RzSearchBytesPattern *rz_search_bytes_pattern_copy(RZ_NONNULL RZ_BORROW RzSearchBytesPattern *hp);
+RZ_API RZ_OWN RzSearchBytesPattern *rz_search_bytes_pattern_new(RZ_OWN ut8 *bytes, RZ_OWN ut8 *mask, size_t length, const char *pattern_desc);
+RZ_API RZ_OWN RzSearchBytesPattern *rz_search_parse_byte_pattern(const char *byte_pattern, RZ_NULLABLE const char *pattern_desc);
 
 /**
  * \brief The cancel callback. It is invoked to check, if the search should be stopped.
@@ -177,7 +192,7 @@ RZ_API bool rz_search_collection_regex_add(RZ_NONNULL RzSearchCollection *col, R
 
 RZ_API RZ_OWN RzSearchCollection *rz_search_collection_bytes();
 RZ_API bool rz_search_collection_bytes_add(RZ_NONNULL RzSearchCollection *col, RZ_NONNULL const char *metadata, RZ_NONNULL const ut8 *bytes, RZ_NULLABLE const ut8 *mask, size_t length);
-RZ_API bool rz_search_collection_bytes_add_pattern(RZ_NONNULL RzSearchCollection *col, RZ_NONNULL const char *hex_pattern);
+RZ_API bool rz_search_collection_bytes_add_pattern(RZ_NONNULL RzSearchCollection *col, RZ_NONNULL RZ_OWN RzSearchBytesPattern *bytes_pattern);
 
 RZ_API RZ_OWN RzSearchCollection *rz_search_collection_strings(RZ_NONNULL RzUtilStrScanOptions *opts, RzStrEnc expected, bool caseless);
 RZ_API bool rz_search_collection_string_add(RZ_NONNULL RzSearchCollection *col, RZ_NONNULL const char *string);
@@ -188,7 +203,7 @@ RZ_API bool rz_search_collection_match_any(RZ_NULLABLE RzSearchCollection *sc, R
 RZ_API void rz_search_collection_free(RZ_NULLABLE RzSearchCollection *sc);
 RZ_API void rz_search_hit_free(RZ_NULLABLE RzSearchHit *hit);
 
-RZ_IPI RZ_OWN RzList /*<RzSearchHit *>*/ *rz_search_io(RZ_NONNULL RzSearchOpt *opt, RZ_NONNULL RzSearchCollection *col, RZ_NONNULL RzIO *io, RZ_NONNULL RzList /*<RzIOMap *>*/ *search_in);
+RZ_API RZ_OWN RzList /*<RzSearchHit *>*/ *rz_search_on_io(RZ_BORROW RZ_NONNULL RzSearchOpt *opt, RZ_BORROW RZ_NONNULL RzSearchCollection *col, RZ_BORROW RZ_NONNULL RzIO *io, RZ_BORROW RZ_NONNULL RzList /*<RzIOMap *>*/ *search_in);
 
 #ifdef __cplusplus
 }

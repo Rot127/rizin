@@ -444,9 +444,11 @@ RZ_API char *rz_hex_bin2strdup(const ut8 *in, int len) {
  *
  * \param in Input string in hexadecimal form. An optional "0x" prefix may be present.
  * \param out Output buffer having at least strlen(in) / 2 bytes available
- * \return number of bytes written into \p out
+ * \return Number of bytes written into \p out. The number is negative if an odd number of nibbles was copied.
  */
-RZ_API int rz_hex_str2bin(const char *in, ut8 *out) {
+RZ_API int rz_hex_str2bin(RZ_NONNULL const char *in, RZ_NONNULL RZ_OUT ut8 *out) {
+	rz_return_val_if_fail(in && out, 0);
+
 	long nibbles = 0;
 
 	while (in && *in) {
@@ -492,39 +494,63 @@ RZ_API int rz_hex_str2bin(const char *in, ut8 *out) {
 	return nibbles / 2;
 }
 
-RZ_API int rz_hex_str2binmask(const char *in, ut8 *out, ut8 *mask) {
-	ut8 *ptr;
-	int len, ilen = strlen(in) + 1;
-	int has_nibble = 0;
-	memcpy(out, in, ilen);
-	for (ptr = out; *ptr; ptr++) {
+/**
+ * \brief Transforms an input hex string to its byte array eqivalent and a mask for it.
+ * The hex string is allowed to contain '.' characters as wildcard.
+ * The input string **must not** be prefixed with "0x".
+ * Wildcards in \p in are set to '0' in the mask and \p out.
+ *
+ * Example:
+ *   in:   ff.e4
+ *   out:  ff0e4
+ *   mask: ff0ff
+ *
+ * \param in The hex string to parse and transform.
+ * \param out The output buffer. It must be the same size as \p in. It must be initialized to 0.
+ * \param mask The output buffer for the mask. It must be the same size as \p in.
+ * If should be initialized to 0.
+ * Can be NULL if no mask is required.
+ *
+ * \return The number of bytes written to \p out and \p mask. In case of failure it returns less then 0.
+ * Note: In case of failure the content of \p out and \p mask are undefined.
+ */
+RZ_API int rz_hex_str2binmask(RZ_NONNULL const char *in, RZ_NONNULL RZ_OUT ut8 *out, RZ_NULLABLE RZ_OUT ut8 *mask) {
+	rz_return_val_if_fail(in && out, -1);
+
+	int out_len, in_len = strlen(in) + 1;
+	bool has_nibble = false;
+
+	memcpy(out, in, in_len);
+	for (ut8 *ptr = out; *ptr; ptr++) {
 		if (*ptr == '.') {
 			*ptr = '0';
 		}
 	}
-	len = rz_hex_str2bin((char *)out, out);
-	if (len < 0) {
-		has_nibble = 1;
-		len = -(len + 1);
+	out_len = rz_hex_str2bin((char *)out, out);
+	if (out_len < 0) {
+		has_nibble = true;
+		out_len = -out_len;
 	}
-	if (len != -1) {
-		memcpy(mask, in, ilen);
-		if (has_nibble) {
-			memcpy(mask + ilen, "f0", 3);
-		}
-		for (ptr = mask; *ptr; ptr++) {
-			if (IS_HEXCHAR(*ptr)) {
-				*ptr = 'f';
-			} else if (*ptr == '.') {
-				*ptr = '0';
-			}
-		}
-		len = rz_hex_str2bin((char *)mask, mask);
-		if (len < 0) {
-			len++;
+	if (!mask) {
+		return out_len;
+	}
+
+	memcpy(mask, in, in_len);
+	if (has_nibble) {
+		memcpy(mask + in_len, "f0", 3);
+	}
+	for (ut8 *ptr = mask; *ptr; ptr++) {
+		if (IS_HEXCHAR(*ptr)) {
+			*ptr = 'f';
+		} else if (*ptr == '.') {
+			*ptr = '0';
 		}
 	}
-	return len;
+	out_len = rz_hex_str2bin((char *)mask, mask);
+	if (out_len < 0) {
+		out_len = -out_len;
+	}
+	return out_len;
 }
 
 RZ_API st64 rz_hex_bin_truncate(ut64 in, int n) {
