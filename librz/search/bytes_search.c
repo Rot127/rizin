@@ -67,10 +67,10 @@ RZ_API RZ_OWN RzSearchBytesPattern *rz_search_parse_byte_pattern(const char *byt
 		RZ_LOG_ERROR("More than one ':' is invalid.\n");
 		goto error;
 	}
-	bool with_mask = ddot_count == 1 ? true : false;
+	bool custom_mask = ddot_count == 1 ? true : false;
 
-	if (rz_regex_contains("[^a-fA-F0-9.:]", byte_pattern, RZ_REGEX_ZERO_TERMINATED, 0, RZ_REGEX_DEFAULT)) {
-		RZ_LOG_ERROR("Pattern contains forbitten characters. Allowed is only '0-9', 'a-f', 'A-F', '.' and ':'.\n");
+	if (rz_regex_contains("[^a-fA-F0-9.:x]", byte_pattern, RZ_REGEX_ZERO_TERMINATED, 0, RZ_REGEX_DEFAULT)) {
+		RZ_LOG_ERROR("Pattern contains forbitten characters. Allowed is only '0x', '0-9', 'a-f', 'A-F', '.' and ':'.\n");
 		goto error;
 	}
 	RzRegex *regex = rz_regex_new("^((0x)?([a-fA-F0-9]+):)?(0x)?([a-fA-F.0-9]+)", RZ_REGEX_DEFAULT, RZ_REGEX_DEFAULT);
@@ -88,7 +88,7 @@ RZ_API RZ_OWN RzSearchBytesPattern *rz_search_parse_byte_pattern(const char *byt
 		goto error;
 	}
 
-	if (with_mask) {
+	if (custom_mask) {
 		if (mask_match->len != bytes_match->len) {
 			RZ_LOG_ERROR("Mask and bytes must have the same number of nibbles. "
 				     "But they mismatch: %" PFMTSZu " != %" PFMTSZu "\n",
@@ -96,21 +96,11 @@ RZ_API RZ_OWN RzSearchBytesPattern *rz_search_parse_byte_pattern(const char *byt
 			goto error;
 		}
 
-		bool bytes_have_wildcard = strchr(byte_pattern + bytes_match->len, '.');
 		char *mask_str = rz_str_newlen(byte_pattern + mask_match->start, mask_match->len);
-		if (bytes_have_wildcard) {
-			// The custom mask must be 0 at the wildcard positions.
-			const char *p = byte_pattern + mask_match->start;
-			for (size_t i = 0; p[i]; i++) {
-				if (p[i] == '.') {
-					mask_str[i] = '0';
-				}
-			}
-		}
-		rz_hex_str2binmask(mask_str, mask, NULL);
+		rz_hex_str2bin_mask(mask_str, mask, NULL, false);
 		free(mask_str);
 	}
-	size = rz_hex_str2binmask(byte_pattern + bytes_match->start, bytes, with_mask ? NULL : mask);
+	size = rz_hex_str2bin_mask(byte_pattern + bytes_match->start, bytes, custom_mask ? NULL : mask, false);
 	rz_pvector_free(matches);
 	RzSearchBytesPattern *pat = rz_search_bytes_pattern_new(bytes, mask, size, pattern_desc);
 	return pat;
@@ -136,8 +126,7 @@ static bool bytes_pattern_compare(RzSearchBytesPattern *hp, const ut8 *buffer, s
 		type num = *((type *)buffer + i); \
 		type pat = *((type *)hp->bytes + i); \
 		type mask = *((type *)hp->mask + i); \
-		num &= mask; \
-		if (num != pat) { \
+		if ((num & mask) != (pat & mask)) { \
 			return false; \
 		} \
 	}

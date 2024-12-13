@@ -11,6 +11,7 @@
 #include "../core_private.h"
 
 #include "cmd_search_rop.c"
+#include "rz_cons.h"
 #include <rz_util/rz_assert.h>
 #include <rz_vector.h>
 
@@ -1738,6 +1739,7 @@ RZ_IPI int rz_cmd_search(void *data, const char *input) {
 		RZ_LOG_ERROR("core: recursive search is forbidden.\n"); \
 		return RZ_CMD_STATUS_ERROR; \
 	} \
+	rz_cons_break_push(NULL, NULL); \
 	RzSearchOpt *search_opts = rz_search_opt_new(); \
 	bool opt_applid = rz_search_opt_set_max_hits(search_opts, rz_config_get_i(core->config, "search.maxhits")); \
 	opt_applid &= rz_search_opt_set_max_threads(search_opts, rz_th_max_threads(rz_config_get_i(core->config, "search.max_threads"))); \
@@ -1746,6 +1748,7 @@ RZ_IPI int rz_cmd_search(void *data, const char *input) {
 #define CMD_SEARCH_END() \
 	do { \
 		rz_search_opt_free(search_opts); \
+		rz_cons_break_pop(); \
 		core->in_search = false; \
 	} while (0)
 
@@ -1754,7 +1757,7 @@ static bool cmd_search_progress_cancel(void *user, size_t n_hits, RzSearchCancel
 		// we have RzCmdStateOutput state
 		rz_cons_printf("Searching... hits: %" PFMTSZu "\r", n_hits);
 	}
-	return false;
+	return rz_cons_is_breaked();
 }
 
 static void cmd_search_output_to_state(RzCmdStateOutput *state, RzSearchHit *hit, const char *flag_name) {

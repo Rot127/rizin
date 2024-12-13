@@ -6,6 +6,65 @@
 #include <stdio.h>
 #include <ctype.h>
 
+/**
+ * \brief Returns the byte value for a hexadecimal nibble.
+ *
+ * Example:
+ *    assert(rz_hex_nibble_to_byte('1') == 1);
+ *    assert(rz_hex_nibble_to_byte('A') == 10);
+ *    assert(rz_hex_nibble_to_byte('b') == 11);
+ *    assert(rz_hex_nibble_to_byte('S') == UT8_MAX);
+ *    assert(rz_hex_nibble_to_byte('\0') == UT8_MAX);
+ *
+ * \param The hexadecimal nibble to get the raw byte value for.
+ *
+ * \param The byte value of the nibble.
+ * Or UT8_MAX if the nibble is no hexadecimal character.
+ */
+RZ_API ut8 rz_hex_digit_to_byte(const char c) {
+	if (!isxdigit(c)) {
+		return UT8_MAX;
+	}
+	// Check an ASCII table for this.
+	// Bit 6 indicates if it is A-F or a-f.
+	ut8 byte = (c & 0x40) ? 9 : 0;
+	// Bit 3-0 are the same bits for upper and lower case A-F.
+	// And 'a' & 0xf == 1, so 9 + 1 == 10.
+	byte += (c & 0xf);
+	return byte;
+}
+
+/**
+ * \brief Returns the byte value for a hexadecimal nibble pair.
+ * It stops parsing at the first non hex digit.
+ *
+ * Example:
+ *    assert(rz_hex_nibble_pair_to_byte("1") == 1);
+ *    assert(rz_hex_nibble_pair_to_byte("11") == 17);
+ *    assert(rz_hex_nibble_pair_to_byte("fe") == 254);
+ *
+ *    assert(rz_hex_nibble_pair_to_byte("ff01") == 255);
+ *    assert(rz_hex_nibble_pair_to_byte("F@") == 15);
+ *    assert(rz_hex_nibble_pair_to_byte("p1") == UT8_MAX);
+ *    assert(rz_hex_nibble_pair_to_byte("") == UT8_MAX);
+ *
+ * \param The string to parse as hex digit pair.
+ *
+ * \param The byte value of the nibble pair.
+ * Or UT8_MAX if the nibble is no hexadecimal character.
+ */
+RZ_API ut8 rz_hex_digit_pair_to_byte(const char *npair) {
+	if (!isxdigit(npair[0])) {
+		return UT8_MAX;
+	}
+	ut8 n0 = rz_hex_digit_to_byte(npair[0]);
+	if (!isxdigit(npair[1])) {
+		return n0;
+	}
+	ut8 n1 = rz_hex_digit_to_byte(npair[1]);
+	return (n0 << 4 | n1);
+}
+
 /* int c = 0; ret = hex_to_byte(&c, 'c'); */
 RZ_API bool rz_hex_to_byte(ut8 *val, ut8 c) {
 	if (IS_DIGIT(c)) {
@@ -437,14 +496,71 @@ RZ_API char *rz_hex_bin2strdup(const ut8 *in, int len) {
 }
 
 /**
- * \brief Convert an input string \p in into the binary form in \p out
+ * \brief Convert an input string \p in into the binary form in \p out.
+ * For odd number of nibbles, the MSB side is extended with a 0 nibble.
+ * It stops parsing at the first non hex digit.
  *
  * Convert an input string in the hexadecimal form (e.g. "41424344") into the
- * raw binary form (e.g. "ABCD")
+ * raw binary form (e.g. "\x41\x42\x43\x44" or "ABCD").
+ *
+ * Note: If an odd number of nibbles is given, the buffer is extended on the side of the MSB with a 0 nibble.
+ * So, "444" becomes "\x04\x44".
+ * Use rz_hex_str2bin() if you need to extend it on the LSB side.
  *
  * \param in Input string in hexadecimal form. An optional "0x" prefix may be present.
  * \param out Output buffer having at least strlen(in) / 2 bytes available
- * \return Number of bytes written into \p out. The number is negative if an odd number of nibbles was copied.
+ * \return Number of bytes written into \p out. The number is negative if an odd number of nibbles was parsed.
+ */
+RZ_API int rz_hex_str2bin_msb(RZ_NONNULL const char *in, RZ_NONNULL RZ_OUT ut8 *out) {
+	rz_return_val_if_fail(in && out, 0);
+
+	if (!in[0]) {
+		return 0;
+	}
+
+	size_t i = 0, j = 0;
+	if (in[0] == '0' && in[1] == 'x') {
+		i += 2;
+	}
+
+	ut8 byte = 0;
+	size_t nibbles = rz_str_ansi_len(in + i);
+
+	bool odd_nibble = (nibbles % 2) == 1;
+	if (odd_nibble) {
+		byte = rz_hex_digit_to_byte(in[i]);
+		if (byte == UT8_MAX) {
+			return 0;
+		}
+		out[j] = byte;
+		i++;
+		j++;
+	}
+
+	byte = rz_hex_digit_pair_to_byte(in + i);
+	for (; i <= nibbles && byte != UT8_MAX; j++) {
+		out[j] = byte;
+		i += 2;
+		byte = rz_hex_digit_pair_to_byte(in + i);
+	}
+
+	return odd_nibble ? -j : j;
+}
+
+/**
+ * \brief Convert an input string \p in into the binary form in \p out
+ * For odd number of nibbles, the LSB side is extended with a 0 nibble.
+ *
+ * Convert an input string in the hexadecimal form (e.g. "41424344") into the
+ * raw binary form (e.g. "\x41\x42\x43\x44" or "ABCD").
+ *
+ * Note: If an odd number of nibbles is given, the buffer is extended on the side of the LSB with a 0 nibble.
+ * So, "444" becomes "\x44\x40".
+ * Use rz_hex_str2bin_msb() if you need to extend it on the MSB side.
+ *
+ * \param in Input string in hexadecimal form. An optional "0x" prefix may be present.
+ * \param out Output buffer having at least strlen(in) / 2 bytes available
+ * \return Number of bytes written into \p out. The number is negative if an odd number of nibbles was parsed.
  */
 RZ_API int rz_hex_str2bin(RZ_NONNULL const char *in, RZ_NONNULL RZ_OUT ut8 *out) {
 	rz_return_val_if_fail(in && out, 0);
@@ -497,60 +613,78 @@ RZ_API int rz_hex_str2bin(RZ_NONNULL const char *in, RZ_NONNULL RZ_OUT ut8 *out)
 /**
  * \brief Transforms an input hex string to its byte array eqivalent and a mask for it.
  * The hex string is allowed to contain '.' characters as wildcard.
- * The input string **must not** be prefixed with "0x".
  * Wildcards in \p in are set to '0' in the mask and \p out.
+ * It stops at the first invalid character and returns.
+ *
+ * The input string may be prefixed with a "0x".
  *
  * Example:
- *   in:   ff.e4
- *   out:  ff0e4
- *   mask: ff0ff
+ *   rz_hex_str2bin_mask("ffe4", out, mask, false);
+ *   assert_mem_eq(out, { 0xff, 0xe4 });
+ *   assert_mem_eq(mask, { 0xff, 0xff });
+ *
+ *   rz_hex_str2bin_mask("f=e4", out, mask, false);
+ *   assert_mem_eq(out, { 0x0f });
+ *   assert_mem_eq(mask, { 0xff });
+ *
+ *   rz_hex_str2bin_mask("ff.4", out, mask, false);
+ *   assert_mem_eq(out, { 0xff, 0x04 });
+ *   assert_mem_eq(mask, { 0xff, 0x0f });
+ *
+ *   // Extend on LSB side
+ *   rz_hex_str2bin_mask("ffee4", out, mask, false);
+ *   assert_mem_eq(out, { 0x0f, 0xfe, 0xe4 });
+ *   assert_mem_eq(mask, { 0x0f, 0xff, 0xff });
+ *
+ *   // Extend on MSB side
+ *   rz_hex_str2bin_mask("ffee4", out, mask, true);
+ *   assert_mem_eq(out, { 0xff, 0xee, 0x40 });
+ *   assert_mem_eq(mask, { 0xff, 0xff, 0xf0 });
  *
  * \param in The hex string to parse and transform.
- * \param out The output buffer. It must be the same size as \p in. It must be initialized to 0.
- * \param mask The output buffer for the mask. It must be the same size as \p in.
- * If should be initialized to 0.
- * Can be NULL if no mask is required.
+ * \param out The output buffer. It must be the same size as \p strlen(in) / 2.
+ * \param mask The output buffer for the mask. It must be the same size as \p out.
+ * Can be NULL, if no mask is required.
+ * \param lsb_extend If true, it extends the byte buffer with a 0 nibble at the LSB side.
+ * But only if the \p in has an odd number hex digits.
  *
  * \return The number of bytes written to \p out and \p mask. In case of failure it returns less then 0.
  * Note: In case of failure the content of \p out and \p mask are undefined.
  */
-RZ_API int rz_hex_str2binmask(RZ_NONNULL const char *in, RZ_NONNULL RZ_OUT ut8 *out, RZ_NULLABLE RZ_OUT ut8 *mask) {
-	rz_return_val_if_fail(in && out, -1);
+RZ_API size_t rz_hex_str2bin_mask(RZ_NONNULL const char *in, RZ_NONNULL RZ_OUT ut8 *out, RZ_NULLABLE RZ_OUT ut8 *mask, bool lsb_extend) {
+	rz_return_val_if_fail(in && out, 0);
 
-	int out_len, in_len = strlen(in) + 1;
-	bool has_nibble = false;
-
-	memcpy(out, in, in_len);
-	for (ut8 *ptr = out; *ptr; ptr++) {
-		if (*ptr == '.') {
-			*ptr = '0';
+	char *in_cpy = strdup(in);
+	for (size_t i = 0; in_cpy[i]; ++i) {
+		if (in_cpy[i] == '.') {
+			in_cpy[i] = '0';
 		}
 	}
-	out_len = rz_hex_str2bin((char *)out, out);
-	if (out_len < 0) {
-		has_nibble = true;
-		out_len = -out_len;
+
+	int bytes_copied;
+	if (lsb_extend) {
+		bytes_copied = rz_hex_str2bin(in_cpy, out);
+	} else {
+		bytes_copied = rz_hex_str2bin_msb(in_cpy, out);
 	}
+	size_t ret = bytes_copied < 0 ? -bytes_copied : bytes_copied;
+
 	if (!mask) {
-		return out_len;
+		free(in_cpy);
+		return ret;
 	}
 
-	memcpy(mask, in, in_len);
-	if (has_nibble) {
-		memcpy(mask + in_len, "f0", 3);
-	}
-	for (ut8 *ptr = mask; *ptr; ptr++) {
-		if (IS_HEXCHAR(*ptr)) {
-			*ptr = 'f';
-		} else if (*ptr == '.') {
-			*ptr = '0';
+	for (size_t i = 0; i <= ret; ++i) {
+		mask[i] = 0x00;
+		if (out[i] & 0xf0) {
+			mask[i] |= 0xf0;
+		}
+		if (out[i] & 0x0f) {
+			mask[i] |= 0x0f;
 		}
 	}
-	out_len = rz_hex_str2bin((char *)mask, mask);
-	if (out_len < 0) {
-		out_len = -out_len;
-	}
-	return out_len;
+	free(in_cpy);
+	return ret;
 }
 
 RZ_API st64 rz_hex_bin_truncate(ut64 in, int n) {
