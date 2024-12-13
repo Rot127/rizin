@@ -560,7 +560,7 @@ static void *search_cancel_th(void *user) {
 
 	do {
 		size_t n_hits = rz_th_queue_size(ctx->hits);
-		if (!opt->cancel_cb(opt->cancel_usr, n_hits, RZ_SEARCH_CANCEL_REGULAR_CHECK)) {
+		if (opt->cancel_cb(opt->cancel_usr, n_hits, RZ_SEARCH_CANCEL_REGULAR_CHECK)) {
 			rz_atomic_bool_set(ctx->loop, false);
 			break;
 		}
