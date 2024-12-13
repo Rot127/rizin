@@ -122,7 +122,7 @@ static bool bytes_pattern_compare(RzSearchBytesPattern *hp, const ut8 *buffer, s
 
 	size_t i = 0;
 #define fast_mask_compare(type) \
-	for (; (hp->length - i) > sizeof(type); i += sizeof(type)) { \
+	for (; (hp->length - i) >= sizeof(type); i += sizeof(type)) { \
 		type num = *((type *)buffer + i); \
 		type pat = *((type *)hp->bytes + i); \
 		type mask = *((type *)hp->mask + i); \
