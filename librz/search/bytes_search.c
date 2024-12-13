@@ -120,22 +120,17 @@ static bool bytes_pattern_compare(RzSearchBytesPattern *hp, const ut8 *buffer, s
 		return memcmp(buffer, hp->bytes, hp->length) == 0;
 	}
 
-	size_t i = 0;
-#define fast_mask_compare(type) \
-	for (; (hp->length - i) >= sizeof(type); i += sizeof(type)) { \
-		type num = *((type *)buffer + i); \
-		type pat = *((type *)hp->bytes + i); \
-		type mask = *((type *)hp->mask + i); \
-		if ((num & mask) != (pat & mask)) { \
-			return false; \
-		} \
+	// We can't compare by casting the buffer address
+	// to an ut64, ut32 etc. because the buffer address can be unaligned
+	// for this integer. So we would get undefined behavior.
+	// This is pretty much the simplest we can do
+	// (except writing assembly I guess).
+	for (size_t i = 0; i < hp->length; i++) {
+		ut8 mbyte = hp->mask[i];
+		if ((hp->bytes[i] & mbyte) != (*(buffer + i) & mbyte)) {
+			return false;
+		}
 	}
-
-	fast_mask_compare(ut64);
-	fast_mask_compare(ut32);
-	fast_mask_compare(ut16);
-	fast_mask_compare(ut8);
-#undef fast_mask_compare
 	return true;
 }
 
