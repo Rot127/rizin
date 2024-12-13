@@ -576,6 +576,10 @@ static bool search_iterator_io_map_cb(void *element, void *user) {
 	if (!map) {
 		return rz_atomic_bool_get(ctx->loop);
 	}
+	if (!ctx->opt) {
+		RZ_LOG_ERROR("No search options given.\n");
+		return rz_atomic_bool_get(ctx->loop);
+	}
 
 	RzSearchOpt *opt = ctx->opt;
 	RzSearchCollection *col = ctx->col;
@@ -604,7 +608,7 @@ static bool search_iterator_io_map_cb(void *element, void *user) {
 			break;
 		}
 		RzSearchFindBytesCallback find = col->find;
-		if (!find(col->user, at, buffer, size, ctx->hits)) {
+		if (!find(ctx->opt->find_opts, col->user, at, buffer, size, ctx->hits)) {
 			RZ_LOG_ERROR("search: failed search at 0x%08" PFMT64x "\n", at);
 			break;
 		}

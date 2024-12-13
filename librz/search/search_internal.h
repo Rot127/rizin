@@ -39,7 +39,7 @@ typedef bool (*RzSearchIsEmptyCallback)(void *user);
  * \return True, if a match was found.
  * \return False otherwise.
  */
-typedef bool (*RzSearchFindBytesCallback)(void *user, ut64 address, const ut8 *buffer, size_t size, RZ_OUT RzThreadQueue *hits);
+typedef bool (*RzSearchFindBytesCallback)(RZ_NULLABLE RzSearchFindOpt *fopt, void *user, ut64 address, const ut8 *buffer, size_t size, RZ_OUT RzThreadQueue *hits);
 
 /**
  * \brief A callback to search a graph for a pattern.
@@ -51,7 +51,7 @@ typedef bool (*RzSearchFindBytesCallback)(void *user, ut64 address, const ut8 *b
  * \return True, if a match was found.
  * \return False otherwise.
  */
-typedef bool (*RzSearchFindGraphCallback)(void *user, const RzGraph *graph, RZ_OUT RzThreadQueue *hits);
+typedef bool (*RzSearchFindGraphCallback)(RzSearchFindOpt *fopt, void *user, const RzGraph *graph, RZ_OUT RzThreadQueue *hits);
 
 typedef enum {
 	RZ_SEARCH_SPACE_BYTES = 0, ///< The search is performed on bytes.
@@ -68,7 +68,7 @@ struct rz_search_collection_t {
 };
 
 struct rz_search_opt_t {
-	bool inverse_match;
+	RzSearchFindOpt *find_opts;
 	size_t buffer_size;
 	size_t max_hits;
 	RzThreadNCores max_threads;
@@ -78,13 +78,23 @@ struct rz_search_opt_t {
 	RzSearchCancelCallback cancel_cb;
 };
 
+struct rz_search_find_opt_t {
+	bool match_inverse; ///< Set if the inverse of the given pattern should be matched.
+	bool match_overlap; ///< Set if hits can overlap.
+	size_t alignment; ///< The address alignment to start the search from. If >1, only `buffer + (alignment * x)` is searched.
+};
+
 RZ_IPI RZ_OWN RzSearchHit *rz_search_hit_new(const char *metadata, ut64 address, size_t size);
 
 RZ_IPI RZ_OWN RzSearchCollection *rz_search_collection_new_bytes_space(RZ_NONNULL RzSearchFindBytesCallback find, RZ_NONNULL RzSearchIsEmptyCallback is_empty, RZ_NULLABLE RzSearchFreeCallback free, RZ_NULLABLE void *user);
 RZ_IPI RZ_OWN RzSearchCollection *rz_search_collection_new_graph_space(RZ_NONNULL RzSearchFindGraphCallback find, RZ_NONNULL RzSearchIsEmptyCallback is_empty, RZ_NULLABLE RzSearchFreeCallback free, RZ_NULLABLE void *user);
 RZ_IPI bool rz_search_collection_has_find_callback(RZ_NONNULL RzSearchCollection *col, RZ_NONNULL void *expected);
 RZ_IPI bool rz_search_collection_is_empty(RZ_NONNULL RzSearchCollection *col);
-RZ_IPI static inline bool rz_search_collection_on_bytes_space(RZ_NONNULL RzSearchCollection *col) { return col->space == RZ_SEARCH_SPACE_BYTES; };
-RZ_IPI static inline bool rz_search_collection_on_graph_space(RZ_NONNULL RzSearchCollection *col) { return col->space == RZ_SEARCH_SPACE_GRAPH; };
+RZ_IPI static inline bool rz_search_collection_on_bytes_space(RZ_NONNULL RzSearchCollection *col) {
+	return col->space == RZ_SEARCH_SPACE_BYTES;
+};
+RZ_IPI static inline bool rz_search_collection_on_graph_space(RZ_NONNULL RzSearchCollection *col) {
+	return col->space == RZ_SEARCH_SPACE_GRAPH;
+};
 
 #endif /* RZ_SEARCH_INTERNAL_H */

@@ -16,13 +16,10 @@ RZ_API RZ_OWN RzSearchOpt *rz_search_opt_new() {
 }
 
 RZ_API void rz_search_opt_free(RZ_NULLABLE RzSearchOpt *opt) {
+	if (opt) {
+		rz_search_find_opt_free(opt->find_opts);
+	}
 	free(opt);
-}
-
-RZ_API bool rz_search_opt_set_inverse_match(RZ_NONNULL RzSearchOpt *opt, bool inverse_match) {
-	rz_return_val_if_fail(opt, false);
-	opt->inverse_match = inverse_match;
-	return true;
 }
 
 RZ_API bool rz_search_opt_set_buffer_size(RZ_NONNULL RzSearchOpt *opt, size_t buffer_size) {
@@ -52,4 +49,51 @@ RZ_API bool rz_search_opt_set_cancel_cb(RZ_NONNULL RzSearchOpt *opt, RzSearchCan
 	opt->cancel_cb = callback;
 	opt->cancel_usr = user;
 	return true;
+}
+
+RZ_API bool rz_search_opt_set_find_options(RZ_NONNULL RzSearchOpt *opt, RZ_OWN RzSearchFindOpt *find_opts) {
+	rz_return_val_if_fail(opt, false);
+	opt->find_opts = find_opts;
+	return true;
+}
+
+RZ_API RZ_OWN RzSearchFindOpt *rz_search_find_opt_new() {
+	return RZ_NEW0(RzSearchFindOpt);
+}
+
+RZ_API void rz_search_find_opt_free(RZ_NULLABLE RzSearchFindOpt *opt) {
+	free(opt);
+}
+
+RZ_API bool rz_search_find_opt_set_inverse_match(RZ_NONNULL RzSearchFindOpt *opt, bool inverse_match) {
+	rz_return_val_if_fail(opt, false);
+	opt->match_inverse = inverse_match;
+	return true;
+}
+
+RZ_API bool rz_search_find_opt_get_inverse_match(RZ_NONNULL RzSearchFindOpt *opt) {
+	rz_return_val_if_fail(opt, false);
+	return opt->match_inverse;
+}
+
+RZ_API bool rz_search_find_opt_set_overlap_match(RZ_NONNULL RzSearchFindOpt *opt, bool overlap_match) {
+	rz_return_val_if_fail(opt, false);
+	opt->match_overlap = overlap_match;
+	return true;
+}
+
+RZ_API bool rz_search_find_opt_get_overlap_match(RZ_NONNULL RzSearchFindOpt *opt) {
+	rz_return_val_if_fail(opt, false);
+	return opt->match_overlap;
+}
+
+RZ_API bool rz_search_find_opt_set_alignment(RZ_NONNULL RzSearchFindOpt *opt, size_t alignment) {
+	rz_return_val_if_fail(opt, false);
+	opt->alignment = alignment;
+	return true;
+}
+
+RZ_API ut16 rz_search_find_opt_get_alignment(RZ_NONNULL RzSearchFindOpt *opt) {
+	rz_return_val_if_fail(opt, 0);
+	return opt->alignment;
 }

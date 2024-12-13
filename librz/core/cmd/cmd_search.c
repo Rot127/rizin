@@ -1743,6 +1743,12 @@ RZ_IPI int rz_cmd_search(void *data, const char *input) {
 	RzSearchOpt *search_opts = rz_search_opt_new(); \
 	bool opt_applid = rz_search_opt_set_max_hits(search_opts, rz_config_get_i(core->config, "search.maxhits")); \
 	opt_applid &= rz_search_opt_set_max_threads(search_opts, rz_th_max_threads(rz_config_get_i(core->config, "search.max_threads"))); \
+	RzSearchFindOpt *fopts = rz_core_setup_default_search_find_opts(core); \
+	if (!fopts) { \
+		RZ_LOG_ERROR("Failed setup find options.\n"); \
+		return RZ_CMD_STATUS_ERROR; \
+	} \
+	rz_search_opt_set_find_options(search_opts, fopts); \
 	core->in_search = true;
 
 #define CMD_SEARCH_END() \
@@ -1932,7 +1938,6 @@ RZ_IPI RzCmdStatus rz_cmd_search_hex_handler(RzCore *core, int argc, const char 
 	}
 
 	bool progress = rz_config_get_b(core->config, "search.show_progress");
-	opt_applid &= rz_search_opt_set_inverse_match(search_opts, false);
 	opt_applid &= rz_search_opt_set_buffer_size(search_opts, RZ_MAX(pattern->length, RZ_SEARCH_MIN_BUFFER_SIZE));
 	opt_applid &= rz_search_opt_set_cancel_cb(search_opts, cmd_search_progress_cancel, progress ? state : NULL);
 	if (!opt_applid) {

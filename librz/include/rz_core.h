@@ -1349,6 +1349,7 @@ RZ_API bool rz_core_disasm_until_ret(RZ_NONNULL RzCore *core, ut64 addr, int lim
 	bool ret_val, RZ_NULLABLE RZ_OUT RzStrBuf *buf);
 
 RZ_API RZ_OWN RzList /*<RzIOMap *>*/ *rz_core_setup_io_search_parameters(RzCore *core, RZ_OUT RzSearchOpt *search_opts);
+RZ_API RZ_OWN RzSearchFindOpt *rz_core_setup_default_search_find_opts(RzCore *core);
 
 RZ_API RZ_OWN RzList /*<RzSearchHit *>*/ *rz_core_search_bytes(RZ_NONNULL RzCore *core, RZ_BORROW RZ_NULLABLE RzSearchOpt *user_opts, RZ_NONNULL RZ_OWN RzSearchBytesPattern *pattern);
 

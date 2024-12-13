@@ -2440,6 +2440,16 @@ static bool cb_searchalign(void *user, void *data) {
 	return true;
 }
 
+static bool cb_searchalignment(void *user, void *data) {
+	RzConfigNode *node = (RzConfigNode *)data;
+	ut64 alignment = node->i_value;
+	if (alignment >= 64 || alignment < 1) {
+		RZ_LOG_ERROR("Alignment has to be between 1-63.\n");
+		return false;
+	}
+	return true;
+}
+
 static bool cb_segoff(void *user, void *data) {
 	RzCore *core = (RzCore *)user;
 	RzConfigNode *node = (RzConfigNode *)data;
@@ -3782,14 +3792,14 @@ RZ_API int rz_core_config_init(RzCore *core) {
 	SETPREF("search.prefix", "hit", "Prefix name in search hits label");
 	SETI("search.maxhits", 0, "Maximum number of hits ('0' means no limit)");
 	SETBPREF("search.show_progress", "true", "Show the search process.");
+	SETBPREF("search.overlap", "true", "Look for overlapped search hits.");
+	SETICB("search.io.alignment", 1, &cb_searchalignment, "Only search at set byte alignment.");
 
-	SETCB("search.contiguous", "true", &cb_contiguous, "Accept contiguous/adjacent search hits");
 	SETICB("search.align", 0, &cb_searchalign, "Only catch aligned search hits");
 	SETI("search.chunk", 0, "Chunk size for /+ (default size is asm.bits/8");
 	SETI("search.esilcombo", 8, "Stop search after N consecutive hits");
 	SETI("search.distance", 0, "Search string distance");
 	SETBPREF("search.flags", "true", "All search results are flagged, otherwise only printed");
-	SETBPREF("search.overlap", "false", "Look for overlapped search hits");
 	SETICB("search.kwidx", 0, &cb_search_kwidx, "Store last search index count");
 	SETBPREF("search.show", "true", "Show search results");
 	n = NODECB("search.case_sensitive", "smart", &cb_search_case_sensitive);

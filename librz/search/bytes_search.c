@@ -134,7 +134,12 @@ static bool bytes_pattern_compare(RzSearchBytesPattern *hp, const ut8 *buffer, s
 	return true;
 }
 
-static bool bytes_find(void *user, ut64 address, const ut8 *buffer, size_t size, RzThreadQueue *hits) {
+static bool bytes_find(RzSearchFindOpt *fopts, void *user, ut64 address, const ut8 *buffer, size_t size, RzThreadQueue *hits) {
+	if (!fopts) {
+		RZ_LOG_ERROR("bytes_find requires valid find options.\n");
+		return false;
+	}
+
 	RzPVector /*<BytesPattern *>*/ *patterns = (RzPVector *)user;
 	void **it = NULL;
 	RzSearchBytesPattern *hp = NULL;
@@ -154,7 +159,7 @@ static bool bytes_find(void *user, ut64 address, const ut8 *buffer, size_t size,
 				rz_search_hit_free(hit);
 				return false;
 			}
-			offset += hp->length;
+			offset += fopts->match_overlap ? 1 : hp->length;
 		}
 	}
 	return true;

@@ -2,11 +2,36 @@
 // SPDX-FileCopyrightText: 2024 Rot127 <unisono@quyllur.org>
 // SPDX-License-Identifier: LGPL-3.0-only
 
+#include "rz_config.h"
 #include <rz_util/rz_log.h>
 #include <rz_core.h>
 #include <rz_search.h>
 #include <rz_util/rz_assert.h>
 #include <rz_util/rz_str_search.h>
+
+/**
+ * \brief Sets up the search find options according to the core config.
+ *
+ * \param core The core to get the config from.
+ *
+ * \return The find options to use. Or NULL in case of failure.
+ */
+RZ_API RZ_OWN RzSearchFindOpt *rz_core_setup_default_search_find_opts(RzCore *core) {
+	RzSearchFindOpt *fopts = rz_search_find_opt_new();
+	if (!fopts) {
+		RZ_LOG_ERROR("Failed allocating find options.\n");
+		return NULL;
+	}
+	bool fopts_set = rz_search_find_opt_set_inverse_match(fopts, rz_config_get_b(core->config, "search.inverse"));
+	fopts_set &= rz_search_find_opt_set_overlap_match(fopts, rz_config_get_b(core->config, "search.overlap"));
+	fopts_set &= rz_search_find_opt_set_alignment(fopts, rz_config_get_i(core->config, "search.io.alignment"));
+	if (!fopts_set) {
+		RZ_LOG_ERROR("Failed set find options.\n");
+		rz_search_find_opt_free(fopts);
+		return NULL;
+	}
+	return fopts;
+}
 
 /**
  * \brief Sets up the search parameters according to the core IO layer and config.
@@ -46,6 +71,12 @@ RZ_API RZ_OWN RzList /*<RzIOMap *>*/ *rz_core_setup_io_search_parameters(RzCore 
 			RZ_LOG_ERROR("core: Failed to set 'max_hits' search option.\n");
 			goto fail;
 		}
+		RzSearchFindOpt *fopts = rz_core_setup_default_search_find_opts(core);
+		if (!fopts) {
+			RZ_LOG_ERROR("Failed setup find options.\n");
+			goto fail;
+		}
+		rz_search_opt_set_find_options(search_opts, fopts);
 	}
 
 	return boundaries;
@@ -90,8 +121,7 @@ RZ_API RZ_OWN RzList /*<RzSearchHit *>*/ *rz_core_search_bytes(RZ_NONNULL RzCore
 	if (!user_opts) {
 		// Use default search options for byte search.
 		search_opts = rz_search_opt_new();
-		bool opt_applied = rz_search_opt_set_inverse_match(search_opts, false);
-		opt_applied &= rz_search_opt_set_buffer_size(search_opts, RZ_MAX(pattern->length, RZ_SEARCH_MIN_BUFFER_SIZE));
+		bool opt_applied = rz_search_opt_set_buffer_size(search_opts, RZ_MAX(pattern->length, RZ_SEARCH_MIN_BUFFER_SIZE));
 		opt_applied &= rz_search_opt_set_cancel_cb(search_opts, default_search_no_cancel, NULL);
 		if (!opt_applied) {
 			RZ_LOG_ERROR("code: Failed to setup default search options.\n");

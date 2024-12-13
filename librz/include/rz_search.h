@@ -131,12 +131,17 @@ RZ_API int rz_search_pattern(RzSearch *s, ut64 from, ut64 to);
 RZ_LIB_VERSION_HEADER(rz_search);
 
 #define RZ_SEARCH_MIN_BUFFER_SIZE 512u
-#define RZ_SEARCH_CANCEL_CHECK_INTERVAL_USEC 1000 * 1000
+#define RZ_SEARCH_CANCEL_CHECK_INTERVAL_USEC 500 * 1000
 
 /**
  * \brief Private search options for the search module. Use the rz_search_opt_*() functions to edit it.
  */
 typedef struct rz_search_opt_t RzSearchOpt;
+
+/**
+ * \brief Options for the find() callback of the different searches.
+ */
+typedef struct rz_search_find_opt_t RzSearchFindOpt;
 
 typedef struct rz_search_collection_t RzSearchCollection;
 
@@ -177,11 +182,17 @@ typedef bool (*RzSearchCancelCallback)(void *user, size_t n_hits, RzSearchCancel
 
 RZ_API RZ_OWN RzSearchOpt *rz_search_opt_new();
 RZ_API void rz_search_opt_free(RZ_NULLABLE RzSearchOpt *opt);
-RZ_API bool rz_search_opt_set_inverse_match(RZ_NONNULL RzSearchOpt *opt, bool inverse_match);
 RZ_API bool rz_search_opt_set_buffer_size(RZ_NONNULL RzSearchOpt *opt, size_t buffer_size);
 RZ_API bool rz_search_opt_set_max_hits(RZ_NONNULL RzSearchOpt *opt, size_t max_hits);
 RZ_API bool rz_search_opt_set_max_threads(RZ_NONNULL RzSearchOpt *opt, RzThreadNCores max_threads);
 RZ_API bool rz_search_opt_set_cancel_cb(RZ_NONNULL RzSearchOpt *opt, RzSearchCancelCallback callback, void *user);
+RZ_API bool rz_search_opt_set_find_options(RZ_NONNULL RzSearchOpt *opt, RZ_OWN RzSearchFindOpt *find_opts);
+
+RZ_API RZ_OWN RzSearchFindOpt *rz_search_find_opt_new();
+RZ_API void rz_search_find_opt_free(RZ_NULLABLE RzSearchFindOpt *opt);
+RZ_API bool rz_search_find_opt_set_inverse_match(RZ_NONNULL RzSearchFindOpt *opt, bool inverse_match);
+RZ_API bool rz_search_find_opt_set_overlap_match(RZ_NONNULL RzSearchFindOpt *opt, bool overlap_match);
+RZ_API bool rz_search_find_opt_set_alignment(RZ_NONNULL RzSearchFindOpt *opt, size_t alignment);
 
 RZ_API RZ_OWN RzSearchCollection *rz_search_collection_aes_keys();
 
