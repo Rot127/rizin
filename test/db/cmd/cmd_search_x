@@ -1,0 +1,187 @@
+NAME=Search hex byte search - errors
+FILE=bins/cmd/search/hex_bytes
+CMDS=<<EOF
+/x 00p
+/x pp:ff
+/x fff:ee
+/x f:ee
+/x f:
+/x :f
+/x f:ee:aa
+# Things people do:
+/x pp:f🍍
+/x xff:xee
+# Mask should not contain wildcards
+/x f0f0f.:4141f1
+EOF
+EXPECT_ERR=<<EOF
+ERROR: Pattern contains forbitten characters. Allowed is only '0x', '0-9', 'a-f', 'A-F', '.' and ':'.
+ERROR: Failed to parse given pattern.
+ERROR: Pattern contains forbitten characters. Allowed is only '0x', '0-9', 'a-f', 'A-F', '.' and ':'.
+ERROR: Failed to parse given pattern.
+ERROR: Mask and bytes must have the same number of nibbles. But they mismatch: 3 != 2
+ERROR: Failed to parse given pattern.
+ERROR: Mask and bytes must have the same number of nibbles. But they mismatch: 1 != 2
+ERROR: Failed to parse given pattern.
+ERROR: Mask and bytes must have the same number of nibbles. But they mismatch: 0 != 1
+ERROR: Failed to parse given pattern.
+ERROR: Regex matching failed. Wrong group count.
+ERROR: Failed to parse given pattern.
+ERROR: More than one ':' is invalid.
+ERROR: Failed to parse given pattern.
+ERROR: Pattern contains forbitten characters. Allowed is only '0x', '0-9', 'a-f', 'A-F', '.' and ':'.
+ERROR: Failed to parse given pattern.
+ERROR: Regex matching failed. Wrong group count.
+ERROR: Failed to parse given pattern.
+ERROR: Mask and bytes must have the same number of nibbles. But they mismatch: 0 != 6
+ERROR: Failed to parse given pattern.
+EOF
+RUN
+
+NAME=Search hex byte search - normal search
+FILE=bins/cmd/search/hex_bytes
+CMDS=<<EOF
+e search.show_progress=false
+e search.prefix="a"
+/x 61
+e search.prefix="b"
+/x 62
+# Pineapple
+e search.prefix="🍍"
+/x f09f8d8d
+EOF
+EXPECT=<<EOF
+00000000 1 a.match.0
+00000018 1 a.match.1
+00000030 1 a.match.2
+00000001 1 b.match.0
+00000019 1 b.match.1
+00000031 1 b.match.2
+0000000e 4 🍍.match.0
+00000026 4 🍍.match.1
+0000003e 4 🍍.match.2
+EOF
+RUN
+
+NAME=Search hex byte search - wildcard search - no overlap
+FILE=bins/cmd/search/hex_bytes
+CMDS=<<EOF
+e search.show_progress=false
+e search.overlap=false
+e search.prefix="3wild"
+/x ...1
+e search.prefix="complex"
+/x 4..54647.09f...d2092.f72
+EOF
+EXPECT=<<EOF
+00000006 2 3wild.match.0
+00000015 2 3wild.match.1
+00000017 2 3wild.match.2
+0000001e 2 3wild.match.3
+0000002d 2 3wild.match.4
+0000002f 2 3wild.match.5
+00000036 2 3wild.match.6
+0000000a 12 complex.match.0
+00000022 12 complex.match.1
+0000003a 12 complex.match.2
+EOF
+RUN
+
+
+NAME=Search hex byte search - wildcard search - overlap
+FILE=bins/cmd/search/hex_bytes
+CMDS=<<EOF
+e search.show_progress=false
+e search.overlap=true
+e search.prefix="4wild2"
+/x 4.4.
+EOF
+EXPECT=<<EOF
+00000007 2 4wild2.match.0
+00000008 2 4wild2.match.1
+00000009 2 4wild2.match.2
+0000000a 2 4wild2.match.3
+0000000b 2 4wild2.match.4
+0000000c 2 4wild2.match.5
+0000001f 2 4wild2.match.6
+00000020 2 4wild2.match.7
+00000021 2 4wild2.match.8
+00000022 2 4wild2.match.9
+00000023 2 4wild2.match.10
+00000024 2 4wild2.match.11
+00000037 2 4wild2.match.12
+00000038 2 4wild2.match.13
+00000039 2 4wild2.match.14
+0000003a 2 4wild2.match.15
+0000003b 2 4wild2.match.16
+0000003c 2 4wild2.match.17
+EOF
+RUN
+
+NAME=Search hex byte search - odd number of nibbles
+FILE=bins/cmd/search/hex_bytes_1024
+CMDS=<<EOF
+e search.show_progress=false
+# Should be equivalent to .140
+e search.prefix="odd14f"
+/x 14f
+# Should be equivalent to .0424a41424b
+e search.prefix="odd1424"
+/x 1424a41424b
+EOF
+EXPECT=<<EOF
+00000029 2 odd14f.match.0
+000000d0 6 odd1424.match.0
+EOF
+RUN
+
+NAME=Search hex byte search - custom flag
+FILE=bins/cmd/search/hex_bytes
+CMDS=<<EOF
+e search.show_progress=false
+e search.prefix="1"
+/x f0f0f0:4040f0
+# Invalid flag value combination. Mask dominates.
+e search.prefix="2"
+/x f0f0f0:4141f1
+# Custom flag with wildcard.
+e search.prefix="3"
+/x f0f0f0:4141f.
+e search.prefix="odd_mask"
+/x f0f0f:647f0
+EOF
+EXPECT=<<EOF
+0000000c 3 1.match.0
+00000024 3 1.match.1
+0000003c 3 1.match.2
+0000000c 3 2.match.0
+00000024 3 2.match.1
+0000003c 3 2.match.2
+0000000c 3 3.match.0
+00000024 3 3.match.1
+0000003c 3 3.match.2
+0000000c 3 odd_mask.match.0
+00000024 3 odd_mask.match.1
+0000003c 3 odd_mask.match.2
+EOF
+RUN
+
+NAME=Search hex byte search - custom flag
+FILE=bins/cmd/search/hex_bytes
+CMDS=<<EOF
+e search.show_progress=false
+EOF
+EXPECT=<<EOF
+EOF
+RUN
+
+NAME=Search hex byte search - search over boundary
+FILE=bins/cmd/search/hex_bytes
+CMDS=<<EOF
+e search.show_progress=false
+# Invalid flag value combination. Mask dominates.
+EOF
+EXPECT=<<EOF
+EOF
+RUN
+
