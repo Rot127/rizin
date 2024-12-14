@@ -498,7 +498,8 @@ RZ_API char *rz_hex_bin2strdup(const ut8 *in, int len) {
 /**
  * \brief Convert an input string \p in into the binary form in \p out.
  * For odd number of nibbles, the MSB side is extended with a 0 nibble.
- * It stops parsing at the first non hex digit.
+ *
+ * If \p in contains non-hexadecimal digits, the result is undefined.
  *
  * Convert an input string in the hexadecimal form (e.g. "41424344") into the
  * raw binary form (e.g. "\x41\x42\x43\x44" or "ABCD").
@@ -550,6 +551,8 @@ RZ_API int rz_hex_str2bin_msb(RZ_NONNULL const char *in, RZ_NONNULL RZ_OUT ut8 *
 /**
  * \brief Convert an input string \p in into the binary form in \p out
  * For odd number of nibbles, the LSB side is extended with a 0 nibble.
+ *
+ * If \p in contains non-hexadecimal digits, the result is undefined.
  *
  * Convert an input string in the hexadecimal form (e.g. "41424344") into the
  * raw binary form (e.g. "\x41\x42\x43\x44" or "ABCD").
@@ -616,6 +619,8 @@ RZ_API int rz_hex_str2bin(RZ_NONNULL const char *in, RZ_NONNULL RZ_OUT ut8 *out)
  * Wildcards in \p in are set to '0' in the mask and \p out.
  * It stops at the first invalid character and returns.
  *
+ * If \p in contains non-hexadecimal digits, the result is undefined.
+ *
  * The input string may be prefixed with a "0x".
  *
  * Example:
@@ -623,30 +628,27 @@ RZ_API int rz_hex_str2bin(RZ_NONNULL const char *in, RZ_NONNULL RZ_OUT ut8 *out)
  *   assert_mem_eq(out, { 0xff, 0xe4 });
  *   assert_mem_eq(mask, { 0xff, 0xff });
  *
- *   rz_hex_str2bin_mask("f=e4", out, mask, false);
- *   assert_mem_eq(out, { 0x0f });
- *   assert_mem_eq(mask, { 0xff });
- *
  *   rz_hex_str2bin_mask("ff.4", out, mask, false);
  *   assert_mem_eq(out, { 0xff, 0x04 });
  *   assert_mem_eq(mask, { 0xff, 0x0f });
  *
- *   // Extend on LSB side
+ *   // Extend on MSB side
  *   rz_hex_str2bin_mask("ffee4", out, mask, false);
  *   assert_mem_eq(out, { 0x0f, 0xfe, 0xe4 });
  *   assert_mem_eq(mask, { 0x0f, 0xff, 0xff });
  *
- *   // Extend on MSB side
- *   rz_hex_str2bin_mask("ffee4", out, mask, true);
- *   assert_mem_eq(out, { 0xff, 0xee, 0x40 });
- *   assert_mem_eq(mask, { 0xff, 0xff, 0xf0 });
+ *   // Extend on LSB side
+ *   rz_hex_str2bin_mask("ee4", out, mask, true);
+ *   assert_mem_eq(out, { 0xee, 0x40 });
+ *   assert_mem_eq(mask, { 0xff, 0xf0 });
  *
  * \param in The hex string to parse and transform.
  * \param out The output buffer. It must be the same size as \p strlen(in) / 2.
  * \param mask The output buffer for the mask. It must be the same size as \p out.
  * Can be NULL, if no mask is required.
- * \param lsb_extend If true, it extends the byte buffer with a 0 nibble at the LSB side.
- * But only if the \p in has an odd number hex digits.
+ * \param lsb_extend If set and \p in has an odd number hex digits,
+ * it extends the byte buffer with a wildcard nibble at the LSB (right) side.
+ * If unset and with an odd digit count, it extends on the MSB (left) side.
  *
  * \return The number of bytes written to \p out and \p mask. In case of failure it returns less then 0.
  * Note: In case of failure the content of \p out and \p mask are undefined.
