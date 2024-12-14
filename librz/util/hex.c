@@ -654,6 +654,10 @@ RZ_API int rz_hex_str2bin(RZ_NONNULL const char *in, RZ_NONNULL RZ_OUT ut8 *out)
 RZ_API size_t rz_hex_str2bin_mask(RZ_NONNULL const char *in, RZ_NONNULL RZ_OUT ut8 *out, RZ_NULLABLE RZ_OUT ut8 *mask, bool lsb_extend) {
 	rz_return_val_if_fail(in && out, 0);
 
+	if (in[0] == '\0') {
+		return 0;
+	}
+
 	char *in_cpy = strdup(in);
 	for (size_t i = 0; in_cpy[i]; ++i) {
 		if (in_cpy[i] == '.') {
@@ -673,13 +677,25 @@ RZ_API size_t rz_hex_str2bin_mask(RZ_NONNULL const char *in, RZ_NONNULL RZ_OUT u
 		free(in_cpy);
 		return ret;
 	}
+	bool odd_nibbles = bytes_copied < 0;
+	for (size_t i = 0; i < ret; ++i) {
+		int low_offset = (i * 2);
+		int high_offset = (i * 2) + 1;
+		char low_digit;
+		char high_digit;
+		if (odd_nibbles && (i == 0 || i == (ret - 1))) {
+			low_digit = (i == 0 && !lsb_extend) ? '.' : in[low_offset];
+			high_digit = (i == ret - 1) && lsb_extend ? '.' : in[high_offset - 1];
+		} else {
+			low_digit = in[low_offset];
+			high_digit = in[high_offset];
+		}
 
-	for (size_t i = 0; i <= ret; ++i) {
 		mask[i] = 0x00;
-		if (out[i] & 0xf0) {
+		if (low_digit != '.') {
 			mask[i] |= 0xf0;
 		}
-		if (out[i] & 0x0f) {
+		if (high_digit != '.') {
 			mask[i] |= 0x0f;
 		}
 	}

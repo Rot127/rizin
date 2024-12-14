@@ -213,6 +213,14 @@ bool test_rz_str2bin_mask(void) {
 	mu_assert_memeq(buf, (ut8 *)"ABCD", 4, "Buffer mismatch");
 	mu_assert_memeq(mask, (ut8 *)"\xff\xff\xff\xff", 4, "Mask doesn't match");
 
+	mu_assert_eq(rz_hex_str2bin_mask(".14.", buf, mask, false), 2, "2 bytes are written");
+	mu_assert_memeq(buf, (ut8 *)"\x01\x40", 2, "Buffer mismatch");
+	mu_assert_memeq(mask, (ut8 *)"\x0f\xf0", 2, "Mask doesn't match");
+
+	mu_assert_eq(rz_hex_str2bin_mask("0140", buf, mask, false), 2, "2 bytes are written");
+	mu_assert_memeq(buf, (ut8 *)"\x01\x40", 2, "Buffer mismatch");
+	mu_assert_memeq(mask, (ut8 *)"\xff\xff", 2, "Mask doesn't match");
+
 	mu_assert_eq(rz_hex_str2bin_mask("0x41424344", buf, mask, false), 4, "4 bytes are written");
 	mu_assert_memeq(buf, (ut8 *)"ABCD", 4, "Buffer mismatch");
 	mu_assert_memeq(mask, (ut8 *)"\xff\xff\xff\xff", 4, "Mask doesn't match");
