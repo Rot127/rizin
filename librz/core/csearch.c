@@ -131,7 +131,7 @@ RZ_API RZ_OWN RzList /*<RzSearchHit *>*/ *rz_core_search_bytes(RZ_NONNULL RzCore
 		RZ_LOG_ERROR("core: Setting up search from core failed.\n");
 		goto quit;
 	}
-	if (!rz_search_opt_set_chunk_size_if_bigger(search_opts, pattern->length)) {
+	if (!rz_search_opt_set_elemet_size(user_opts ? user_opts : search_opts, pattern->length)) {
 		RZ_LOG_ERROR("search: Failed to update chunk size in the search options.\n");
 		goto quit;
 	}

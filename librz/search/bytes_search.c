@@ -7,6 +7,7 @@
 
 #include <rz_util/rz_assert.h>
 #include <rz_util/rz_str.h>
+#include <rz_util/rz_buf.h>
 #include "search_internal.h"
 
 RZ_API RZ_OWN RzSearchBytesPattern *rz_search_bytes_pattern_new(RZ_OWN ut8 *bytes, RZ_NULLABLE RZ_OWN ut8 *mask, size_t length, RZ_NULLABLE const char *pattern_desc) {
@@ -116,12 +117,22 @@ error:
 	return NULL;
 }
 
-static bool bytes_pattern_compare(RzSearchBytesPattern *hp, const ut8 *buffer, size_t buffer_size) {
+typedef struct {
+	RzSearchBytesPattern *hp;
+	bool hit;
+} scan_data_t;
+
+static ut64 bytes_pattern_compare(RZ_BORROW RZ_NONNULL const ut8 *buffer, ut64 buffer_size, RZ_NULLABLE void *user) {
+	scan_data_t *sdata = user;
+	RzSearchBytesPattern *hp = sdata->hp;
+
 	if (buffer_size < hp->length) {
-		return false;
+		sdata->hit = false;
+		return buffer_size;
 	} else if (!hp->mask) {
-		// if no mask defined, then we do memcmp
-		return memcmp(buffer, hp->bytes, hp->length) == 0;
+		// Without mask only a memcmp().
+		sdata->hit = memcmp(buffer, hp->bytes, hp->length) == 0;
+		return hp->length;
 	}
 
 	// We can't compare by casting the buffer address
@@ -132,13 +143,15 @@ static bool bytes_pattern_compare(RzSearchBytesPattern *hp, const ut8 *buffer, s
 	for (size_t i = 0; i < hp->length; i++) {
 		ut8 mbyte = hp->mask[i];
 		if ((hp->bytes[i] & mbyte) != (*(buffer + i) & mbyte)) {
-			return false;
+			sdata->hit = false;
+			return hp->length;
 		}
 	}
-	return true;
+	sdata->hit = true;
+	return hp->length;
 }
 
-static bool bytes_find(RzSearchFindOpt *fopts, void *user, ut64 address, const ut8 *buffer, size_t size, RzThreadQueue *hits) {
+static bool bytes_find(RzSearchFindOpt *fopts, void *user, ut64 address, RzBuffer *buffer, size_t size, RzThreadQueue *hits) {
 	if (!fopts) {
 		RZ_LOG_ERROR("bytes_find requires valid find options.\n");
 		return false;
@@ -146,24 +159,28 @@ static bool bytes_find(RzSearchFindOpt *fopts, void *user, ut64 address, const u
 
 	RzPVector /*<BytesPattern *>*/ *patterns = (RzPVector *)user;
 	void **it = NULL;
-	RzSearchBytesPattern *hp = NULL;
+	scan_data_t sdata = { .hp = NULL, .hit = false };
 
 	rz_pvector_foreach (patterns, it) {
-		hp = (RzSearchBytesPattern *)*it;
+		sdata.hp = (RzSearchBytesPattern *)*it;
 		for (size_t offset = 0; offset < size;) {
+			sdata.hit = false;
+
 			size_t leftovers = size - offset;
-			if (hp->length > leftovers) {
+			if (sdata.hp->length > leftovers) {
 				break;
-			} else if (!bytes_pattern_compare(hp, buffer + offset, leftovers)) {
+			}
+			rz_buf_fwd_scan(buffer, offset, leftovers, bytes_pattern_compare, &sdata);
+			if (!sdata.hit) {
 				offset++;
 				continue;
 			}
-			RzSearchHit *hit = rz_search_hit_new(hp->pattern_desc, address + offset, hp->length);
+			RzSearchHit *hit = rz_search_hit_new(sdata.hp->pattern_desc, address + offset, sdata.hp->length);
 			if (!hit || !rz_th_queue_push(hits, hit, true)) {
 				rz_search_hit_free(hit);
 				return false;
 			}
-			offset += fopts->match_overlap ? 1 : hp->length;
+			offset += fopts->match_overlap ? 1 : sdata.hp->length;
 		}
 	}
 	return true;

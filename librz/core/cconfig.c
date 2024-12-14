@@ -2450,18 +2450,6 @@ static bool cb_searchalignment(void *user, void *data) {
 	return true;
 }
 
-static bool cb_searchchunk(void *user, void *data) {
-	RzConfigNode *node = (RzConfigNode *)data;
-	ut64 chunk_size = node->i_value;
-	if (chunk_size > RZ_SEARCH_MAX_CHUNK_SIZE || chunk_size < RZ_SEARCH_MIN_CHUNK_SIZE) {
-		RZ_LOG_ERROR("Chunk size has to be between %#" PFMT64x "-%#" PFMT64x ".\n",
-			RZ_SEARCH_MIN_CHUNK_SIZE,
-			RZ_SEARCH_MAX_CHUNK_SIZE);
-		return false;
-	}
-	return true;
-}
-
 static bool cb_segoff(void *user, void *data) {
 	RzCore *core = (RzCore *)user;
 	RzConfigNode *node = (RzConfigNode *)data;

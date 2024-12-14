@@ -2,7 +2,9 @@
 // SPDX-FileCopyrightText: 2024 deroad <wargio@libero.it>
 // SPDX-License-Identifier: LGPL-3.0-only
 
-#include "rz_th.h"
+#include <rz_list.h>
+#include <rz_th.h>
+#include <rz_util/rz_buf.h>
 #include <rz_search.h>
 
 // Experimental search engine (fails, because stops at first hit of every block read
@@ -548,9 +550,10 @@ RZ_API void rz_search_kw_reset(RzSearch *s) {
 
 typedef struct search_ctx {
 	RzIO *io; ///< the RzIO struct to use
+	RzThreadLock *io_lock;
 	RzSearchCollection *col; ///< collection to use
 	RzSearchOpt *opt; ///< User options
-	RzThreadQueue *hits; ///< Hits list
+	RzThreadQueue /* RzSearchHits */ *hits; ///< Hits list
 	RzAtomicBool *loop; ///< If set, the execution will continue until it terminates. If unset, the execution cancels.
 } search_ctx_t;
 
@@ -572,8 +575,8 @@ static void *search_cancel_th(void *user) {
 
 static bool search_iterator_io_map_cb(void *element, void *user) {
 	search_ctx_t *ctx = (search_ctx_t *)user;
-	RzIOMap *map = (RzIOMap *)element;
-	if (!map) {
+	RzSearchWindow *window = (RzSearchWindow *)element;
+	if (!window) {
 		return rz_atomic_bool_get(ctx->loop);
 	}
 	if (!ctx->opt) {
@@ -581,41 +584,67 @@ static bool search_iterator_io_map_cb(void *element, void *user) {
 		return rz_atomic_bool_get(ctx->loop);
 	}
 
-	RzSearchOpt *opt = ctx->opt;
 	RzSearchCollection *col = ctx->col;
 
-	ut8 *buffer = malloc(opt->chunk_size);
+	ut64 at = window->address;
+	ut64 size = window->size;
+
+	RzBuffer *rz_buf = NULL;
+	ut8 *buffer = malloc(size);
 	if (!buffer) {
-		rz_atomic_bool_set(ctx->loop, false);
-		return false;
+		RZ_LOG_ERROR("search: Failed to allocate buffer at 0x%08" PFMT64x " (0x%08" PFMT64x " bytes)\n", at, size);
+		goto failure;
 	}
 
-	const ut64 from = rz_itv_begin(map->itv);
-	const ut64 to = rz_itv_end(map->itv);
+	// read the buffer
+	rz_th_lock_enter(ctx->io_lock);
+	if (!rz_io_nread_at(ctx->io, at, buffer, size)) {
+		RZ_LOG_ERROR("search: failed to read at 0x%08" PFMT64x " (0x%08" PFMT64x " bytes)\n", at, size);
+		rz_th_lock_leave(ctx->io_lock);
+		goto failure;
+	}
+	rz_th_lock_leave(ctx->io_lock);
+	rz_buf = rz_buf_new_with_bytes(buffer, size);
 
-	for (ut64 at = from; at < to; at += opt->chunk_size) {
-		if (!rz_atomic_bool_get(ctx->loop)) {
-			break;
-		}
-		// calculate the buffer size
-		size_t size = opt->chunk_size;
-		if ((at + opt->chunk_size) > to) {
-			size = to - at;
-		}
-		// read the buffer
-		if (!rz_io_read_at(ctx->io, at, buffer, size)) {
-			RZ_LOG_ERROR("search: failed to read at 0x%08" PFMT64x " (%" PFMTSZu " bytes)\n", at, size);
-			break;
-		}
-		RzSearchFindBytesCallback find = col->find;
-		if (!find(ctx->opt->find_opts, col->user, at, buffer, size, ctx->hits)) {
-			RZ_LOG_ERROR("search: failed search at 0x%08" PFMT64x "\n", at);
-			break;
-		}
+	RzSearchFindBytesCallback find = col->find;
+	if (!find(ctx->opt->find_opts, col->user, at, rz_buf, size, ctx->hits)) {
+		RZ_LOG_ERROR("search: failed search at 0x%08" PFMT64x "\n", at);
+		goto failure;
 	}
 
 	free(buffer);
 	return rz_atomic_bool_get(ctx->loop);
+
+failure:
+	rz_buf_free(rz_buf);
+	rz_atomic_bool_set(ctx->loop, false);
+	return false;
+}
+
+static RzList *assemble_search_window_list(RzList /*<RzIOMap *>*/ *search_in, RzSearchOpt *opt) {
+	RzList *list = rz_list_newf(free);
+	if (!list) {
+		return NULL;
+	}
+
+	RzIOMap *map;
+	RzListIter *iter;
+	rz_list_foreach(search_in, iter, map) {
+		ut64 start = map->itv.addr;
+		ut64 end = start + map->itv.size;
+		for (size_t chunk_begin = start; chunk_begin < end; chunk_begin += opt->chunk_size) {
+			ut64 window_size = chunk_begin + opt->chunk_size + (opt->element_size - 1);
+			if (window_size > end) {
+				window_size = end - chunk_begin;
+			}
+
+			RzSearchWindow *window = RZ_NEW0(RzSearchWindow);
+			window->address = chunk_begin;
+			window->size = window_size;
+			rz_list_append(list, window);
+		}
+	}
+	return list;
 }
 
 /**
@@ -637,6 +666,7 @@ RZ_API RZ_OWN RzList /*<RzSearchHit *>*/ *rz_search_on_io(
 	search_ctx_t ctx = { 0 };
 	RzList *results = NULL;
 	RzThreadQueue *hits = NULL;
+	RzList /* RzSearchWindow */ *windows = NULL;
 	RzThread *cancel_th = NULL;
 
 	if (!rz_search_collection_on_bytes_space(col)) {
@@ -665,9 +695,17 @@ RZ_API RZ_OWN RzList /*<RzSearchHit *>*/ *rz_search_on_io(
 		return NULL;
 	}
 
+	windows = assemble_search_window_list(search_in, opt);
+	if (!windows) {
+		RZ_LOG_ERROR("search: Could not prepare search window queue.\n");
+		rz_list_free(windows);
+		return NULL;
+	}
+
 	ctx.col = col;
 	ctx.opt = opt;
 	ctx.io = io;
+	ctx.io_lock = rz_th_lock_new(false);
 	ctx.loop = rz_atomic_bool_new(true);
 	ctx.hits = hits;
 
@@ -682,7 +720,7 @@ RZ_API RZ_OWN RzList /*<RzSearchHit *>*/ *rz_search_on_io(
 		}
 	}
 
-	if (!rz_th_iterate_list(search_in, search_iterator_io_map_cb, opt->max_threads, &ctx)) {
+	if (!rz_th_iterate_list(windows, search_iterator_io_map_cb, opt->max_threads, &ctx)) {
 		RZ_LOG_ERROR("search: cannot iterate over list.\n");
 	} else {
 		results = rz_th_queue_pop_all(hits);

@@ -28,7 +28,7 @@ RZ_API bool rz_search_opt_set_max_hits(RZ_NONNULL RzSearchOpt *opt, size_t max_h
 	return true;
 }
 
-RZ_API bool rz_search_opt_set_chunk_size(RZ_NONNULL RzSearchOpt *opt, ut64 chunk_size) {
+static bool set_chunk_size(RZ_NONNULL RzSearchOpt *opt, ut64 chunk_size) {
 	rz_return_val_if_fail(opt, false);
 	if (chunk_size < RZ_SEARCH_MIN_CHUNK_SIZE || chunk_size > RZ_SEARCH_MAX_CHUNK_SIZE) {
 		RZ_LOG_ERROR("search: Chunk size is not in range of %#" PFMT64x "-%#" PFMT64x " bytes.\n",
@@ -40,16 +40,23 @@ RZ_API bool rz_search_opt_set_chunk_size(RZ_NONNULL RzSearchOpt *opt, ut64 chunk
 	return true;
 }
 
-RZ_API bool rz_search_opt_set_chunk_size_if_bigger(RZ_NONNULL RzSearchOpt *opt, ut64 chunk_size) {
-	rz_return_val_if_fail(opt, false);
-	if (chunk_size < RZ_SEARCH_MIN_CHUNK_SIZE || chunk_size > RZ_SEARCH_MAX_CHUNK_SIZE) {
-		RZ_LOG_ERROR("search: Chunk size is not in range of %#" PFMT64x "-%#" PFMT64x " bytes.\n",
-			RZ_SEARCH_MIN_CHUNK_SIZE,
-			RZ_SEARCH_MAX_CHUNK_SIZE);
+static bool element_chunk_ratio_ok(ut64 element_size, ut64 chunk_size) {
+	if (element_size >= chunk_size) {
 		return false;
 	}
-	if (chunk_size > opt->chunk_size) {
-		opt->chunk_size = chunk_size;
+	return (chunk_size / element_size) >= RZ_SEARCH_MIN_ELEMENTS_PER_CHUNK;
+}
+
+RZ_API bool rz_search_opt_set_elemet_size(RZ_NONNULL RzSearchOpt *opt, ut64 element_size) {
+	rz_return_val_if_fail(opt, false);
+	if (!element_chunk_ratio_ok(element_size, opt->chunk_size)) {
+		if (!set_chunk_size(opt, element_size * RZ_SEARCH_MIN_ELEMENTS_PER_CHUNK)) {
+			RZ_LOG_ERROR("search: Element to search is too big.\n");
+			return false;
+		}
+	}
+	if (element_size > opt->chunk_size) {
+		opt->element_size = element_size;
 	}
 	return true;
 }

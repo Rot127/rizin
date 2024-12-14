@@ -12,6 +12,7 @@
 #define RZ_SEARCH_AES_LENGTH         40
 #define RZ_SEARCH_PRIVATE_KEY_LENGTH 11
 #define RZ_SEARCH_MAX_HEX_PATTERN    UT16_MAX
+#define RZ_SEARCH_MIN_ELEMENTS_PER_CHUNK 50u
 
 /**
  * \brief The callback to free the private user data in the RzSearchCollection.
@@ -39,7 +40,7 @@ typedef bool (*RzSearchIsEmptyCallback)(void *user);
  * \return True, if a match was found.
  * \return False otherwise.
  */
-typedef bool (*RzSearchFindBytesCallback)(RZ_NULLABLE RzSearchFindOpt *fopt, void *user, ut64 address, const ut8 *buffer, size_t size, RZ_OUT RzThreadQueue *hits);
+typedef bool (*RzSearchFindBytesCallback)(RZ_NULLABLE RzSearchFindOpt *fopt, void *user, ut64 address, RzBuffer *buffer, size_t size, RZ_OUT RzThreadQueue *hits);
 
 /**
  * \brief A callback to search a graph for a pattern.
@@ -71,6 +72,7 @@ struct rz_search_opt_t {
 	RzSearchFindOpt *find_opts;
 	size_t max_hits;
 	ut64 chunk_size;
+	ut64 element_size;
 	RzThreadNCores max_threads;
 
 	// cancel callback

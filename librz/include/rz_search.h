@@ -176,6 +176,14 @@ typedef struct bytes_pattern {
 	size_t length; ///< Pattern & mask length
 } RzSearchBytesPattern;
 
+/**
+ * \brief A memory window to search for elements.
+ */
+typedef struct io_search_window {
+	ut64 address; ///< Start address of search window.
+	ut64 size; ///< Size of search window.
+} RzSearchWindow;
+
 RZ_API void rz_search_bytes_pattern_free(RZ_NULLABLE RZ_OWN RzSearchBytesPattern *hp);
 RZ_API RZ_OWN RzSearchBytesPattern *rz_search_bytes_pattern_copy(RZ_NONNULL RZ_BORROW RzSearchBytesPattern *hp);
 RZ_API RZ_OWN RzSearchBytesPattern *rz_search_bytes_pattern_new(RZ_OWN ut8 *bytes, RZ_OWN ut8 *mask, size_t length, const char *pattern_desc);
@@ -196,8 +204,7 @@ typedef bool (*RzSearchCancelCallback)(void *user, size_t n_hits, RzSearchCancel
 RZ_API RZ_OWN RzSearchOpt *rz_search_opt_new();
 RZ_API void rz_search_opt_free(RZ_NULLABLE RzSearchOpt *opt);
 RZ_API bool rz_search_opt_set_max_hits(RZ_NONNULL RzSearchOpt *opt, size_t max_hits);
-RZ_API bool rz_search_opt_set_chunk_size(RZ_NONNULL RzSearchOpt *opt, ut64 chunk_size);
-RZ_API bool rz_search_opt_set_chunk_size_if_bigger(RZ_NONNULL RzSearchOpt *opt, ut64 chunk_size);
+RZ_API bool rz_search_opt_set_elemet_size(RZ_NONNULL RzSearchOpt *opt, ut64 chunk_size);
 RZ_API bool rz_search_opt_set_max_threads(RZ_NONNULL RzSearchOpt *opt, RzThreadNCores max_threads);
 RZ_API bool rz_search_opt_set_cancel_cb(RZ_NONNULL RzSearchOpt *opt, RzSearchCancelCallback callback, void *user);
 RZ_API bool rz_search_opt_set_find_options(RZ_NONNULL RzSearchOpt *opt, RZ_OWN RzSearchFindOpt *find_opts);
