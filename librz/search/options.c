@@ -11,7 +11,7 @@ RZ_API RZ_OWN RzSearchOpt *rz_search_opt_new() {
 		return NULL;
 	}
 	opt->max_threads = RZ_THREAD_N_CORES_ALL_AVAILABLE;
-	opt->buffer_size = RZ_SEARCH_MIN_BUFFER_SIZE;
+	opt->chunk_size = RZ_SEARCH_DEFAULT_CHUNK_SIZE;
 	return opt;
 }
 
@@ -22,19 +22,35 @@ RZ_API void rz_search_opt_free(RZ_NULLABLE RzSearchOpt *opt) {
 	free(opt);
 }
 
-RZ_API bool rz_search_opt_set_buffer_size(RZ_NONNULL RzSearchOpt *opt, size_t buffer_size) {
-	rz_return_val_if_fail(opt, false);
-	if (buffer_size < RZ_SEARCH_MIN_BUFFER_SIZE) {
-		RZ_LOG_ERROR("search: buffer size is less than %u bytes.\n", RZ_SEARCH_MIN_BUFFER_SIZE);
-		return false;
-	}
-	opt->buffer_size = buffer_size;
-	return true;
-}
-
 RZ_API bool rz_search_opt_set_max_hits(RZ_NONNULL RzSearchOpt *opt, size_t max_hits) {
 	rz_return_val_if_fail(opt, false);
 	opt->max_hits = max_hits;
+	return true;
+}
+
+RZ_API bool rz_search_opt_set_chunk_size(RZ_NONNULL RzSearchOpt *opt, ut64 chunk_size) {
+	rz_return_val_if_fail(opt, false);
+	if (chunk_size < RZ_SEARCH_MIN_CHUNK_SIZE || chunk_size > RZ_SEARCH_MAX_CHUNK_SIZE) {
+		RZ_LOG_ERROR("search: Chunk size is not in range of %#" PFMT64x "-%#" PFMT64x " bytes.\n",
+			RZ_SEARCH_MIN_CHUNK_SIZE,
+			RZ_SEARCH_MAX_CHUNK_SIZE);
+		return false;
+	}
+	opt->chunk_size = chunk_size;
+	return true;
+}
+
+RZ_API bool rz_search_opt_set_chunk_size_if_bigger(RZ_NONNULL RzSearchOpt *opt, ut64 chunk_size) {
+	rz_return_val_if_fail(opt, false);
+	if (chunk_size < RZ_SEARCH_MIN_CHUNK_SIZE || chunk_size > RZ_SEARCH_MAX_CHUNK_SIZE) {
+		RZ_LOG_ERROR("search: Chunk size is not in range of %#" PFMT64x "-%#" PFMT64x " bytes.\n",
+			RZ_SEARCH_MIN_CHUNK_SIZE,
+			RZ_SEARCH_MAX_CHUNK_SIZE);
+		return false;
+	}
+	if (chunk_size > opt->chunk_size) {
+		opt->chunk_size = chunk_size;
+	}
 	return true;
 }
 

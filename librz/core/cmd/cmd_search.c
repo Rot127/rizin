@@ -1939,7 +1939,6 @@ RZ_IPI RzCmdStatus rz_cmd_search_hex_handler(RzCore *core, int argc, const char 
 	}
 
 	bool progress = rz_config_get_b(core->config, "search.show_progress");
-	opt_applid &= rz_search_opt_set_buffer_size(search_opts, RZ_MAX(pattern->length, RZ_SEARCH_MIN_BUFFER_SIZE));
 	opt_applid &= rz_search_opt_set_cancel_cb(search_opts, cmd_search_progress_cancel, progress ? state : NULL);
 	if (!opt_applid) {
 		RZ_LOG_ERROR("code: Failed to setup default search options.\n");

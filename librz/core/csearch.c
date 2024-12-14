@@ -61,16 +61,14 @@ RZ_API RZ_OWN RzList /*<RzIOMap *>*/ *rz_core_setup_io_search_parameters(RzCore 
 	if (search_opts) {
 		// Set search options known by core.
 		ut32 max_threads = rz_th_max_threads(rz_config_get_i(core->config, "search.max_threads"));
-		if (!rz_search_opt_set_max_threads(search_opts, max_threads)) {
-			RZ_LOG_ERROR("core: Failed to set 'max_threads' search option.\n");
+		ut32 max_hits = rz_config_get_i(core->config, "search.maxhits");
+		bool set_sopts = rz_search_opt_set_max_threads(search_opts, max_threads);
+		set_sopts |= rz_search_opt_set_max_hits(search_opts, max_hits);
+		if (!set_sopts) {
+			RZ_LOG_ERROR("core: Failed to setup search options.\n");
 			goto fail;
 		}
 
-		ut32 max_hits = rz_config_get_i(core->config, "search.maxhits");
-		if (!rz_search_opt_set_max_hits(search_opts, max_hits)) {
-			RZ_LOG_ERROR("core: Failed to set 'max_hits' search option.\n");
-			goto fail;
-		}
 		RzSearchFindOpt *fopts = rz_core_setup_default_search_find_opts(core);
 		if (!fopts) {
 			RZ_LOG_ERROR("Failed setup find options.\n");
@@ -119,21 +117,22 @@ RZ_API RZ_OWN RzList /*<RzSearchHit *>*/ *rz_core_search_bytes(RZ_NONNULL RzCore
 	}
 
 	if (!user_opts) {
-		// Use default search options for byte search.
 		search_opts = rz_search_opt_new();
-		bool opt_applied = rz_search_opt_set_buffer_size(search_opts, RZ_MAX(pattern->length, RZ_SEARCH_MIN_BUFFER_SIZE));
-		opt_applied &= rz_search_opt_set_cancel_cb(search_opts, default_search_no_cancel, NULL);
-		if (!opt_applied) {
-			RZ_LOG_ERROR("code: Failed to setup default search options.\n");
+		if (!rz_search_opt_set_cancel_cb(search_opts, default_search_no_cancel, NULL)) {
+			RZ_LOG_ERROR("search: Failed to setup callback for search options.\n");
 			goto quit;
 		}
 	}
 
-	// Don't pass the search options.
+	// Don't pass the user provided search options.
 	// They were set up by the user and we respect them.
 	boundaries = rz_core_setup_io_search_parameters(core, user_opts ? NULL : search_opts);
 	if (!boundaries) {
 		RZ_LOG_ERROR("core: Setting up search from core failed.\n");
+		goto quit;
+	}
+	if (!rz_search_opt_set_chunk_size_if_bigger(search_opts, pattern->length)) {
+		RZ_LOG_ERROR("search: Failed to update chunk size in the search options.\n");
 		goto quit;
 	}
 

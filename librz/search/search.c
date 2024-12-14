@@ -584,7 +584,7 @@ static bool search_iterator_io_map_cb(void *element, void *user) {
 	RzSearchOpt *opt = ctx->opt;
 	RzSearchCollection *col = ctx->col;
 
-	ut8 *buffer = malloc(opt->buffer_size);
+	ut8 *buffer = malloc(opt->chunk_size);
 	if (!buffer) {
 		rz_atomic_bool_set(ctx->loop, false);
 		return false;
@@ -593,13 +593,13 @@ static bool search_iterator_io_map_cb(void *element, void *user) {
 	const ut64 from = rz_itv_begin(map->itv);
 	const ut64 to = rz_itv_end(map->itv);
 
-	for (ut64 at = from; at < to; at += opt->buffer_size) {
+	for (ut64 at = from; at < to; at += opt->chunk_size) {
 		if (!rz_atomic_bool_get(ctx->loop)) {
 			break;
 		}
 		// calculate the buffer size
-		size_t size = opt->buffer_size;
-		if ((at + opt->buffer_size) > to) {
+		size_t size = opt->chunk_size;
+		if ((at + opt->chunk_size) > to) {
 			size = to - at;
 		}
 		// read the buffer
@@ -644,8 +644,8 @@ RZ_API RZ_OWN RzList /*<RzSearchHit *>*/ *rz_search_on_io(
 		return NULL;
 	}
 
-	if (opt->buffer_size < RZ_SEARCH_MIN_BUFFER_SIZE) {
-		RZ_LOG_ERROR("search: cannot search when buffer size is less than %u bytes.\n", RZ_SEARCH_MIN_BUFFER_SIZE);
+	if (opt->chunk_size < RZ_SEARCH_MIN_CHUNK_SIZE) {
+		RZ_LOG_ERROR("search: cannot search when buffer size is less than %#" PFMT64x " bytes.\n", RZ_SEARCH_MIN_CHUNK_SIZE);
 		return NULL;
 	}
 

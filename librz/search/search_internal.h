@@ -69,8 +69,8 @@ struct rz_search_collection_t {
 
 struct rz_search_opt_t {
 	RzSearchFindOpt *find_opts;
-	size_t buffer_size;
 	size_t max_hits;
+	ut64 chunk_size;
 	RzThreadNCores max_threads;
 
 	// cancel callback

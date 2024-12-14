@@ -130,7 +130,20 @@ RZ_API int rz_search_pattern(RzSearch *s, ut64 from, ut64 to);
 
 RZ_LIB_VERSION_HEADER(rz_search);
 
-#define RZ_SEARCH_MIN_BUFFER_SIZE 512u
+/**
+ * \brief Minimal buffer size for each find() thread in bytes.
+ */
+#define RZ_SEARCH_MIN_CHUNK_SIZE 32ull
+/**
+ * \brief Default buffer size for each find() thread in bytes.
+ * Size: 64K
+ */
+#define RZ_SEARCH_DEFAULT_CHUNK_SIZE 0x10000ull
+/**
+ * \brief Maximum buffer size to check in each find() thread in bytes.
+ * Size: 4G
+ */
+#define RZ_SEARCH_MAX_CHUNK_SIZE             0x100000000ull
 #define RZ_SEARCH_CANCEL_CHECK_INTERVAL_USEC 500 * 1000
 
 /**
@@ -182,8 +195,9 @@ typedef bool (*RzSearchCancelCallback)(void *user, size_t n_hits, RzSearchCancel
 
 RZ_API RZ_OWN RzSearchOpt *rz_search_opt_new();
 RZ_API void rz_search_opt_free(RZ_NULLABLE RzSearchOpt *opt);
-RZ_API bool rz_search_opt_set_buffer_size(RZ_NONNULL RzSearchOpt *opt, size_t buffer_size);
 RZ_API bool rz_search_opt_set_max_hits(RZ_NONNULL RzSearchOpt *opt, size_t max_hits);
+RZ_API bool rz_search_opt_set_chunk_size(RZ_NONNULL RzSearchOpt *opt, ut64 chunk_size);
+RZ_API bool rz_search_opt_set_chunk_size_if_bigger(RZ_NONNULL RzSearchOpt *opt, ut64 chunk_size);
 RZ_API bool rz_search_opt_set_max_threads(RZ_NONNULL RzSearchOpt *opt, RzThreadNCores max_threads);
 RZ_API bool rz_search_opt_set_cancel_cb(RZ_NONNULL RzSearchOpt *opt, RzSearchCancelCallback callback, void *user);
 RZ_API bool rz_search_opt_set_find_options(RZ_NONNULL RzSearchOpt *opt, RZ_OWN RzSearchFindOpt *find_opts);
