@@ -13,6 +13,7 @@ CMDS=<<EOF
 /x xff:xee
 # Mask should not contain wildcards
 /x f0f0f.:4141f1
+/x ff:.2
 EOF
 EXPECT_ERR=<<EOF
 ERROR: Pattern contains forbitten characters. Allowed is only '0x', '0-9', 'a-f', 'A-F', '.' and ':'.
@@ -34,6 +35,8 @@ ERROR: Failed to parse given pattern.
 ERROR: Regex matching failed. Wrong group count.
 ERROR: Failed to parse given pattern.
 ERROR: Mask and bytes must have the same number of nibbles. But they mismatch: 0 != 6
+ERROR: Failed to parse given pattern.
+ERROR: With a custom mask no wildcards are allowed.
 ERROR: Failed to parse given pattern.
 EOF
 RUN
@@ -144,11 +147,12 @@ e search.prefix="1"
 # Invalid flag value combination. Mask dominates.
 e search.prefix="2"
 /x f0f0f0:4141f1
-# Custom flag with wildcard.
-e search.prefix="3"
-/x f0f0f0:4141f.
 e search.prefix="odd_mask"
 /x f0f0f:647f0
+# Custom flag with wildcard.
+e search.overlap=false
+e search.prefix="4142"
+/x 4142:4142
 EOF
 EXPECT=<<EOF
 0000000c 3 1.match.0
@@ -157,21 +161,24 @@ EXPECT=<<EOF
 0000000c 3 2.match.0
 00000024 3 2.match.1
 0000003c 3 2.match.2
-0000000c 3 3.match.0
-00000024 3 3.match.1
-0000003c 3 3.match.2
 0000000c 3 odd_mask.match.0
 00000024 3 odd_mask.match.1
 0000003c 3 odd_mask.match.2
-EOF
-RUN
-
-NAME=Search hex byte search - custom flag
-FILE=bins/cmd/search/hex_bytes
-CMDS=<<EOF
-e search.show_progress=false
-EOF
-EXPECT=<<EOF
+00000000 2 4142.match.0
+00000004 2 4142.match.1
+00000007 2 4142.match.2
+0000000b 2 4142.match.3
+00000014 2 4142.match.4
+00000018 2 4142.match.5
+0000001c 2 4142.match.6
+0000001f 2 4142.match.7
+00000023 2 4142.match.8
+0000002c 2 4142.match.9
+00000030 2 4142.match.10
+00000034 2 4142.match.11
+00000037 2 4142.match.12
+0000003b 2 4142.match.13
+00000044 2 4142.match.14
 EOF
 RUN
 

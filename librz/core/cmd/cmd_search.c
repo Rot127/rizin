@@ -12,6 +12,7 @@
 
 #include "cmd_search_rop.c"
 #include "rz_cons.h"
+#include <rz_util/rz_str.h>
 #include <rz_util/rz_assert.h>
 #include <rz_vector.h>
 

@@ -95,6 +95,10 @@ RZ_API RZ_OWN RzSearchBytesPattern *rz_search_parse_byte_pattern(const char *byt
 				mask_match->len, bytes_match->len);
 			goto error;
 		}
+		if (strchr(byte_pattern + bytes_match->start, '.')) {
+			RZ_LOG_ERROR("With a custom mask no wildcards are allowed.\n");
+			goto error;
+		}
 
 		char *mask_str = rz_str_newlen(byte_pattern + mask_match->start, mask_match->len);
 		rz_hex_str2bin_mask(mask_str, mask, NULL, false);
