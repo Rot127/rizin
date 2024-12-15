@@ -589,34 +589,27 @@ static bool search_iterator_io_map_cb(void *element, void *user) {
 	ut64 at = window->address;
 	ut64 size = window->size;
 
-	RzBuffer *rz_buf = NULL;
-	ut8 *buffer = malloc(size);
-	if (!buffer) {
-		RZ_LOG_ERROR("search: Failed to allocate buffer at 0x%08" PFMT64x " (0x%08" PFMT64x " bytes)\n", at, size);
-		goto failure;
-	}
-
 	// read the buffer
 	rz_th_lock_enter(ctx->io_lock);
-	if (!rz_io_nread_at(ctx->io, at, buffer, size)) {
+	RzBuffer *buffer = rz_io_nread_at_new_buf(ctx->io, at, size);
+	if (!buffer || rz_buf_size(buffer) != size) {
 		RZ_LOG_ERROR("search: failed to read at 0x%08" PFMT64x " (0x%08" PFMT64x " bytes)\n", at, size);
 		rz_th_lock_leave(ctx->io_lock);
 		goto failure;
 	}
 	rz_th_lock_leave(ctx->io_lock);
-	rz_buf = rz_buf_new_with_bytes(buffer, size);
 
 	RzSearchFindBytesCallback find = col->find;
-	if (!find(ctx->opt->find_opts, col->user, at, rz_buf, size, ctx->hits)) {
+	if (!find(ctx->opt->find_opts, col->user, at, buffer, size, ctx->hits)) {
 		RZ_LOG_ERROR("search: failed search at 0x%08" PFMT64x "\n", at);
 		goto failure;
 	}
 
-	free(buffer);
+	rz_buf_free(buffer);
 	return rz_atomic_bool_get(ctx->loop);
 
 failure:
-	rz_buf_free(rz_buf);
+	rz_buf_free(buffer);
 	rz_atomic_bool_set(ctx->loop, false);
 	return false;
 }
@@ -734,6 +727,8 @@ RZ_API RZ_OWN RzList /*<RzSearchHit *>*/ *rz_search_on_io(
 		rz_atomic_bool_free(ctx.loop);
 	}
 
+	rz_th_lock_free(ctx.io_lock);
+	rz_list_free(windows);
 	rz_th_queue_free(hits);
 	return results;
 }
