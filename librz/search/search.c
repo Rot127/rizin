@@ -6,6 +6,7 @@
 #include <rz_th.h>
 #include <rz_util/rz_buf.h>
 #include <rz_search.h>
+#include "search_internal.h"
 
 // Experimental search engine (fails, because stops at first hit of every block read
 #define USE_BMH 0
@@ -600,7 +601,7 @@ static bool search_iterator_io_map_cb(void *element, void *user) {
 	rz_th_lock_leave(ctx->io_lock);
 
 	RzSearchFindBytesCallback find = col->find;
-	if (!find(ctx->opt->find_opts, col->user, at, buffer, size, ctx->hits)) {
+	if (!find(ctx->opt->find_opts, col->user, at, buffer, ctx->hits)) {
 		RZ_LOG_ERROR("search: failed search at 0x%08" PFMT64x "\n", at);
 		goto failure;
 	}
@@ -615,6 +616,7 @@ failure:
 }
 
 static RzList *assemble_search_window_list(RzList /*<RzIOMap *>*/ *search_in, RzSearchOpt *opt) {
+	rz_return_val_if_fail(search_in && opt && opt->element_size, NULL);
 	RzList *list = rz_list_newf(free);
 	if (!list) {
 		return NULL;
@@ -626,8 +628,8 @@ static RzList *assemble_search_window_list(RzList /*<RzIOMap *>*/ *search_in, Rz
 		ut64 start = map->itv.addr;
 		ut64 end = start + map->itv.size;
 		for (size_t chunk_begin = start; chunk_begin < end; chunk_begin += opt->chunk_size) {
-			ut64 window_size = chunk_begin + opt->chunk_size + (opt->element_size - 1);
-			if (window_size > end) {
+			ut64 window_size = opt->chunk_size + opt->element_size - 1;
+			if (chunk_begin + window_size > end) {
 				window_size = end - chunk_begin;
 			}
 

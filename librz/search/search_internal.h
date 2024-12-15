@@ -12,7 +12,38 @@
 #define RZ_SEARCH_AES_LENGTH         40
 #define RZ_SEARCH_PRIVATE_KEY_LENGTH 11
 #define RZ_SEARCH_MAX_HEX_PATTERN    UT16_MAX
-#define RZ_SEARCH_MIN_ELEMENTS_PER_CHUNK 50u
+
+/**
+ * \brief The number of elements per search chunk.
+ * Note, the actual buffer, passed to the find() callback,
+ * will be bigger by sizeof(element) - 1.
+ * To also find elements crossing chunk boundaries.
+ *
+ * ATTENTION: If you change this value, update the test
+ * in cmd_search_x::"search over boundary"
+ */
+#define RZ_SEARCH_MIN_ELEMENTS_PER_CHUNK 64u
+
+/**
+ * \brief Minimal buffer size for each find() thread in bytes.
+ */
+#define RZ_SEARCH_MIN_CHUNK_SIZE 32ull
+
+/**
+ * \brief Default buffer size for each find() thread in bytes.
+ * Size: 4096
+ *
+ * ATTENTION: If you change this value, update the test
+ * in cmd_search_x::"search over boundary"
+ */
+#define RZ_SEARCH_DEFAULT_CHUNK_SIZE 0x1000ull
+
+/**
+ * \brief Maximum buffer size to check in each find() thread in bytes.
+ * Size: 4G
+ */
+#define RZ_SEARCH_MAX_CHUNK_SIZE             0x100000000ull
+#define RZ_SEARCH_CANCEL_CHECK_INTERVAL_USEC 500 * 1000
 
 /**
  * \brief The callback to free the private user data in the RzSearchCollection.
@@ -34,13 +65,12 @@ typedef bool (*RzSearchIsEmptyCallback)(void *user);
  * \param user The private user data.
  * \param address The address associated with the given bytes.
  * \param buffer The bytes buffer.
- * \param size The buffer size in bytes.
  * \param The queue to push new hits onto.
  *
  * \return True, if a match was found.
  * \return False otherwise.
  */
-typedef bool (*RzSearchFindBytesCallback)(RZ_NULLABLE RzSearchFindOpt *fopt, void *user, ut64 address, RzBuffer *buffer, size_t size, RZ_OUT RzThreadQueue *hits);
+typedef bool (*RzSearchFindBytesCallback)(RZ_NULLABLE RzSearchFindOpt *fopt, void *user, ut64 address, RzBuffer *buffer, RZ_OUT RzThreadQueue *hits);
 
 /**
  * \brief A callback to search a graph for a pattern.

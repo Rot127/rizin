@@ -55,9 +55,7 @@ RZ_API bool rz_search_opt_set_elemet_size(RZ_NONNULL RzSearchOpt *opt, ut64 elem
 			return false;
 		}
 	}
-	if (element_size > opt->chunk_size) {
-		opt->element_size = element_size;
-	}
+	opt->element_size = element_size;
 	return true;
 }
 

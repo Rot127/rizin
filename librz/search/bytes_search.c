@@ -151,7 +151,7 @@ static ut64 bytes_pattern_compare(RZ_BORROW RZ_NONNULL const ut8 *buffer, ut64 b
 	return hp->length;
 }
 
-static bool bytes_find(RzSearchFindOpt *fopts, void *user, ut64 address, RzBuffer *buffer, size_t size, RzThreadQueue *hits) {
+static bool bytes_find(RzSearchFindOpt *fopts, void *user, ut64 address, RzBuffer *buffer, RzThreadQueue *hits) {
 	if (!fopts) {
 		RZ_LOG_ERROR("bytes_find requires valid find options.\n");
 		return false;
@@ -160,6 +160,7 @@ static bool bytes_find(RzSearchFindOpt *fopts, void *user, ut64 address, RzBuffe
 	RzPVector /*<BytesPattern *>*/ *patterns = (RzPVector *)user;
 	void **it = NULL;
 	scan_data_t sdata = { .hp = NULL, .hit = false };
+	size_t size = rz_buf_size(buffer);
 
 	rz_pvector_foreach (patterns, it) {
 		sdata.hp = (RzSearchBytesPattern *)*it;

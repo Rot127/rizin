@@ -131,22 +131,6 @@ RZ_API int rz_search_pattern(RzSearch *s, ut64 from, ut64 to);
 RZ_LIB_VERSION_HEADER(rz_search);
 
 /**
- * \brief Minimal buffer size for each find() thread in bytes.
- */
-#define RZ_SEARCH_MIN_CHUNK_SIZE 32ull
-/**
- * \brief Default buffer size for each find() thread in bytes.
- * Size: 64K
- */
-#define RZ_SEARCH_DEFAULT_CHUNK_SIZE 0x10000ull
-/**
- * \brief Maximum buffer size to check in each find() thread in bytes.
- * Size: 4G
- */
-#define RZ_SEARCH_MAX_CHUNK_SIZE             0x100000000ull
-#define RZ_SEARCH_CANCEL_CHECK_INTERVAL_USEC 500 * 1000
-
-/**
  * \brief Private search options for the search module. Use the rz_search_opt_*() functions to edit it.
  */
 typedef struct rz_search_opt_t RzSearchOpt;
