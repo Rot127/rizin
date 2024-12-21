@@ -107,7 +107,8 @@ RZ_API RZ_OWN RzSearchBytesPattern *rz_search_parse_byte_pattern(const char *byt
 	}
 	size = rz_hex_str2bin_mask(byte_pattern + bytes_match->start, bytes, custom_mask ? NULL : mask, false);
 	rz_pvector_free(matches);
-	RzSearchBytesPattern *pat = rz_search_bytes_pattern_new(bytes, mask, size, pattern_desc);
+	bool use_mask = custom_mask || mask_match->len != 0;
+	RzSearchBytesPattern *pat = rz_search_bytes_pattern_new(bytes, use_mask ? mask : NULL, size, pattern_desc);
 	return pat;
 
 error:
