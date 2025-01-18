@@ -34191,7 +34191,10 @@ static void hex_disasm_with_templates(const HexInsnTemplate *tpl, HexState *stat
 		} else if (tpl->id == HEX_INS_J2_JUMPR) {
 			// jumpr Rs is sometimes used as jumpr R31.
 			// Block analysis needs to check it to recognize if this jump is a return.
-			hic->ana_op.analysis_vals[0].plugin_specific = hi->ops[0].op.reg;
+			// Tail call.
+			if (hi->ops[0].op.reg == HEX_REG_INT_REGS_R31) {
+				hic->ana_op.type = RZ_ANALYSIS_OP_TYPE_TAIL | RZ_ANALYSIS_OP_TYPE_JMP;
+			}
 		} else if (type == HEX_OP_TEMPLATE_TYPE_IMM) {
 			hic->ana_op.analysis_vals[i].imm = hi->ops[i].op.imm;
 		}

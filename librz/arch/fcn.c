@@ -1265,14 +1265,8 @@ static RzAnalysisBBEndCause run_basic_block_analysis(RzAnalysisTaskItem *item, R
 		case RZ_ANALYSIS_OP_TYPE_UJMP:
 		case RZ_ANALYSIS_OP_TYPE_RJMP:
 			if (is_hexagon) {
-				if (op.analysis_vals[0].plugin_specific == 31) {
-					// jumpr Rs instruction which uses R31.
-					// This is a return, but not typed as such.
-					gotoBeach(RZ_ANALYSIS_RET_END);
-				} else {
-					// Ignore
-					break;
-				}
+				// Ignore. They are marked as tail call by the arch plugin.
+				break;
 			} else if (is_arm && analysis->bits == 32 && last_is_mov_lr_pc) {
 				break;
 			} else if (is_arm && analysis->bits == 32 && last_is_add_lr_pc) {

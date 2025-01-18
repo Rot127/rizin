@@ -875,7 +875,6 @@ typedef struct rz_analysis_value_t {
 	RzRegItem *seg; // segment selector register
 	RzRegItem *reg; // register / register base used (-1 if no reg)
 	RzRegItem *regdelta; // register index used (-1 if no reg)
-	ut64 plugin_specific; // Can be used differently by each analysis plugin.
 } RzAnalysisValue;
 
 typedef enum {
