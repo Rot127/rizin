@@ -1379,6 +1379,10 @@ RZ_API bool hexagon_decode_iword(RzAnalysis *analysis, HexReversedOpcode *rev, R
 	ut64 iword_addr_offset = 0;
 	iword->addr = addr;
 	HexInsnContainer *hic = NULL;
+	// Gets set if any return, exit, illegal or tail instruction
+	// is part of the packet. This is necessary, because the instructions
+	// doesn't need to be ordered.
+	bool adjacent_pkt_is_next = true;
 	do {
 		rev->ana_op = RZ_NEW0(RzAnalysisOp);
 		hic = hexagon_reverse_opcode(rev, addr + iword_addr_offset, NULL, analysis);
@@ -1398,8 +1402,9 @@ RZ_API bool hexagon_decode_iword(RzAnalysis *analysis, HexReversedOpcode *rev, R
 			rz_set_u_add(iword->jump_targets, rev->ana_op->jump);
 		}
 
+		adjacent_pkt_is_next &= !(rz_analys_op_is_leaf_op(rev->ana_op) || rz_analysis_op_is_uncond_jump(rev->ana_op));
 		if (hic->pkt_info.last_insn) {
-			if (rev->ana_op->type != RZ_ANALYSIS_OP_TYPE_RET && !rz_analysis_op_is_jump(rev->ana_op)) {
+			if (adjacent_pkt_is_next) {
 				ut64 next_iword_addr = addr + iword->size_bytes;
 				rz_set_u_add(iword->jump_targets, next_iword_addr);
 			}

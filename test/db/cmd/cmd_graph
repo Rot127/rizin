@@ -1031,7 +1031,7 @@ FILE=bins/elf/analysis/hexagon-hello-loop
 CMDS=<<EOF
 s 0x5000000000
 agF
-s 0xffffffffffffffff
+s 0xfffffffffffffff0
 agF
 EOF
 EXPECT=<<EOF
@@ -1039,7 +1039,7 @@ EXPECT=<<EOF
 |  0x5000000000 (e)  |
 `--------------------'
 .--------------------------.
-|  0xffffffffffffffff (e)  |
+|  0xfffffffffffffff0 (e)  |
 `--------------------------'
 EOF
 RUN
@@ -1432,5 +1432,24 @@ EXPECT=<<EOF
 .----------------.
 |  0x11bac (jt)  |
 `----------------'
+EOF
+RUN
+
+NAME=hexagon CFG graph Jumpr Rs tail jump return.
+FILE=bins/elf/analysis/hexagon-hello-loop
+CMDS=<<EOF
+s 0x000055b0
+af
+pi 4
+agF
+EOF
+EXPECT=<<EOF
+/   R1 = ##0x0
+|   jumpr LR
+\   memw(R0+##0x0) = R1.new
+[   nop
+.---------------.
+|  0x55b0 (et)  |
+`---------------'
 EOF
 RUN
