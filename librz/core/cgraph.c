@@ -918,65 +918,9 @@ RZ_API RZ_OWN RzGraph /*<RzGraphNodeInfo *>*/ *rz_core_graph_icfg(RZ_NONNULL RzC
 	return graph;
 }
 
-static inline bool is_call(const RzAnalysisOp *op) {
-	_RzAnalysisOpType type = (op->type & RZ_ANALYSIS_OP_TYPE_MASK);
-	return type == RZ_ANALYSIS_OP_TYPE_CALL ||
-		type == RZ_ANALYSIS_OP_TYPE_UCALL ||
-		type == RZ_ANALYSIS_OP_TYPE_RCALL ||
-		type == RZ_ANALYSIS_OP_TYPE_ICALL ||
-		type == RZ_ANALYSIS_OP_TYPE_IRCALL ||
-		type == RZ_ANALYSIS_OP_TYPE_CCALL ||
-		type == RZ_ANALYSIS_OP_TYPE_UCCALL;
-}
-
-static inline bool is_tail(const RzAnalysisOp *op) {
-	return op->type & RZ_ANALYSIS_OP_TYPE_TAIL;
-}
-
-static inline bool is_jump(const RzAnalysisOp *op) {
-	_RzAnalysisOpType type = (op->type & RZ_ANALYSIS_OP_TYPE_MASK);
-	return type == RZ_ANALYSIS_OP_TYPE_JMP ||
-		type == RZ_ANALYSIS_OP_TYPE_UJMP ||
-		type == RZ_ANALYSIS_OP_TYPE_RJMP ||
-		type == RZ_ANALYSIS_OP_TYPE_IJMP ||
-		type == RZ_ANALYSIS_OP_TYPE_IRJMP ||
-		type == RZ_ANALYSIS_OP_TYPE_CJMP ||
-		type == RZ_ANALYSIS_OP_TYPE_RCJMP ||
-		type == RZ_ANALYSIS_OP_TYPE_MJMP ||
-		type == RZ_ANALYSIS_OP_TYPE_MCJMP ||
-		type == RZ_ANALYSIS_OP_TYPE_UCJMP;
-}
-
-static inline bool is_uncond_jump(const RzAnalysisOp *op) {
-	ut32 op_type = op->type & RZ_ANALYSIS_OP_TYPE_MASK;
-	return (op_type == RZ_ANALYSIS_OP_TYPE_JMP || op_type == RZ_ANALYSIS_OP_TYPE_UJMP) &&
-		!((op->type & RZ_ANALYSIS_OP_HINT_MASK) & RZ_ANALYSIS_OP_TYPE_COND);
-}
-
-static inline bool is_invalid(const RzAnalysisOp *op) {
-	return (op->type & RZ_ANALYSIS_OP_TYPE_MASK) == RZ_ANALYSIS_OP_TYPE_ILL;
-}
-
-static inline bool is_return(const RzAnalysisOp *op) {
-	return (op->type & RZ_ANALYSIS_OP_TYPE_MASK) == RZ_ANALYSIS_OP_TYPE_RET;
-}
-
-static inline bool is_cond(const RzAnalysisOp *op) {
-	return (op->type & RZ_ANALYSIS_OP_HINT_MASK) == RZ_ANALYSIS_OP_TYPE_COND;
-}
-
-static inline bool is_exit(const RzAnalysisOp *op) {
-	return (op->type & RZ_ANALYSIS_OP_TYPE_MASK) == RZ_ANALYSIS_OP_TYPE_ILL;
-}
-
-static inline bool is_leaf_op(const RzAnalysisOp *op) {
-	return is_return(op) || is_exit(op);
-}
-
-
 static inline bool ignore_next_instr(const RzAnalysisOp *op) {
 	// Ignore if:
-	return is_uncond_jump(op) || (op->fail != UT64_MAX && !is_call(op)) || is_invalid(op); // Except calls, everything which has set fail
+	return rz_analysis_op_is_uncond_jump(op) || (op->fail != UT64_MAX && !rz_analysis_op_is_call(op)) || rz_analysis_op_is_invalid(op) || rz_analysis_op_is_tail(op); // Except calls, everything which has set fail
 }
 
 static RzGraphNodeCFGSubType get_cfg_node_flags(const RzAnalysisOp *op, bool is_entry) {
@@ -985,22 +929,22 @@ static RzGraphNodeCFGSubType get_cfg_node_flags(const RzAnalysisOp *op, bool is_
 	if (is_entry) {
 		subtype |= RZ_GRAPH_NODE_SUBTYPE_CFG_ENTRY;
 	}
-	if (is_call(op)) {
+	if (rz_analysis_op_is_call(op)) {
 		subtype |= RZ_GRAPH_NODE_SUBTYPE_CFG_CALL;
 	}
-	if (is_tail(op)) {
+	if (rz_analysis_op_is_tail(op)) {
 		subtype |= RZ_GRAPH_NODE_SUBTYPE_CFG_TAIL;
 	}
-	if (is_jump(op)) {
+	if (rz_analysis_op_is_jump(op)) {
 		subtype |= RZ_GRAPH_NODE_SUBTYPE_CFG_JUMP;
 	}
-	if (is_return(op)) {
+	if (rz_analysis_op_is_return(op)) {
 		subtype |= RZ_GRAPH_NODE_SUBTYPE_CFG_RETURN;
 	}
-	if (is_cond(op)) {
+	if (rz_analysis_op_is_cond(op)) {
 		subtype |= RZ_GRAPH_NODE_SUBTYPE_CFG_COND;
 	}
-	if (is_exit(op)) {
+	if (rz_analysis_op_is_exit(op)) {
 		subtype |= RZ_GRAPH_NODE_SUBTYPE_CFG_EXIT;
 	}
 	return subtype;
@@ -1019,6 +963,14 @@ static RzGraphNodeCFGIWordSubType get_cfg_iword_node_flags(const RzAnalysisInsnW
 		subtype |= RZ_GRAPH_NODE_SUBTYPE_CFG_IWORD_TAIL;
 	}
 	return subtype;
+}
+
+static inline bool subtype_is_cfg_iword_leaf(RzGraphNodeCFGIWordSubType subtype) {
+	return !(subtype & RZ_GRAPH_NODE_SUBTYPE_CFG_IWORD_COND)
+			&& ((subtype & RZ_GRAPH_NODE_SUBTYPE_CFG_IWORD_RETURN)
+			|| (subtype & RZ_GRAPH_NODE_SUBTYPE_CFG_IWORD_EXIT)
+			|| (subtype & RZ_GRAPH_NODE_SUBTYPE_CFG_IWORD_TAIL));
+	
 }
 
 /**
@@ -1042,8 +994,8 @@ static RzGraphNodeInfo *rz_graph_create_node_info_cfg_iword(const RzAnalysisInsn
 		RzGraphNodeInfoDataCFG *info = RZ_NEW0(RzGraphNodeInfoDataCFG);
 		info->address = op->addr;
 		info->call_address = (rz_analysis_op_is_call(op) || rz_analysis_op_is_ccall(op)) ? op->jump : UT64_MAX;
-		info->jump_address = is_jump(op) ? op->jump : UT64_MAX;
-		info->next = is_return(op) || is_uncond_jump(op) || is_tail(op) ? UT64_MAX : op->addr + op->size;
+		info->jump_address = rz_analysis_op_is_jump(op) ? op->jump : UT64_MAX;
+		info->next = subtype_is_cfg_iword_leaf(subtype) || rz_analys_op_is_leaf_op(op) || rz_analysis_op_is_uncond_jump(op) ? UT64_MAX : op->addr + op->size;
 		info->subtype = get_cfg_node_flags(op, is_entry);
 		rz_pvector_push(data->cfg_iword.insn, info);
 		is_entry = false;
@@ -1054,9 +1006,9 @@ static RzGraphNodeInfo *rz_graph_create_node_info_cfg_iword(const RzAnalysisInsn
 static RzGraphNode *add_node_info_cfg(RzGraph /*<RzGraphNodeInfo *>*/ *cfg, const RzAnalysisOp *op, bool is_entry) {
 	rz_return_val_if_fail(cfg, NULL);
 	RzGraphNodeCFGSubType subtype = get_cfg_node_flags(op, is_entry);
-	ut64 call_target = is_call(op) ? op->jump : UT64_MAX;
+	ut64 call_target = rz_analysis_op_is_call(op) ? op->jump : UT64_MAX;
 	ut64 jump_target = rz_analysis_op_is_jump(op) ? op->jump : UT64_MAX;
-	ut64 next = is_return(op) || is_uncond_jump(op) ? UT64_MAX : op->addr + op->size;
+	ut64 next = rz_analysis_op_is_return(op) || rz_analysis_op_is_uncond_jump(op) ? UT64_MAX : op->addr + op->size;
 	RzGraphNodeInfo *data = rz_graph_create_node_info_cfg(op->addr, call_target, jump_target, next, subtype);
 	if (!data) {
 		return NULL;
@@ -1173,17 +1125,17 @@ static void assign_tails_exits(RZ_BORROW RzGraph *graph, HtUU *nodes_visited, co
 	RzGraphNode *node = rz_graph_get_node(graph, node_idx);
 	rz_return_if_fail(node && found);
 	RzGraphNodeInfo *data = node->data;
-	if (is_call(ana_op)) {
+	if (rz_analysis_op_is_call(ana_op)) {
 		// Calls an exit procedure like abort, stack_chk_fail etc.
 		data->cfg.subtype |= RZ_GRAPH_NODE_SUBTYPE_CFG_EXIT;
-	} else if (is_jump(ana_op)) {
+	} else if (rz_analysis_op_is_jump(ana_op)) {
 		// tail call
 		data->cfg.subtype |= RZ_GRAPH_NODE_SUBTYPE_CFG_TAIL;
 	}
 }
 
 static inline bool tail_exit_candidate(bool to_node_within_fcn, bool next_within_fcn, const RzAnalysisOp *curr_op) {
-	return (is_call(curr_op) && !next_within_fcn) || (!to_node_within_fcn && is_jump(curr_op) && !is_cond(curr_op));
+	return (rz_analysis_op_is_call(curr_op) && !next_within_fcn) || (!to_node_within_fcn && rz_analysis_op_is_jump(curr_op) && !rz_analysis_op_is_cond(curr_op));
 }
 
 /**
@@ -1232,15 +1184,15 @@ RZ_API RZ_OWN RzGraph /*<RzGraphNodeInfo *>*/ *rz_core_graph_cfg(RZ_NONNULL RzCo
 		rz_vector_pop(to_visit, &cur_addr);
 
 		disas_bytes = decode_op_at(core, cur_addr, buf, sizeof(buf), &curr_op);
-		if (disas_bytes <= 0 || is_leaf_op(&curr_op)) {
+		if (disas_bytes <= 0 || rz_analys_op_is_leaf_op(&curr_op)) {
 			// A leaf. It was added before to the graph by the parent node.
 			rz_analysis_op_fini(&curr_op);
 			continue;
 		}
 
 		bool to_node_within_fcn = true;
-		bool add_jump = curr_op.jump != UT64_MAX && !is_call(&curr_op);
-		bool add_fail = curr_op.fail != UT64_MAX && !is_call(&curr_op);
+		bool add_jump = curr_op.jump != UT64_MAX && !rz_analysis_op_is_call(&curr_op);
+		bool add_fail = curr_op.fail != UT64_MAX && !rz_analysis_op_is_call(&curr_op);
 		if (add_jump) {
 			if (decode_op_at(core, curr_op.jump, buf, sizeof(buf), &target_op) <= 0) {
 				rz_analysis_op_fini(&target_op);

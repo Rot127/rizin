@@ -943,37 +943,65 @@ typedef struct rz_analysis_op_t {
 } RzAnalysisOp;
 
 static inline bool rz_analysis_op_is_call(const RzAnalysisOp *op) {
-	bool is_call = (op->type == RZ_ANALYSIS_OP_TYPE_CALL ||
-		op->type == RZ_ANALYSIS_OP_TYPE_UCALL ||
-		op->type == RZ_ANALYSIS_OP_TYPE_RCALL ||
-		op->type == RZ_ANALYSIS_OP_TYPE_ICALL ||
-		op->type == RZ_ANALYSIS_OP_TYPE_IRCALL);
-	return is_call;
+	_RzAnalysisOpType type = (op->type & RZ_ANALYSIS_OP_TYPE_MASK);
+	return type == RZ_ANALYSIS_OP_TYPE_CALL ||
+		type == RZ_ANALYSIS_OP_TYPE_UCALL ||
+		type == RZ_ANALYSIS_OP_TYPE_RCALL ||
+		type == RZ_ANALYSIS_OP_TYPE_ICALL ||
+		type == RZ_ANALYSIS_OP_TYPE_IRCALL ||
+		type == RZ_ANALYSIS_OP_TYPE_CCALL ||
+		type == RZ_ANALYSIS_OP_TYPE_UCCALL;
+}
+
+static inline bool rz_analysis_op_is_tail(const RzAnalysisOp *op) {
+	return op->type & RZ_ANALYSIS_OP_TYPE_TAIL;
+}
+
+static inline bool rz_analysis_op_is_cond(const RzAnalysisOp *op) {
+	return op->type & RZ_ANALYSIS_OP_TYPE_COND;
 }
 
 static inline bool rz_analysis_op_is_jump(const RzAnalysisOp *op) {
-	bool is_jump = (op->type == RZ_ANALYSIS_OP_TYPE_JMP ||
-		op->type == RZ_ANALYSIS_OP_TYPE_UJMP ||
-		op->type == RZ_ANALYSIS_OP_TYPE_RJMP ||
-		op->type == RZ_ANALYSIS_OP_TYPE_IJMP ||
-		op->type == RZ_ANALYSIS_OP_TYPE_IRJMP);
-	return is_jump;
+	_RzAnalysisOpType type = (op->type & RZ_ANALYSIS_OP_TYPE_MASK);
+	return type == RZ_ANALYSIS_OP_TYPE_JMP ||
+		type == RZ_ANALYSIS_OP_TYPE_UJMP ||
+		type == RZ_ANALYSIS_OP_TYPE_RJMP ||
+		type == RZ_ANALYSIS_OP_TYPE_IJMP ||
+		type == RZ_ANALYSIS_OP_TYPE_IRJMP ||
+		type == RZ_ANALYSIS_OP_TYPE_CJMP ||
+		type == RZ_ANALYSIS_OP_TYPE_RCJMP ||
+		type == RZ_ANALYSIS_OP_TYPE_MJMP ||
+		type == RZ_ANALYSIS_OP_TYPE_MCJMP ||
+		type == RZ_ANALYSIS_OP_TYPE_UCJMP;
+}
+
+static inline bool rz_analysis_op_is_uncond_jump(const RzAnalysisOp *op) {
+	ut32 op_type = op->type & RZ_ANALYSIS_OP_TYPE_MASK;
+	return (op_type == RZ_ANALYSIS_OP_TYPE_JMP || op_type == RZ_ANALYSIS_OP_TYPE_UJMP) &&
+		!rz_analysis_op_is_cond(op);
+}
+
+static inline bool rz_analysis_op_is_invalid(const RzAnalysisOp *op) {
+	return (op->type & RZ_ANALYSIS_OP_TYPE_MASK) == RZ_ANALYSIS_OP_TYPE_ILL;
 }
 
 static inline bool rz_analysis_op_is_return(const RzAnalysisOp *op) {
-	return (op->type == RZ_ANALYSIS_OP_TYPE_RET);
+	return (op->type & RZ_ANALYSIS_OP_TYPE_MASK) == RZ_ANALYSIS_OP_TYPE_RET;
 }
 
-static inline bool rz_analysis_op_is_creturn(const RzAnalysisOp *op) {
-	return (op->type == RZ_ANALYSIS_OP_TYPE_CRET);
-}
-
-static inline bool rz_analysis_op_is_cjump(const RzAnalysisOp *op) {
-	return rz_analysis_op_is_jump(op) && op->type & RZ_ANALYSIS_OP_TYPE_COND;
+static inline bool rz_analysis_op_is_exit(const RzAnalysisOp *op) {
+	return (op->type & RZ_ANALYSIS_OP_TYPE_MASK) == RZ_ANALYSIS_OP_TYPE_ILL;
 }
 
 static inline bool rz_analysis_op_is_ccall(const RzAnalysisOp *op) {
-	return rz_analysis_op_is_call(op) && op->type & RZ_ANALYSIS_OP_TYPE_COND;
+	return rz_analysis_op_is_call(op) && rz_analysis_op_is_cond(op);
+}
+
+/**
+ * \brief The RzAnalysisOp would be a leaf in an CFG.
+ */
+static inline bool rz_analys_op_is_leaf_op(const RzAnalysisOp *op) {
+	return !rz_analysis_op_is_cond(op) && (rz_analysis_op_is_return(op) || rz_analysis_op_is_exit(op) || rz_analysis_op_is_tail(op) || rz_analysis_op_is_invalid(op));
 }
 
 /**
