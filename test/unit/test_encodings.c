@@ -204,7 +204,7 @@ bool test_rz_utf16_encode(void) {
 	memset(utf16_out, 0, sizeof(utf16_out));
 
 	const ut8 utf16le_last_surr[] = { 0xFF, 0xDB, 0xFF, 0xDF };
-	codepoint = UNICODE_LAST_CODE_POINT;
+	codepoint = RZ_UNICODE_LAST_CODE_POINT;
 	nbytes = rz_utf16le_encode(utf16_out, codepoint);
 	mu_assert_eq(nbytes, 4, "Decoded number of bytes mismatch.");
 	mu_assert_memeq(utf16_out, utf16le_last_surr, sizeof(utf16le), "Encode failed.");

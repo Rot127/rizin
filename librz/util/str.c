@@ -1687,14 +1687,14 @@ static char *rz_str_escape_utf(const char *buf, int buf_size, RzStrEnc enc, cons
 		end = buf + len;
 	}
 	/* Worst case scenario, we convert every byte to an \U00hhhhhh */
-	new_buf = RZ_NEWS0(char, 1 + (len * UNICODE_ESCAPED_STR_WIDTH));
+	new_buf = RZ_NEWS0(char, 1 + (len * RZ_UNICODE_ESCAPED_STR_WIDTH));
 	if (!new_buf) {
 		return NULL;
 	}
 	p = buf;
 	q = new_buf;
 	while (p < end) {
-		RzCodePoint ch = UNICODE_LAST_CODE_POINT + 1;
+		RzCodePoint ch = RZ_UNICODE_LAST_CODE_POINT + 1;
 		size_t min_char_width;
 		switch (enc) {
 		case RZ_STRING_ENC_UTF16LE:
@@ -4203,7 +4203,7 @@ RZ_API RZ_OWN char *rz_str_stringify_raw_buffer(RzStrStringifyOpt *option, RZ_NU
 				line_runes = 0;
 			}
 			continue;
-		} else if (code_point == UNICODE_NUL && option->stop_at_nil) {
+		} else if (code_point == RZ_UNICODE_NUL && option->stop_at_nil) {
 			break;
 		} else if (code_point == '\n') {
 			line_runes = 0;

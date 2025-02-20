@@ -291,7 +291,7 @@ static bool bin_search_range(RzCodePoint cp, const RzUnicodeRangeTable table, si
  * \return True if the code point is defined, false otherwise.
  */
 RZ_API bool rz_unicode_code_point_is_defined(const RzCodePoint c) {
-	if (c > UNICODE_LAST_CODE_POINT) {
+	if (c > RZ_UNICODE_LAST_CODE_POINT) {
 		return false;
 	}
 	return !bin_search_range(c, undefined_ranges, RZ_ARRAY_SIZE(undefined_ranges));
@@ -370,7 +370,7 @@ RZ_API bool rz_unicode_code_point_is_format(const RzCodePoint c) {
 RZ_API bool rz_unicode_code_point_is_printable(const RzCodePoint c) {
 	// RzCodePoints are most commonly single bytes.
 	// We can early out with this common case.
-	if (c <= UNICODE_LAST_ASCII) {
+	if (c <= RZ_UNICODE_LAST_ASCII) {
 		// Check for control plain of ASCII here, because they are so common.
 		return IS_PRINTABLE(c);
 	}
@@ -484,8 +484,8 @@ RZ_API void rz_unicode_code_point_escape(RzCodePoint code_point, RZ_NONNULL RZ_O
 	} else if (short_escape(code_point, &q, opt)) {
 		goto assign_return;
 	} else {
-		rz_snprintf(q, UNICODE_ESCAPED_STR_WIDTH + 1, "\\U00%06" PFMT32x, code_point);
-		q += UNICODE_ESCAPED_STR_WIDTH;
+		rz_snprintf(q, RZ_UNICODE_ESCAPED_STR_WIDTH + 1, "\\U00%06" PFMT32x, code_point);
+		q += RZ_UNICODE_ESCAPED_STR_WIDTH;
 	}
 assign_return:
 	*dst = q;

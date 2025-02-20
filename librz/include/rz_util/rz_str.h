@@ -10,8 +10,6 @@
 extern "C" {
 #endif
 
-#define ASCII_LAST_CODE_POINT 0x7F
-
 typedef enum {
 	RZ_STRING_TYPE_RAW, ///< The raw sequence of bytes without any marker of beginning or end
 	RZ_STRING_TYPE_ZERO, ///< C-style strings (ASCII or UTF-8) with zero as the end marker

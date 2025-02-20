@@ -7,7 +7,7 @@
 #include <rz_util.h>
 #include <rz_windows.h>
 
-#define UNICODE_BLOCKS_COUNT RZ_ARRAY_SIZE(unicode_blocks)
+#define RZ_UNICODE_BLOCKS_COUNT RZ_ARRAY_SIZE(unicode_blocks)
 
 /**
  * \brief Unicode blocks.
@@ -358,7 +358,7 @@ const RzUnicodeRangeNameTable unicode_blocks = {
 };
 
 RZ_API const char *rz_utf_block_name(int idx) {
-	if (idx < 0 || idx >= UNICODE_BLOCKS_COUNT) {
+	if (idx < 0 || idx >= RZ_UNICODE_BLOCKS_COUNT) {
 		return NULL;
 	}
 	return unicode_blocks[idx].name;
@@ -379,26 +379,26 @@ RZ_API size_t rz_utf8_decode(RZ_NONNULL const ut8 *buf, size_t buf_len, RZ_NULLA
 	if (buf_len < 1) {
 		return 0;
 	}
-	RzCodePoint code_point = UNICODE_LAST_CODE_POINT + 1;
+	RzCodePoint code_point = RZ_UNICODE_LAST_CODE_POINT + 1;
 	size_t bytes_used = 0;
 	if (buf[0] < 0x80) {
 		code_point = (RzCodePoint)buf[0];
 		bytes_used = 1;
 	} else if (buf_len > 1 && (buf[0] & 0xe0) == 0xc0 && (buf[1] & 0xc0) == 0x80) {
 		code_point = (buf[0] & 0x1f) << 6 | (buf[1] & 0x3f);
-		if (code_point < UNICODE_FIRST_2BYTE_CODE_POINT) {
+		if (code_point < RZ_UNICODE_FIRST_2BYTE_CODE_POINT) {
 			return 0;
 		}
 		bytes_used = 2;
 	} else if (buf_len > 2 && (buf[0] & 0xf0) == 0xe0 && (buf[1] & 0xc0) == 0x80 && (buf[2] & 0xc0) == 0x80) {
 		code_point = (buf[0] & 0xf) << 12 | (buf[1] & 0x3f) << 6 | (buf[2] & 0x3f);
-		if (code_point < UNICODE_FIRST_3BYTE_CODE_POINT) {
+		if (code_point < RZ_UNICODE_FIRST_3BYTE_CODE_POINT) {
 			return 0;
 		}
 		bytes_used = 3;
 	} else if (buf_len > 3 && (buf[0] & 0xf8) == 0xf0 && (buf[1] & 0xc0) == 0x80 && (buf[2] & 0xc0) == 0x80 && (buf[3] & 0xc0) == 0x80) {
 		code_point = (buf[0] & 7) << 18 | (buf[1] & 0x3f) << 12 | (buf[2] & 0x3f) << 6 | (buf[3] & 0x3f);
-		if (code_point < UNICODE_FIRST_4BYTE_CODE_POINT) {
+		if (code_point < RZ_UNICODE_FIRST_4BYTE_CODE_POINT) {
 			return 0;
 		}
 		bytes_used = 4;
@@ -585,7 +585,7 @@ RZ_API char *rz_acp_to_utf8_l(const char *str, int len) {
 #endif // __WINDOWS__
 
 RZ_API int rz_utf_block_idx(RzCodePoint ch) {
-	const int last = UNICODE_BLOCKS_COUNT;
+	const int last = RZ_UNICODE_BLOCKS_COUNT;
 	int low = 0, hi = last - 1, mid = 0;
 
 	do {
@@ -601,7 +601,7 @@ RZ_API int rz_utf_block_idx(RzCodePoint ch) {
 		}
 	} while (low <= hi);
 
-	return UNICODE_BLOCKS_COUNT - 1; /* index for "No_Block" */
+	return RZ_UNICODE_BLOCKS_COUNT - 1; /* index for "No_Block" */
 }
 
 /* str must be UTF8-encoded */
@@ -612,7 +612,7 @@ RZ_API int *rz_utf_block_list(const ut8 *str, int len, int **freq_list) {
 	if (len < 0) {
 		len = strlen((const char *)str);
 	}
-	int block_freq[UNICODE_BLOCKS_COUNT] = { 0 };
+	int block_freq[RZ_UNICODE_BLOCKS_COUNT] = { 0 };
 	int *list = RZ_NEWS0(int, len + 1);
 	if (!list) {
 		return NULL;
@@ -634,7 +634,7 @@ RZ_API int *rz_utf_block_list(const ut8 *str, int len, int **freq_list) {
 		int block_idx;
 		int ch_bytes = rz_utf8_decode(str_ptr, str_end - str_ptr, &ch);
 		if (!ch_bytes) {
-			block_idx = UNICODE_BLOCKS_COUNT - 1;
+			block_idx = RZ_UNICODE_BLOCKS_COUNT - 1;
 			ch_bytes = 1;
 		} else {
 			block_idx = rz_utf_block_idx(ch);

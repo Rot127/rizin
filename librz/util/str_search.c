@@ -226,7 +226,7 @@ static inline size_t buf_look_ahead(const RzUtilStrScanOptions *opt, RzStrEnc en
 	case RZ_STRING_ENC_UTF32BE:
 	case RZ_STRING_ENC_UTF32LE:
 	default:
-		return UNICODE_MAX_BYTES_PER_CHAR;
+		return RZ_UNICODE_MAX_BYTES_PER_CHAR;
 	}
 }
 
@@ -241,7 +241,7 @@ static RzDetectedString *process_one_string(const ut8 *buf, const ut64 from, ut6
 	// Most calls to this function never produce a valid string (e.g. because they are too short).
 	// To save allocations and frees, we first decode the first few code points onto the stack.
 	// Then, if the stack buffer is full, we move it to the heap.
-	ut8 stack_alloc[UNICODE_MAX_BYTES_PER_CHAR * 5] = { 0 };
+	ut8 stack_alloc[RZ_UNICODE_MAX_BYTES_PER_CHAR * 5] = { 0 };
 	// Gets only set if the stack buffer is full.
 	ut8 *heap_alloc = NULL;
 	ut8 *output_buf = stack_alloc;
@@ -299,7 +299,7 @@ static RzDetectedString *process_one_string(const ut8 *buf, const ut64 from, ut6
 		}
 
 		/* Invalid sequence detected */
-		if (!char_bytes || (ascii_only && r > UNICODE_LAST_ASCII)) {
+		if (!char_bytes || (ascii_only && r > RZ_UNICODE_LAST_ASCII)) {
 			// Either an invalid code point decoded or a non-ASCII character.
 			break;
 		}
@@ -311,7 +311,7 @@ static RzDetectedString *process_one_string(const ut8 *buf, const ut64 from, ut6
 
 		needle += char_bytes;
 
-		if (i + UNICODE_MAX_BYTES_PER_CHAR > sizeof(stack_alloc) && !heap_alloc) {
+		if (i + RZ_UNICODE_MAX_BYTES_PER_CHAR > sizeof(stack_alloc) && !heap_alloc) {
 			// The decoded string now gets larger than the space on the stack.
 			// Allocate on the heap and move the string decoded so far.
 			heap_alloc = RZ_NEWS(ut8, opt->max_str_length + 1);
