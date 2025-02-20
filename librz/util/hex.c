@@ -9,17 +9,22 @@
 /**
  * \brief Returns the byte value for a hexadecimal nibble.
  *
+ * \param The hexadecimal nibble to get the raw byte value for.
+ *
+ * \param The byte value of the nibble.
+ * Or UT8_MAX if the nibble is no hexadecimal character.
+ *
+ * \return The byte value of the hex digit.
+ * Or UT8_MAX if the character was not a hexadecimal character.
+ *
  * Example:
+ * ```c
  *    assert(rz_hex_nibble_to_byte('1') == 1);
  *    assert(rz_hex_nibble_to_byte('A') == 10);
  *    assert(rz_hex_nibble_to_byte('b') == 11);
  *    assert(rz_hex_nibble_to_byte('S') == UT8_MAX);
  *    assert(rz_hex_nibble_to_byte('\0') == UT8_MAX);
- *
- * \param The hexadecimal nibble to get the raw byte value for.
- *
- * \param The byte value of the nibble.
- * Or UT8_MAX if the nibble is no hexadecimal character.
+ * ```
  */
 RZ_API ut8 rz_hex_digit_to_byte(const char c) {
 	if (!isxdigit(c)) {
@@ -38,7 +43,13 @@ RZ_API ut8 rz_hex_digit_to_byte(const char c) {
  * \brief Returns the byte value for a hexadecimal nibble pair.
  * It stops parsing at the first non hex digit.
  *
+ * \param The string to parse as hex digit pair.
+ *
+ * \return The byte value of the nibble pair.
+ * Or UT16_MAX if the first nibble is no hexadecimal character.
+ *
  * Example:
+ * ```c
  *    assert(rz_hex_nibble_pair_to_byte("1") == 1);
  *    assert(rz_hex_nibble_pair_to_byte("11") == 17);
  *    assert(rz_hex_nibble_pair_to_byte("fe") == 254);
@@ -47,11 +58,7 @@ RZ_API ut8 rz_hex_digit_to_byte(const char c) {
  *    assert(rz_hex_nibble_pair_to_byte("F@") == 15);
  *    assert(rz_hex_nibble_pair_to_byte("p1") == UT16_MAX);
  *    assert(rz_hex_nibble_pair_to_byte("") == UT16_MAX);
- *
- * \param The string to parse as hex digit pair.
- *
- * \return The byte value of the nibble pair.
- * Or UT16_MAX if the first nibble is no hexadecimal character.
+ * ```
  */
 RZ_API ut16 rz_hex_digit_pair_to_byte(const char *npair) {
 	if (!isxdigit(npair[0])) {
@@ -627,7 +634,19 @@ RZ_API int rz_hex_str2bin(RZ_NONNULL const char *in, RZ_NONNULL RZ_OUT ut8 *out)
  *
  * The input string may be prefixed with a "0x".
  *
+ * \param in The hex string to parse and transform.
+ * \param out The output buffer. It must be the same size as \p strlen(in) / 2.
+ * \param mask The output buffer for the mask. It must be the same size as \p out.
+ * Can be NULL, if no mask is required.
+ * \param lsb_extend If set and \p in has an odd number hex digits,
+ * it extends the byte buffer with a wildcard nibble at the LSB (right) side.
+ * If unset and with an odd digit count, it extends on the MSB (left) side.
+ *
+ * \return The number of bytes written to \p out and \p mask. In case of failure it returns less then 0.
+ * Note: In case of failure the content of \p out and \p mask are undefined.
+ *
  * Example:
+ * ```c
  *   rz_hex_str2bin_mask("ffe4", out, mask, false);
  *   assert_mem_eq(out, { 0xff, 0xe4 });
  *   assert_mem_eq(mask, { 0xff, 0xff });
@@ -645,17 +664,7 @@ RZ_API int rz_hex_str2bin(RZ_NONNULL const char *in, RZ_NONNULL RZ_OUT ut8 *out)
  *   rz_hex_str2bin_mask("ee4", out, mask, true);
  *   assert_mem_eq(out, { 0xee, 0x40 });
  *   assert_mem_eq(mask, { 0xff, 0xf0 });
- *
- * \param in The hex string to parse and transform.
- * \param out The output buffer. It must be the same size as \p strlen(in) / 2.
- * \param mask The output buffer for the mask. It must be the same size as \p out.
- * Can be NULL, if no mask is required.
- * \param lsb_extend If set and \p in has an odd number hex digits,
- * it extends the byte buffer with a wildcard nibble at the LSB (right) side.
- * If unset and with an odd digit count, it extends on the MSB (left) side.
- *
- * \return The number of bytes written to \p out and \p mask. In case of failure it returns less then 0.
- * Note: In case of failure the content of \p out and \p mask are undefined.
+ * ```
  */
 RZ_API size_t rz_hex_str2bin_mask(RZ_NONNULL const char *in, RZ_NONNULL RZ_OUT ut8 *out, RZ_NULLABLE RZ_OUT ut8 *mask, bool lsb_extend) {
 	rz_return_val_if_fail(in && out, 0);
