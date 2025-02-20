@@ -454,12 +454,15 @@ static inline bool invalid_ebcdic_decode(ut8 byte_in, ut8 ebcdic_decode) {
 /// @{
 
 /**
- * \brief Convert an ibm037 char into an unicode RzCodePoint
+ * \brief Convert an IBM037 char into an Unicode code point.
  *
- * \param src ibm037 char
- * \param dst unicode RzCodePoint
- * \retval 0 if \p dst is null
- * \retval 1 if convert successful
+ * \param src The IBM037 character to convert.
+ * \param dst The pointer to write the code point to.
+ * It is always written, even if the conversion is invalid.
+ *
+ * \return Number of bytes the output char is wide:
+ * 1 if the conversion was successful.
+ * 0 if the conversion failed.
  */
 RZ_API int rz_str_ibm037_to_unicode(const ut8 src, RZ_NONNULL RZ_OUT RzCodePoint *dst) {
 	rz_return_val_if_fail(dst, 0);
@@ -468,10 +471,15 @@ RZ_API int rz_str_ibm037_to_unicode(const ut8 src, RZ_NONNULL RZ_OUT RzCodePoint
 }
 
 /**
- * \brief Convert an unicode RzCodePoint into an ibm037 char
+ * \brief Convert an Unicode code point into an IBM037 char.
  *
- * \param dst ibm037 char
- * \param src unicode RzCodePoint
+ * \param dst The pointer to write the code IBM037 char to.
+ * It is always written, even if the conversion is invalid.
+ * \param src The Unicode code point to convert.
+ *
+ * \return Number of bytes the output char is wide:
+ * 1 if the conversion was successful.
+ * 0 if the conversion failed.
  */
 RZ_API int rz_str_ibm037_from_unicode(RZ_NONNULL RZ_OUT ut8 *dst, const RzCodePoint src) {
 	rz_return_val_if_fail(dst, 0);
@@ -479,14 +487,20 @@ RZ_API int rz_str_ibm037_from_unicode(RZ_NONNULL RZ_OUT ut8 *dst, const RzCodePo
 		*dst = ibm037_from_uni[src];
 		return invalid_ebcdic_decode(src, *dst) ? 0 : 1;
 	}
+	*dst = 0;
 	return 0;
 }
 
 /**
- * \brief Convert an ibm037 char into an ascii char
+ * \brief Convert an IBM037 char into an ASCII char.
  *
- * \param dst ibm037 char
- * \param src ascii char
+ * \param src The IBM037 character to convert.
+ * \param dst The pointer to write the ASCII char to.
+ * It is always written, even if the conversion is invalid.
+ *
+ * \return Number of bytes the output char is wide:
+ * 1 if the conversion was successful.
+ * 0 if the conversion failed.
  */
 RZ_API int rz_str_ibm037_to_ascii(const ut8 src, RZ_NONNULL RZ_OUT ut8 *dst) {
 	rz_return_val_if_fail(dst, 0);
@@ -495,14 +509,20 @@ RZ_API int rz_str_ibm037_to_ascii(const ut8 src, RZ_NONNULL RZ_OUT ut8 *dst) {
 		*dst = c;
 		return invalid_ebcdic_decode(src, *dst) ? 0 : 1;
 	}
+	*dst = 0;
 	return 0;
 }
 
 /**
- * \brief Convert an ascii char into an ibm037 char
+ * \brief Convert an ASCII char into an IBM037 char.
  *
- * \param dst ibm037 char
- * \param src ascii char
+ * \param dst The pointer to write the decoded char to.
+ * It is always written, even if the conversion is invalid.
+ * \param src The ASCII character to convert.
+ *
+ * \return Number of bytes the output char is wide:
+ * 1 if the conversion was successful.
+ * 0 if the conversion failed.
  */
 RZ_API int rz_str_ibm037_from_ascii(RZ_NONNULL RZ_OUT ut8 *dst, const ut8 src) {
 	rz_return_val_if_fail(dst, 0);
@@ -519,14 +539,34 @@ RZ_API int rz_str_ibm037_from_ascii(RZ_NONNULL RZ_OUT ut8 *dst, const ut8 src) {
 
 /// @{
 
-/// Convert an ibm290 char into an unicode RzCodePoint
+/**
+ * \brief Convert an IBM290 char into an Unicode code point.
+ *
+ * \param src The IBM290 character to convert.
+ * \param dst The pointer to write the code point to.
+ * It is always written, even if the conversion is invalid.
+ *
+ * \return Number of bytes the output char is wide:
+ * 1 if the conversion was successful.
+ * 0 if the conversion failed.
+ */
 RZ_API int rz_str_ibm290_to_unicode(const ut8 src, RZ_NONNULL RZ_OUT RzCodePoint *dst) {
 	rz_return_val_if_fail(dst, 0);
 	*dst = ibm290_to_uni[src];
 	return invalid_ebcdic_decode(src, *dst) ? 0 : 1;
 }
 
-/// Convert an unicode RzCodePoint into an ibm290 char
+/**
+ * \brief Convert an Unicode code point into an IBM290 char.
+ *
+ * \param dst The pointer to write the code IBM290 char to.
+ * It is always written, even if the conversion is invalid.
+ * \param src The Unicode code point to convert.
+ *
+ * \return Number of bytes the output char is wide:
+ * 1 if the conversion was successful.
+ * 0 if the conversion failed.
+ */
 RZ_API int rz_str_ibm290_from_unicode(RZ_NONNULL RZ_OUT ut8 *dst, const RzCodePoint src) {
 	rz_return_val_if_fail(dst, 0);
 	if (src <= 0xff) {
@@ -536,10 +576,21 @@ RZ_API int rz_str_ibm290_from_unicode(RZ_NONNULL RZ_OUT ut8 *dst, const RzCodePo
 		*dst = ibm290_page30[src & 0xff];
 		return invalid_ebcdic_decode(src, *dst) ? 0 : 1;
 	}
+	*dst = 0;
 	return 0;
 }
 
-/// Convert an ibm290 char into an ascii char
+/**
+ * \brief Convert an IBM290 char into an ASCII char.
+ *
+ * \param src The IBM290 character to convert.
+ * \param dst The pointer to write the ASCII char to.
+ * It is always written, even if the conversion is invalid.
+ *
+ * \return Number of bytes the output char is wide:
+ * 1 if the conversion was successful.
+ * 0 if the conversion failed.
+ */
 RZ_API int rz_str_ibm290_to_ascii(const ut8 src, RZ_NONNULL RZ_OUT ut8 *dst) {
 	rz_return_val_if_fail(dst, 0);
 	ut8 c = ibm290_to_uni[src];
@@ -547,10 +598,21 @@ RZ_API int rz_str_ibm290_to_ascii(const ut8 src, RZ_NONNULL RZ_OUT ut8 *dst) {
 		*dst = c;
 		return invalid_ebcdic_decode(src, *dst) ? 0 : 1;
 	}
+	*dst = 0;
 	return 0;
 }
 
-/// Convert an ascii char into an ibm290 char
+/**
+ * \brief Convert an ASCII char into an IBM290 char.
+ *
+ * \param dst The pointer to write the decoded char to.
+ * It is always written, even if the conversion is invalid.
+ * \param src The ASCII character to convert.
+ *
+ * \return Number of bytes the output char is wide:
+ * 1 if the conversion was successful.
+ * 0 if the conversion failed.
+ */
 RZ_API int rz_str_ibm290_from_ascii(RZ_NONNULL RZ_OUT ut8 *dst, const ut8 src) {
 	rz_return_val_if_fail(dst, 0);
 	*dst = ibm290_page00[src];
@@ -566,24 +628,55 @@ RZ_API int rz_str_ibm290_from_ascii(RZ_NONNULL RZ_OUT ut8 *dst, const ut8 src) {
 
 /// @{
 
-/// Convert an ebcdic_uk char into an unicode RzCodePoint
+/**
+ * \brief Convert an EBCDIC_UK char into an Unicode code point.
+ *
+ * \param src The EBCDIC_UK character to convert.
+ * \param dst The pointer to write the code point to.
+ * It is always written, even if the conversion is invalid.
+ *
+ * \return Number of bytes the output char is wide:
+ * 1 if the conversion was successful.
+ * 0 if the conversion failed.
+ */
 RZ_API int rz_str_ebcdic_uk_to_unicode(const ut8 src, RZ_NONNULL RZ_OUT RzCodePoint *dst) {
 	rz_return_val_if_fail(dst, 0);
 	*dst = ebcdic_uk_to_uni[src];
 	return invalid_ebcdic_decode(src, *dst) ? 0 : 1;
 }
 
-/// Convert an unicode RzCodePoint into an ebcdic_uk char
+/**
+ * \brief Convert an Unicode code point into an EBCDIC_UK char.
+ *
+ * \param dst The pointer to write the code EBCDIC_UK char to.
+ * It is always written, even if the conversion is invalid.
+ * \param src The Unicode code point to convert.
+ *
+ * \return Number of bytes the output char is wide:
+ * 1 if the conversion was successful.
+ * 0 if the conversion failed.
+ */
 RZ_API int rz_str_ebcdic_uk_from_unicode(RZ_NONNULL RZ_OUT ut8 *dst, const RzCodePoint src) {
 	rz_return_val_if_fail(dst, 0);
 	if (src <= 0xff) {
 		*dst = ebcdic_uk_from_uni[src];
 		return invalid_ebcdic_decode(src, *dst) ? 0 : 1;
 	}
+	*dst = 0;
 	return 0;
 }
 
-/// Convert an ebcdic_uk char into an ascii char
+/**
+ * \brief Convert an EBCDIC_UK char into an ASCII char.
+ *
+ * \param src The EBCDIC_UK character to convert.
+ * \param dst The pointer to write the ASCII char to.
+ * It is always written, even if the conversion is invalid.
+ *
+ * \return Number of bytes the output char is wide:
+ * 1 if the conversion was successful.
+ * 0 if the conversion failed.
+ */
 RZ_API int rz_str_ebcdic_uk_to_ascii(const ut8 src, RZ_NONNULL RZ_OUT ut8 *dst) {
 	rz_return_val_if_fail(dst, 0);
 	ut8 c = ebcdic_uk_to_uni[src];
@@ -591,10 +684,21 @@ RZ_API int rz_str_ebcdic_uk_to_ascii(const ut8 src, RZ_NONNULL RZ_OUT ut8 *dst) 
 		*dst = c;
 		return invalid_ebcdic_decode(src, *dst) ? 0 : 1;
 	}
+	*dst = 0;
 	return 0;
 }
 
-/// Convert an ascii char into an ebcdic_uk char
+/**
+ * \brief Convert an ASCII char into an EBCDIC_UK char.
+ *
+ * \param dst The pointer to write the decoded char to.
+ * It is always written, even if the conversion is invalid.
+ * \param src The ASCII character to convert.
+ *
+ * \return Number of bytes the output char is wide:
+ * 1 if the conversion was successful.
+ * 0 if the conversion failed.
+ */
 RZ_API int rz_str_ebcdic_uk_from_ascii(RZ_NONNULL RZ_OUT ut8 *dst, const ut8 src) {
 	rz_return_val_if_fail(dst, 0);
 	*dst = ebcdic_uk_from_uni[src];
@@ -610,24 +714,55 @@ RZ_API int rz_str_ebcdic_uk_from_ascii(RZ_NONNULL RZ_OUT ut8 *dst, const ut8 src
 
 /// @{
 
-/// Convert an ebcdic_us char into an unicode RzCodePoint
+/**
+ * \brief Convert an EBCDIC_US char into an Unicode code point.
+ *
+ * \param src The EBCDIC_US character to convert.
+ * \param dst The pointer to write the code point to.
+ * It is always written, even if the conversion is invalid.
+ *
+ * \return Number of bytes the output char is wide:
+ * 1 if the conversion was successful.
+ * 0 if the conversion failed.
+ */
 RZ_API int rz_str_ebcdic_us_to_unicode(const ut8 src, RZ_NONNULL RZ_OUT RzCodePoint *dst) {
 	rz_return_val_if_fail(dst, 0);
 	*dst = ebcdic_us_to_uni[src];
 	return invalid_ebcdic_decode(src, *dst) ? 0 : 1;
 }
 
-/// Convert an unicode RzCodePoint into an ebcdic_us char
+/**
+ * \brief Convert an Unicode code point into an EBCDIC_US char.
+ *
+ * \param dst The pointer to write the code EBCDIC_US char to.
+ * It is always written, even if the conversion is invalid.
+ * \param src The Unicode code point to convert.
+ *
+ * \return Number of bytes the output char is wide:
+ * 1 if the conversion was successful.
+ * 0 if the conversion failed.
+ */
 RZ_API int rz_str_ebcdic_us_from_unicode(RZ_NONNULL RZ_OUT ut8 *dst, const RzCodePoint src) {
 	rz_return_val_if_fail(dst, 0);
 	if (src <= 0xff) {
 		*dst = ebcdic_us_from_uni[src];
 		return invalid_ebcdic_decode(src, *dst) ? 0 : 1;
 	}
+	*dst = 0;
 	return 0;
 }
 
-/// Convert an ebcdic_us char into an ascii char
+/**
+ * \brief Convert an EBCDIC_US char into an ASCII char.
+ *
+ * \param src The EBCDIC_US character to convert.
+ * \param dst The pointer to write the ASCII char to.
+ * It is always written, even if the conversion is invalid.
+ *
+ * \return Number of bytes the output char is wide:
+ * 1 if the conversion was successful.
+ * 0 if the conversion failed.
+ */
 RZ_API int rz_str_ebcdic_us_to_ascii(const ut8 src, RZ_NONNULL RZ_OUT ut8 *dst) {
 	rz_return_val_if_fail(dst, 0);
 	ut8 c = ebcdic_us_to_uni[src];
@@ -635,10 +770,21 @@ RZ_API int rz_str_ebcdic_us_to_ascii(const ut8 src, RZ_NONNULL RZ_OUT ut8 *dst) 
 		*dst = c;
 		return invalid_ebcdic_decode(src, *dst) ? 0 : 1;
 	}
+	*dst = 0;
 	return 0;
 }
 
-/// Convert an ascii char into an ebcdic_us char
+/**
+ * \brief Convert an ASCII char into an EBCDIC_US char.
+ *
+ * \param dst The pointer to write the decoded char to.
+ * It is always written, even if the conversion is invalid.
+ * \param src The ASCII character to convert.
+ *
+ * \return Number of bytes the output char is wide:
+ * 1 if the conversion was successful.
+ * 0 if the conversion failed.
+ */
 RZ_API int rz_str_ebcdic_us_from_ascii(RZ_NONNULL RZ_OUT ut8 *dst, const ut8 src) {
 	rz_return_val_if_fail(dst, 0);
 	*dst = ebcdic_us_from_uni[src];
@@ -654,14 +800,34 @@ RZ_API int rz_str_ebcdic_us_from_ascii(RZ_NONNULL RZ_OUT ut8 *dst, const ut8 src
 /// @{
 //
 
-/// Convert an ebcdic_es char into an unicode RzCodePoint
+/**
+ * \brief Convert an EBCDIC_ES char into an Unicode code point.
+ *
+ * \param src The EBCDIC_ES character to convert.
+ * \param dst The pointer to write the code point to.
+ * It is always written, even if the conversion is invalid.
+ *
+ * \return Number of bytes the output char is wide:
+ * 1 if the conversion was successful.
+ * 0 if the conversion failed.
+ */
 RZ_API int rz_str_ebcdic_es_to_unicode(const ut8 src, RZ_NONNULL RZ_OUT RzCodePoint *dst) {
 	rz_return_val_if_fail(dst, 0);
 	*dst = ebcdic_es_to_uni[src];
 	return invalid_ebcdic_decode(src, *dst) ? 0 : 1;
 }
 
-/// Convert an unicode RzCodePoint into an ebcdic_es char
+/**
+ * \brief Convert an Unicode code point into an EBCDIC_ES char.
+ *
+ * \param dst The pointer to write the code EBCDIC_ES char to.
+ * It is always written, even if the conversion is invalid.
+ * \param src The Unicode code point to convert.
+ *
+ * \return Number of bytes the output char is wide:
+ * 1 if the conversion was successful.
+ * 0 if the conversion failed.
+ */
 RZ_API int rz_str_ebcdic_es_from_unicode(RZ_NONNULL RZ_OUT ut8 *dst, const RzCodePoint src) {
 	rz_return_val_if_fail(dst, 0);
 	if (src <= 0xff) {
@@ -671,10 +837,21 @@ RZ_API int rz_str_ebcdic_es_from_unicode(RZ_NONNULL RZ_OUT ut8 *dst, const RzCod
 		*dst = ebcdic_es_page20[src & 0xff];
 		return invalid_ebcdic_decode(src, *dst) ? 0 : 1;
 	}
+	*dst = 0;
 	return 0;
 }
 
-/// Convert an ebcdic_es char into an ascii char
+/**
+ * \brief Convert an EBCDIC_ES char into an ASCII char.
+ *
+ * \param src The EBCDIC_ES character to convert.
+ * \param dst The pointer to write the ASCII char to.
+ * It is always written, even if the conversion is invalid.
+ *
+ * \return Number of bytes the output char is wide:
+ * 1 if the conversion was successful.
+ * 0 if the conversion failed.
+ */
 RZ_API int rz_str_ebcdic_es_to_ascii(const ut8 src, RZ_NONNULL RZ_OUT ut8 *dst) {
 	rz_return_val_if_fail(dst, 0);
 	ut8 c = ebcdic_es_to_uni[src];
@@ -682,10 +859,21 @@ RZ_API int rz_str_ebcdic_es_to_ascii(const ut8 src, RZ_NONNULL RZ_OUT ut8 *dst) 
 		*dst = c;
 		return invalid_ebcdic_decode(src, *dst) ? 0 : 1;
 	}
+	*dst = 0;
 	return 0;
 }
 
-/// Convert an ascii char into an ebcdic char
+/**
+ * \brief Convert an ASCII char into an EBCDIC_ES char.
+ *
+ * \param dst The pointer to write the decoded char to.
+ * It is always written, even if the conversion is invalid.
+ * \param src The ASCII character to convert.
+ *
+ * \return Number of bytes the output char is wide:
+ * 1 if the conversion was successful.
+ * 0 if the conversion failed.
+ */
 RZ_API int rz_str_ebcdic_es_from_ascii(RZ_NONNULL RZ_OUT ut8 *dst, const ut8 src) {
 	rz_return_val_if_fail(dst, 0);
 	*dst = ebcdic_es_page00[src];
