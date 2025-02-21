@@ -1402,7 +1402,7 @@ RZ_API bool hexagon_decode_iword(RzAnalysis *analysis, HexReversedOpcode *rev, R
 			rz_set_u_add(iword->jump_targets, rev->ana_op->jump);
 		}
 
-		adjacent_pkt_is_next &= !(rz_analys_op_is_leaf_op(rev->ana_op) || rz_analysis_op_is_uncond_jump(rev->ana_op));
+		adjacent_pkt_is_next |= !(rz_analys_op_is_leaf_op(rev->ana_op) || rz_analysis_op_is_uncond_jump(rev->ana_op));
 		if (hic->pkt_info.last_insn) {
 			if (adjacent_pkt_is_next) {
 				ut64 next_iword_addr = addr + iword->size_bytes;
