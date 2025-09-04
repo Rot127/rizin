@@ -395,3 +395,22 @@ os       darwin
 subsys   visionOS
 EOF
 RUN
+
+NAME=mach-o don't overwrite silently the plugins arch.
+FILE=bins/mach0/mc680x0_2048-NeXTSTEP
+CMDS=<<EOF
+i~^arch
+EOF
+EXPECT=<<EOF
+arch     mc680x0
+EOF
+EXPECT_ERR=<<EOF
+ERROR: unknown thread state structure
+ERROR: mach0: Cannot parse thread
+ERROR: core: asm.arch: cannot find (mc680x0)
+ERROR: core: analysis.arch: cannot find 'mc680x0'
+ERROR: core: asm.arch: cannot find (mc680x0)
+ERROR: core: analysis.arch: cannot find 'mc680x0'
+EOF
+RUN
+
