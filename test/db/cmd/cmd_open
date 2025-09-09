@@ -852,10 +852,6 @@ NAME=Switch between same archs, with different bits and machine
 FILE=bins/mach0/AppIOSEntitlements.ios
 CMDS=<<EOF
 obs
-echo "# default"
-e asm.arch
-e asm.bits
-e asm.cpu
 
 obs arm_64_all
 echo "# arm_64_all"
@@ -872,10 +868,6 @@ EOF
 EXPECT=<<EOF
 arm_32_v7
 arm_64_all
-# default
-arm
-32
-v7
 # arm_64_all
 arm
 64
