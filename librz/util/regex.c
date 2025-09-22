@@ -1223,11 +1223,11 @@ RZ_API RZ_OWN RzPVector /*<RzVector<RzRegexMatch *> *>*/ *rz_regex_match_all_ove
 	RzRegexFlags mflags) {
 	switch (regex->re_type) {
 	case RZ_REGEX_UTF8:
-		return match_all_internal_8(regex->re8, (ut8 *)text, text_size, text_offset, mflags, true, regex->jit_stack);
+		return match_all_internal_8(regex->re8, (ut8 *)text, text_size, text_offset, mflags, true, NULL);
 	case RZ_REGEX_UTF16:
-		return match_all_internal_16(regex->re16, (ut16 *)text, text_size / RZ_UTF16_CODE_POINT_WIDTH, text_offset / RZ_UTF16_CODE_POINT_WIDTH, mflags, true, regex->jit_stack);
+		return match_all_internal_16(regex->re16, (ut16 *)text, text_size / RZ_UTF16_CODE_POINT_WIDTH, text_offset / RZ_UTF16_CODE_POINT_WIDTH, mflags, true, NULL);
 	case RZ_REGEX_UTF32:
-		return match_all_internal_32(regex->re32, (ut32 *)text, text_size / RZ_UTF32_CODE_POINT_WIDTH, text_offset / RZ_UTF32_CODE_POINT_WIDTH, mflags, true, regex->jit_stack);
+		return match_all_internal_32(regex->re32, (ut32 *)text, text_size / RZ_UTF32_CODE_POINT_WIDTH, text_offset / RZ_UTF32_CODE_POINT_WIDTH, mflags, true, NULL);
 	}
 	rz_warn_if_reached();
 	return NULL;
@@ -1241,11 +1241,11 @@ RZ_API RZ_OWN RzPVector /*<RzVector<RzRegexMatch *> *>*/ *rz_regex_match_all_mul
 	RzRegexFlags mflags) {
 	switch (regex->re_type) {
 	case RZ_REGEX_UTF8:
-		return match_all_internal_8(regex->re8, (ut8 *)text, text_size, text_offset, mflags, false, regex->jit_stack);
+		return match_all_internal_8(regex->re8, (ut8 *)text, text_size, text_offset, mflags, false, NULL);
 	case RZ_REGEX_UTF16:
-		return match_all_internal_16(regex->re16, (ut16 *)text, text_size / RZ_UTF16_CODE_POINT_WIDTH, text_offset / RZ_UTF16_CODE_POINT_WIDTH, mflags, false, regex->jit_stack);
+		return match_all_internal_16(regex->re16, (ut16 *)text, text_size / RZ_UTF16_CODE_POINT_WIDTH, text_offset / RZ_UTF16_CODE_POINT_WIDTH, mflags, false, NULL);
 	case RZ_REGEX_UTF32:
-		return match_all_internal_32(regex->re32, (ut32 *)text, text_size / RZ_UTF32_CODE_POINT_WIDTH, text_offset / RZ_UTF32_CODE_POINT_WIDTH, mflags, false, regex->jit_stack);
+		return match_all_internal_32(regex->re32, (ut32 *)text, text_size / RZ_UTF32_CODE_POINT_WIDTH, text_offset / RZ_UTF32_CODE_POINT_WIDTH, mflags, false, NULL);
 	}
 	rz_warn_if_reached();
 	return NULL;

@@ -82,11 +82,13 @@ static bool native_string_find(RzSearchFindOpt *fopt, RzDetectedString *find, ut
 	const ut8 *raw_buf = rz_buf_get_whole_hot_paths((RzBuffer *)buffer, &size);
 	RzPVector *matches = NULL;
 
+	RzRegexMulti *re = rz_regex_multi_clone(find->regex, true);
 	if (fopt->match_overlap) {
 		matches = rz_regex_match_all_overlap_multi(find->regex, raw_buf, size, 0, RZ_REGEX_DEFAULT);
 	} else {
 		matches = rz_regex_match_all_multi(find->regex, raw_buf, size, 0, RZ_REGEX_DEFAULT);
 	}
+	rz_regex_free_multi_clone(re);
 	if (!matches) {
 		return false;
 	}
