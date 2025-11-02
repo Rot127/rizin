@@ -885,3 +885,17 @@ v7
 EOF
 EXPECT_ERR=
 RUN
+
+NAME=pd multiplemain
+FILE=bins/elf/mipsloop
+CMDS=<<EOF
+e scr.color=1
+oml=
+EOF
+EXPECT=<<EOF
+0      0x90ec0 -----------------------------[32m#[0m    0x9104c [32mr--[0m   3     fmap.LOAD1
+1      0x9104c -----------------------------[34m#[0m    0x91060 [34mrw-[0m   4     mmap.LOAD1
+2*     0x80000 [31m#[0m-----------------------------    0x80620 [31mr-x[0m   3     fmap.LOAD0
+=>  0x000804f0 ------------------------------ 0x000805f0             
+EOF
+RUN
