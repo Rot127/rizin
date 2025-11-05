@@ -1481,6 +1481,9 @@ static bool xrefs_load_cb(void *user, const SdbKv *kv) {
 			case RZ_ANALYSIS_XREF_TYPE_CODE:
 			case RZ_ANALYSIS_XREF_TYPE_CALL:
 			case RZ_ANALYSIS_XREF_TYPE_DATA:
+			case RZ_ANALYSIS_XREF_TYPE_MEM_WRITE:
+			case RZ_ANALYSIS_XREF_TYPE_CALL_RET:
+			case RZ_ANALYSIS_XREF_TYPE_RETURN:
 			case RZ_ANALYSIS_XREF_TYPE_STRING:
 				type = baby->str_value[0];
 				break;
