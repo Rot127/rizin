@@ -23,7 +23,7 @@ static inline void *generate_pu_key(ut64 index) {
 	ut64 index_div_1024 = index / 1024; // +1
 
 	if (index == UT64_MAX) {
-		return UT64_MAX;
+		return (void *)UT64_MAX;
 	}
 
 	// Try to mimic real world pointer paterns
@@ -66,6 +66,7 @@ static ut64 reshuffle_key(ut64 index, ut64 max_value, ut64 unexistent_key) {
 	default:
 		rz_warn_if_reached();
 	}
+	return UT64_MAX;
 }
 
 static void bench_rz_ht_pu_combined(RzTable *t_out) {
@@ -112,23 +113,23 @@ static void bench_rz_ht_pu_combined(RzTable *t_out) {
 		RZ_BENCH_RUN("[HtPU] iterate (100 elements)", t_out, ITERATION_COUNT, {
 			ht_pu_foreach(ht_100, (HtPUForeachCallback)ht_pu_foreach_cb, &temp);
 		});
-		RZ_BENCH_RUN_I("[HtPU] lookup (100 elements)", i, t_out, ITERATION_COUNT, {
+		RZ_BENCH_RUN_I_RAND("[HtPU] lookup (100 elements)", i, t_out, ITERATION_COUNT, {
 			ut64 reshuffled_key = reshuffle_key(i, 100, UT64_MAX);
 			ut64 result = ht_pu_find(ht_100, generate_pu_key(reshuffled_key), NULL);
 		});
-		RZ_BENCH_RUN_I("[HtPU] lookup (1k elements)", i, t_out, ITERATION_COUNT, {
+		RZ_BENCH_RUN_I_RAND("[HtPU] lookup (1k elements)", i, t_out, ITERATION_COUNT, {
 			ut64 reshuffled_key = reshuffle_key(i, 1000, UT64_MAX);
 			ut64 result = ht_pu_find(ht_1k, generate_pu_key(reshuffled_key), NULL);
 		});
-		RZ_BENCH_RUN_I("[HtPU] lookup (10k elements)", i, t_out, ITERATION_COUNT, {
+		RZ_BENCH_RUN_I_RAND("[HtPU] lookup (10k elements)", i, t_out, ITERATION_COUNT, {
 			ut64 reshuffled_key = reshuffle_key(i, 10000, UT64_MAX);
 			ut64 result = ht_pu_find(ht_10k, generate_pu_key(reshuffled_key), NULL);
 		});
-		RZ_BENCH_RUN_I("[HtPU] lookup (100k elements)", i, t_out, ITERATION_COUNT, {
+		RZ_BENCH_RUN_I_RAND("[HtPU] lookup (100k elements)", i, t_out, ITERATION_COUNT, {
 			ut64 reshuffled_key = reshuffle_key(i, 100000, UT64_MAX);
 			ut64 result = ht_pu_find(ht_100k, generate_pu_key(reshuffled_key), NULL);
 		});
-		RZ_BENCH_RUN_I("[HtPU] lookup (1M elements)", i, t_out, ITERATION_COUNT, {
+		RZ_BENCH_RUN_I_RAND("[HtPU] lookup (1M elements)", i, t_out, ITERATION_COUNT, {
 			ut64 reshuffled_key = reshuffle_key(i, 1000000, UT64_MAX);
 			ut64 result = ht_pu_find(ht_1m, generate_pu_key(reshuffled_key), NULL);
 		});
@@ -254,23 +255,23 @@ static void bench_rz_ht_su_combined(RzTable *t_out) {
 		RZ_BENCH_RUN("[HtSU] iterate (100 elements)", t_out, ITERATION_COUNT, {
 			ht_su_foreach(ht_100, (HtSUForeachCallback)ht_su_foreach_cb, NULL);
 		});
-		RZ_BENCH_RUN_I("[HtSU] lookup (100 elements)", i, t_out, ITERATION_COUNT, {
+		RZ_BENCH_RUN_I_RAND("[HtSU] lookup (100 elements)", i, t_out, ITERATION_COUNT, {
 			const char *key = precomputed_keys[reshuffle_key(i, 100, ITERATION_COUNT)];
 			ut64 result = ht_su_find(ht_100, key, NULL);
 		});
-		RZ_BENCH_RUN_I("[HtSU] lookup (1k elements)", i, t_out, ITERATION_COUNT, {
+		RZ_BENCH_RUN_I_RAND("[HtSU] lookup (1k elements)", i, t_out, ITERATION_COUNT, {
 			const char *key = precomputed_keys[reshuffle_key(i, 1000, ITERATION_COUNT)];
 			ut64 result = ht_su_find(ht_1k, key, NULL);
 		});
-		RZ_BENCH_RUN_I("[HtSU] lookup (10k elements)", i, t_out, ITERATION_COUNT, {
+		RZ_BENCH_RUN_I_RAND("[HtSU] lookup (10k elements)", i, t_out, ITERATION_COUNT, {
 			const char *key = precomputed_keys[reshuffle_key(i, 10000, ITERATION_COUNT)];
 			ut64 result = ht_su_find(ht_10k, key, NULL);
 		});
-		RZ_BENCH_RUN_I("[HtSU] lookup (100k elements)", i, t_out, ITERATION_COUNT, {
+		RZ_BENCH_RUN_I_RAND("[HtSU] lookup (100k elements)", i, t_out, ITERATION_COUNT, {
 			const char *key = precomputed_keys[reshuffle_key(i, 100000, ITERATION_COUNT)];
 			ut64 result = ht_su_find(ht_100k, key, NULL);
 		});
-		RZ_BENCH_RUN_I("[HtSU] lookup (1M elements)", i, t_out, ITERATION_COUNT, {
+		RZ_BENCH_RUN_I_RAND("[HtSU] lookup (1M elements)", i, t_out, ITERATION_COUNT, {
 			const char *key = precomputed_keys[reshuffle_key(i, 1000000, ITERATION_COUNT)];
 			ut64 result = ht_su_find(ht_1m, key, NULL);
 		});
@@ -320,7 +321,7 @@ static void bench_rz_ht_uu_combined(RzTable *t_out) {
 			ht_uu_foreach(ht, (HtUUForeachCallback)ht_uu_foreach_cb, NULL);
 		});
 
-		RZ_BENCH_RUN_I("[HtUU] lookup (100 elements)", i, t_out, ITERATION_COUNT, {
+		RZ_BENCH_RUN_I_RAND("[HtUU] lookup (100 elements)", i, t_out, ITERATION_COUNT, {
 			ht_uu_find(ht, reshuffle_key(i, size, size), NULL);
 		});
 
@@ -335,7 +336,7 @@ static void bench_rz_ht_uu_combined(RzTable *t_out) {
 			ht_uu_insert(ht, i, i);
 		}
 
-		RZ_BENCH_RUN_I("[HtUU] lookup (1k elements)", i, t_out, ITERATION_COUNT, {
+		RZ_BENCH_RUN_I_RAND("[HtUU] lookup (1k elements)", i, t_out, ITERATION_COUNT, {
 			ht_uu_find(ht, reshuffle_key(i, size, size), NULL);
 		});
 
@@ -350,7 +351,7 @@ static void bench_rz_ht_uu_combined(RzTable *t_out) {
 			ht_uu_insert(ht, i, i);
 		}
 
-		RZ_BENCH_RUN_I("[HtUU] lookup (10k elements)", i, t_out, ITERATION_COUNT, {
+		RZ_BENCH_RUN_I_RAND("[HtUU] lookup (10k elements)", i, t_out, ITERATION_COUNT, {
 			ht_uu_find(ht, reshuffle_key(i, size, size), NULL);
 		});
 
@@ -365,7 +366,7 @@ static void bench_rz_ht_uu_combined(RzTable *t_out) {
 			ht_uu_insert(ht, i, i);
 		}
 
-		RZ_BENCH_RUN_I("[HtUU] lookup (100k elements)", i, t_out, ITERATION_COUNT, {
+		RZ_BENCH_RUN_I_RAND("[HtUU] lookup (100k elements)", i, t_out, ITERATION_COUNT, {
 			ht_uu_find(ht, reshuffle_key(i, size, size), NULL);
 		});
 
@@ -380,7 +381,7 @@ static void bench_rz_ht_uu_combined(RzTable *t_out) {
 			ht_uu_insert(ht, i, i);
 		}
 
-		RZ_BENCH_RUN_I("[HtUU] lookup (1M elements)", i, t_out, ITERATION_COUNT, {
+		RZ_BENCH_RUN_I_RAND("[HtUU] lookup (1M elements)", i, t_out, ITERATION_COUNT, {
 			ht_uu_find(ht, reshuffle_key(i, size, size), NULL);
 		});
 

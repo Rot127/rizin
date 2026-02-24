@@ -44,6 +44,19 @@ RZ_API void rz_bench_report(RZ_NONNULL RzBenchCtx *ctx, RZ_NONNULL RzTable *t);
 		rz_bench_report(&ctx, table); \
 	} while (0)
 
+#define RZ_BENCH_RUN_I_RAND(name, i, table, iterations, code) \
+	do { \
+		RzBenchCtx ctx; \
+		rz_bench_init(&ctx, name, iterations); \
+		rz_bench_start(&ctx); \
+		for (ut64(k) = 0; (k) < iterations; (k)++) { \
+			ut64(i) = rz_num_rand64(iterations); \
+			code; \
+		} \
+		rz_bench_end(&ctx); \
+		rz_bench_report(&ctx, table); \
+	} while (0)
+
 #define RZ_BENCH_RUN_I(name, i, table, iterations, code) \
 	do { \
 		RzBenchCtx ctx; \
