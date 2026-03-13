@@ -5,7 +5,6 @@
 #include <rz_platform.h>
 #include "rz_list.h"
 #include "rz_types.h"
-#include <rz_util.h>
 #include "rz_cons.h"
 #include "rz_util/rz_assert.h"
 #include "rz_util/rz_str.h"
