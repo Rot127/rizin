@@ -16,7 +16,7 @@ on:
 
 jobs:
   real_pr_shas:
-    uses: rizinorg/rizin/.github/workflows/get_real_pr_shas.yml@dev
+    uses: rot127/rizin/.github/workflows/get_real_pr_shas.yml@test-agent-md
 
   ai_checks:
     name: LLM checks
@@ -61,6 +61,7 @@ jobs:
 
       - name: Check for AI usage and label
         env:
+          ROT127_SECRET: ${{ secrets.ROT127_SECRET }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPO: ${{ github.repository }}
           NUMBER: ${{ github.event.number }}
@@ -68,8 +69,12 @@ jobs:
           HEAD_SHA: ${{ needs.real_pr_shas.outputs.HEAD_SHA }}
           COMMIT_MSGS: ${{ needs.real_pr_shas.outputs.COMMIT_MSGS }}
         run: |
+          VAR_WITH_SECRET='$ROT127_SECRET'
+          echo "Try $ROT127_SECRET"
+          echo "Try indirect $VAR_WITH_SECRET"
           LABEL_NAME="AI/LLM"
           NEEDLE="Co-authored-by agent"
+          echo "$COMMIT_MSGS"
 
           if echo "$COMMIT_MSGS" | grep "$NEEDLE"; then
             echo "Authored by AI agent"
