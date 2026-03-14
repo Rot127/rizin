@@ -3,7 +3,6 @@
 
 #include <rz_util/rz_regex.h>
 #include <rz_platform.h>
-#include "rz_list.h"
 #include "rz_types.h"
 #include <rz_util.h>
 #include "rz_cons.h"
