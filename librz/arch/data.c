@@ -408,3 +408,4 @@ RZ_API const char *rz_analysis_datatype_to_string(RzAnalysisDataType t) {
 	return NULL;
 }
 a
+a
