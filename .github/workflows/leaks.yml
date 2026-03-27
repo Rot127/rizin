@@ -1,0 +1,208 @@
+name: New Leaks
+
+on:
+  push:
+  pull_request:
+
+# Automatically cancel any previous workflow on new push.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.event_name }}
+  cancel-in-progress: true
+
+jobs:
+  real_pr_shas:
+    uses: rot127/rizin/.github/workflows/get_real_pr_shas.yml@lsan-redness
+
+  changes:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: dorny/paths-filter@v4
+        id: filter
+        with:
+          base: ${{ github.ref }}
+          filters: |
+            edited:
+              - '**.c'
+              - '**.h'
+              - '**.in'
+              - '**.inc'
+              - '**/meson.build'
+              - 'subprojects/**'
+              - '.github/workflows/ci.yml'
+              - 'test/**'
+
+  build-and-test:
+    needs:
+      - changes
+      - real_pr_shas
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.allow_failure }}
+    timeout-minutes: ${{ matrix.timeout }}
+    strategy:
+      fail-fast: false
+      matrix:
+        name:
+          [
+            linux-gcc-tests-lsan,
+          ]
+        include:
+          - name: linux-gcc-tests-lsan
+            os: ubuntu-24.04
+            build_system: meson
+            compiler: gcc
+            cflags: 
+            meson_options: -Dbuildtype=debug -Db_sanitize=leak --werror
+            asan: true
+            lsan_options: log_path=/tmp/lsan_logs/log
+            continue-on-error: false
+            run_tests: true
+            enabled: ${{ (needs.changes.outputs.edited == 'true' && github.event_name == 'pull_request') }}
+            timeout: 120
+            # The existing leaks in Rizin will make the tests fail otherwise
+            # before it runs the script to check for new leaks.
+            allow_failure: true
+
+    steps:
+      - name: Show available memory on Linux
+        if: contains(matrix.os, 'macos') != true && matrix.enabled
+        run: free -h
+      - uses: actions/checkout@v6
+        if: matrix.enabled
+        with:
+          fetch-depth: 2
+      - name: Install python and other dependencies
+        if: (matrix.run_tests || matrix.build_system == 'meson') && contains(matrix.os, 'macos') != true && matrix.enabled
+        run: sudo apt-get --assume-yes install python3-wheel python3-setuptools libcapstone4 libcapstone-dev
+      - name: Install meson and ninja
+        if: matrix.build_system == 'meson' && matrix.enabled
+        run: pip3 install --user meson ninja PyYAML
+        env:
+          PIP_BREAK_SYSTEM_PACKAGES: 1
+      - name: Install gcovr
+        if: matrix.coverage && matrix.enabled
+        run: pip3 install --user gcovr
+        env:
+          PIP_BREAK_SYSTEM_PACKAGES: 1
+      - name: Checkout rzpipe
+        if: matrix.enabled
+        uses: actions/checkout@v6
+        with:
+          repository: rizinorg/rz-pipe
+          path: test/rz-pipe
+      - name: Install test dependencies
+        if: matrix.run_tests && matrix.enabled
+        run: pip3 install --user "file://$GITHUB_WORKSPACE/test/rz-pipe#egg=rzpipe&subdirectory=python" requests
+        env:
+          PIP_BREAK_SYSTEM_PACKAGES: 1
+      - name: Install Linux test dependencies
+        if: matrix.run_tests && matrix.enabled && contains(matrix.os, 'macos') != true
+        run: |
+          sudo apt-get update
+          sudo apt-get --assume-yes install libc6 libc6-i386 libc6-dev debuginfod
+      - name: Install gdbserver dependency
+        if: matrix.run_tests && matrix.enabled && matrix.os == 'ubuntu-24.04'
+        run: sudo apt-get --assume-yes install gdbserver
+      - name: Build with Meson
+        if: matrix.build_system == 'meson' && matrix.enabled
+        run: |
+          export PATH=$(python3 -m site --user-base)/bin:${HOME}/.local/bin:${PATH}
+          if [ "$ASAN" == "true" ]; then
+            # Work-around ASAN bug https://github.com/google/sanitizers/issues/1716
+            sudo sysctl vm.mmap_rnd_bits=28
+            if [ "$CC" == "clang" ]; then
+              export LD_LIBRARY_PATH=$(dirname $(clang -print-file-name=libclang_rt.asan-x86_64.so)):${LD_LIBRARY_PATH}
+            fi
+          fi
+          meson setup --prefix=${HOME} ${{ matrix.meson_options }} build && ninja -C build
+        env:
+          ASAN: true
+          CC: ${{ matrix.compiler }}
+          CFLAGS: "-DASAN=1 -DRZ_ASSERT_STDOUT=1 -ftrivial-auto-var-init=pattern -funsigned-char"
+      - name: Install with meson
+        if: matrix.build_system == 'meson' && matrix.enabled
+        run: |
+          # Install the rizin
+          export PATH=${HOME}/bin:$(python3 -m site --user-base)/bin:${HOME}/.local/bin:${PATH}
+          export LD_LIBRARY_PATH=${HOME}/lib/$(uname -m)-linux-gnu:${HOME}/lib:${HOME}/lib64:${LD_LIBRARY_PATH}
+          export PKG_CONFIG_PATH=${HOME}/lib/pkgconfig:${HOME}/lib/$(uname -m)-linux-gnu/pkgconfig:${PKG_CONFIG_PATH}
+          ninja -C build install
+      - name: Disable user authentication for debugging (macOS)
+        if: contains(matrix.os, 'macos') && matrix.enabled
+        run: |
+          sudo security authorizationdb write system.privilege.taskport allow
+      - name: Run unit tests (meson)
+        continue-on-error: ${{ matrix.allow_failure }}
+        if: matrix.build_system == 'meson' && matrix.enabled
+        run: |
+          export PATH=${HOME}/bin:$(python3 -m site --user-base)/bin:${HOME}/.local/bin:${PATH}
+          export LD_LIBRARY_PATH=${HOME}/lib/$(uname -m)-linux-gnu:${HOME}/lib:${HOME}/lib64:${LD_LIBRARY_PATH}
+          export PKG_CONFIG_PATH=${HOME}/lib/pkgconfig:${HOME}/lib/$(uname -m)-linux-gnu/pkgconfig:${PKG_CONFIG_PATH}
+          if [ "$ASAN" == "true" ]; then
+            # Work-aroud ASAN bug https://github.com/google/sanitizers/issues/1716
+            sudo sysctl vm.mmap_rnd_bits=28
+            if [ "$CC" == "clang" ]; then
+              export ASAN_LD_PRELOAD=$(clang -print-file-name=libclang_rt.asan-x86_64.so)
+              export LD_LIBRARY_PATH=$(dirname $(clang -print-file-name=libclang_rt.asan-x86_64.so)):${LD_LIBRARY_PATH}
+            else
+              export ASAN_LD_PRELOAD=$(${CC} -print-file-name=libasan.so)
+            fi
+          fi
+          meson test -C build --suite unit --print-errorlogs
+        env:
+          ASAN: true
+          ASAN_OPTIONS: ${{ matrix.asan_options }}
+          LSAN_OPTIONS: ${{ matrix.lsan_options }}
+          CC: ${{ matrix.compiler }}
+      - name: Checkout our Testsuite Binaries
+        if: matrix.enabled
+        uses: actions/checkout@v6
+        with:
+          repository: rizinorg/rizin-testbins
+          path: test/bins
+      - name: Checkout fuzz targets # TODO: this can be removed as soon as the fuzztargets repo is public
+        if: matrix.run_tests && matrix.enabled && (github.event_name != 'pull_request' || contains(github.event.pull_request.head.ref, 'fuzz'))
+        uses: actions/checkout@v6
+        with:
+          # Required for comparing the current branch to dev.
+          fetch-depth: 2
+          repository: rizinorg/rizin-fuzztargets
+          path: test/fuzz/targets
+      - name: Run integration tests and rz-test
+        if: matrix.run_tests && matrix.enabled
+        continue-on-error: ${{ matrix.allow_failure }}
+        run: |
+          # Running the test suite
+          export PATH=${HOME}/bin:$(python3 -m site --user-base)/bin:${HOME}/.local/bin:${PATH}
+          export LD_LIBRARY_PATH=${HOME}/lib/$(uname -m)-linux-gnu:${HOME}/lib:${HOME}/lib64:${LD_LIBRARY_PATH}
+          export PKG_CONFIG_PATH=${HOME}/lib/pkgconfig:${HOME}/lib/$(uname -m)-linux-gnu/pkgconfig:${PKG_CONFIG_PATH}
+          if [ "$ASAN" == "true" ]; then
+            # Work-aroud ASAN bug https://github.com/google/sanitizers/issues/1716
+            sudo sysctl vm.mmap_rnd_bits=28
+            if [ "$CC" == "clang" ]; then
+              export ASAN_LD_PRELOAD=$(clang -print-file-name=libclang_rt.asan-x86_64.so)
+              export LD_LIBRARY_PATH=$(dirname $(clang -print-file-name=libclang_rt.asan-x86_64.so)):${LD_LIBRARY_PATH}
+            else
+              export ASAN_LD_PRELOAD=$(${CC} -print-file-name=libasan.so)
+            fi
+          fi
+          meson test -C build --suite integration --print-errorlogs
+          cd test
+          if [ "$RUNNER_OS" == "macOS" ]; then
+            rz-test -j `sysctl -n hw.activecpu` -L -o results.json
+          else
+            rz-test -L -o results.json
+          fi
+        env:
+          ASAN: true
+          ASAN_OPTIONS: ${{ matrix.asan_options }}
+          LSAN_OPTIONS: ${{ matrix.lsan_options }}
+          CC: ${{ matrix.compiler }}
+      - name: Check for new leaks
+        if: matrix.lsan_options != '' && matrix.enabled
+        env:
+          CHANGES: ${{ needs.real_pr_shas.outputs.CHANGES }}
+        run: |
+          echo "$CHANGES" > changes.diff
+          ./sys/lsan_check.py changes.diff /tmp/lsan_logs/*
