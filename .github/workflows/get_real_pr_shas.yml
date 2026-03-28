@@ -13,7 +13,7 @@
 #
 # jobs:
 #   real_pr_shas:
-#     uses: riziorg/rizin/.github/workflows/get_real_pr_shas.yml@dev
+#     uses: rot127/rizin/.github/workflows/get_real_pr_shas.yml@fetch-base
 #
 # ...
 #
