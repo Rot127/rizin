@@ -971,7 +971,7 @@ RZ_API RzAbsIntResultCode rz_absint_run(RZ_BORROW RZ_NONNULL RzAbsIntInstance *i
 			if (lift_res == RZ_ABSINT_LIFT_BLOCK_RESULT_BREAK) {
 				ret = RZ_ABSINT_RESULT_BREAK;
 				rz_absint_state_free(inst, ctx.astate);
-				goto cleanup;
+				goto cleanup_res;
 			}
 			if (lift_res != RZ_ABSINT_LIFT_BLOCK_RESULT_OK) {
 				rz_absint_state_free(inst, ctx.astate);
