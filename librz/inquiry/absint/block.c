@@ -95,7 +95,7 @@ static void interp_block_mark_uninterpreted(RzAbsIntRunContext *ctx, RzAbsIntBlo
 		return;
 	}
 	block->uninterpreted = true;
-	rz_list_push(ctx->queue, block);
+	rz_list_push(ctx->todo_interp, block);
 }
 
 /**
@@ -350,7 +350,7 @@ RZ_API void rz_absint_run_push(RZ_BORROW RZ_NONNULL RzAbsIntRunContext *ctx, RZ_
 }
 
 RZ_IPI RZ_OWN RzAbsIntBlock *rz_absint_run_pop(RZ_BORROW RZ_NONNULL RzAbsIntRunContext *ctx) {
-	RzAbsIntBlock *r = rz_list_pop(ctx->queue);
+	RzAbsIntBlock *r = rz_list_pop(ctx->todo_interp);
 	if (!r) {
 		return NULL;
 	}

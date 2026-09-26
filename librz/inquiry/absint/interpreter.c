@@ -842,8 +842,8 @@ RZ_API bool rz_absint_run_context_init(RZ_BORROW RZ_NONNULL RzAbsIntRunContext *
 	ctx->inst = inst;
 	ctx->astate = NULL;
 	ctx->res = NULL;
-	ctx->queue = rz_list_new();
-	if (!ctx->queue) {
+	ctx->todo_interp = rz_list_new();
+	if (!ctx->todo_interp) {
 		return false;
 	}
 	interp_blocks_init(ctx);
@@ -854,7 +854,7 @@ RZ_API void rz_absint_run_context_fini(RZ_NULLABLE RzAbsIntRunContext *ctx) {
 	if (!ctx) {
 		return;
 	}
-	rz_list_free(ctx->queue);
+	rz_list_free(ctx->todo_interp);
 	interp_blocks_fini(ctx->inst, &ctx->blocks);
 }
 
